@@ -1,5 +1,4 @@
 services:
-  # === Backend (FastAPI + Docker) ===
   - type: web
     name: fat-eibl-backend
     env: docker
