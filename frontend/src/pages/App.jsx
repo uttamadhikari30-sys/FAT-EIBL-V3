@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./Login.jsx"; // ✅ Make sure this file exists in the same folder
-import Dashboard from "./Dashboard.jsx"; // Optional if you have one
+import Login from "./Login.jsx";
+import Dashboard from "./Dashboard.jsx";
 
 export default function App() {
   return (
