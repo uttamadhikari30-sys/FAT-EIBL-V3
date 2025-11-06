@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: fat-eibl-backend
+    env: docker
+    plan: free
+    repo: https://github.com/uttamadhikari30-sys/FAT-EIBL
+    branch: main
+    dockerfilePath: backend/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://fatuser:fatpass@db:5432/fatdb
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        value: dev-secret
+      - key: EMAIL_FROM
+        value: Audit@edmeinsurance.com
+
+  - type: static
+    name: fat-eibl-frontend
+    buildCommand: npm run build
+    publishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://fat-eibl-backend.onrender.com
