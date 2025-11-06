@@ -1,15 +1,16 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Date, Text
-from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from datetime import date
 import os, shutil
 from dotenv import load_dotenv
 import requests
 
-# ✅ Import users and models
-from app.models import user
+# ✅ Import from database (moved get_db here to avoid circular import)
+from app.database import Base, engine, get_db
+
+# ✅ Import users router (no circular import now)
 from app.routers import users
 
 # Optional OpenAI
@@ -21,13 +22,22 @@ except Exception:
 # Load environment variables
 load_dotenv()
 
-# === Database Setup ===
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+# === FastAPI App ===
+app = FastAPI(title="FAT-EIBL (Edme) – API")
 
-# === Models ===
+# === CORS ===
+allow = os.getenv("ALLOW_ORIGINS", "*").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allow,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# === Models (local models only for tasks/audit) ===
+from sqlalchemy import Column, Integer, String, Date, Text
+
 class Task(Base):
     __tablename__ = "tasks"
     id = Column(Integer, primary_key=True, index=True)
@@ -46,29 +56,8 @@ class AuditLog(Base):
     action = Column(String(50))
     detail = Column(Text)
 
-# ✅ Create all tables (includes users table too)
+# ✅ Create all tables (includes Task, AuditLog, and user models)
 Base.metadata.create_all(bind=engine)
-
-# === DB Session ===
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# === FastAPI App ===
-app = FastAPI(title="FAT-EIBL (Edme) – API")
-
-# === CORS ===
-allow = os.getenv("ALLOW_ORIGINS", "*").split(",")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allow,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # === Pydantic Schemas ===
 class TaskCreate(BaseModel):
@@ -189,4 +178,3 @@ def ai_chat(prompt: str = Form(...)):
 
 # --- USER ROUTES ---
 app.include_router(users.router, prefix="/users", tags=["Users"])
-
