@@ -5,7 +5,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: backend/Dockerfile
-    buildContext: backend.
     envVars:
       - key: DATABASE_URL
         value: postgresql://fatuser:fatpass@db:5432/fatdb
