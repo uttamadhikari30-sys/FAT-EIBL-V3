@@ -1,5 +1,4 @@
 services:
-  # === Backend (FastAPI + Docker) ===
   - type: web
     name: fat-eibl-backend
     env: docker
@@ -7,6 +6,7 @@ services:
     repo: https://github.com/uttamadhikari30-sys/FAT-EIBL-V3
     branch: main
     dockerfilePath: backend/Dockerfile
+    buildContext: backend  
     envVars:
       - key: DATABASE_URL
         value: postgresql://fatuser:fatpass@db:5432/fatdb
