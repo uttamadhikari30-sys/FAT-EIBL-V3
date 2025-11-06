@@ -1,4 +1,5 @@
 services:
+  # === Backend (FastAPI + Docker) ===
   - type: web
     name: fat-eibl-backend
     env: docker
@@ -6,7 +7,7 @@ services:
     repo: https://github.com/uttamadhikari30-sys/FAT-EIBL-V3
     branch: main
     dockerfilePath: backend/Dockerfile
-    buildContext: backend  
+    buildContext: backend
     envVars:
       - key: DATABASE_URL
         value: postgresql://fatuser:fatpass@db:5432/fatdb
@@ -22,7 +23,10 @@ services:
     name: fat-eibl-frontend
     env: node
     plan: free
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: |
+      cd frontend
+      npm install --legacy-peer-deps
+      npm run build
     startCommand: npx serve -s frontend/dist
     envVars:
       - key: VITE_API_URL
