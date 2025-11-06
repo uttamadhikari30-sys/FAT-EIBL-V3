@@ -1,0 +1,25 @@
+/* === FAT-EIBL Theme === */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8fbff;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #0d1b2a;
+}
+
+h1, h2, h3 {
+  color: #0047AB;
+}
+
+button {
+  background-color: #0047AB;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #003580;
+}
