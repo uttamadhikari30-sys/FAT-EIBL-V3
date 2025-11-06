@@ -1,72 +1,34 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
 export default function Login() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    // Replace these with your admin credentials
-    if (email === "Uttam.singh@edmeinsurance.com" && password === "123") {
-      localStorage.setItem("user", email);
-      navigate("/");
-    } else {
-      alert("Invalid credentials");
-    }
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        flexDirection: "column",
-        background: "linear-gradient(to right, #f7faff, #eaf2ff)",
-      }}
-    >
-      <img src="/logo.png" alt="logo" style={{ height: 70, marginBottom: 20 }} />
-      <h2 style={{ color: "#004aad" }}>Welcome to FAT-EIBL</h2>
-      <p style={{ marginBottom: 20, color: "#555" }}>
-        Finance Audit Tracker – Edme Insurance Brokers Limited
-      </p>
-      <form
-        onSubmit={handleLogin}
-        style={{
-          background: "#fff",
-          padding: 30,
-          borderRadius: 10,
-          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-          minWidth: 300,
-        }}
-      >
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc" }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ padding: 10, borderRadius: 6, border: "1px solid #ccc" }}
-        />
-        <button className="btn" type="submit">
-          Login
-        </button>
-      </form>
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="p-6 bg-white rounded-2xl shadow-lg text-center">
+        <h1 className="text-2xl font-bold text-blue-900 mb-2">
+          Welcome to FAT-EIBL
+        </h1>
+        <p className="text-gray-500 mb-4">
+          Finance Audit Tracker – Edme Insurance Brokers Limited
+        </p>
+        <form>
+          <input
+            type="email"
+            placeholder="Email"
+            className="border p-2 w-64 mb-3 rounded"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="border p-2 w-64 mb-3 rounded"
+          />
+          <button
+            type="submit"
+            className="bg-blue-700 text-white px-4 py-2 rounded w-64"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
