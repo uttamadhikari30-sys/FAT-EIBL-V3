@@ -5,8 +5,8 @@ export default function Login() {
     <div style={{
       textAlign: "center",
       marginTop: "100px",
-      fontFamily: "sans-serif",
-      color: "#003366"
+      fontFamily: "Arial, sans-serif",
+      color: "#0047AB"
     }}>
       <h1>Welcome to FAT-EIBL</h1>
       <p>Finance Audit Tracker – Edme Insurance Brokers Limited</p>
