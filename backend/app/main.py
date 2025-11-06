@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine, Column, Integer, String, Date, Text, func
+from sqlalchemy import create_engine, Column, Integer, String, Date, Text
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from pydantic import BaseModel
 from datetime import date
@@ -8,19 +8,26 @@ import os, shutil
 from dotenv import load_dotenv
 import requests
 
+# ✅ Import users and models
+from app.models import user
+from app.routers import users
+
 # Optional OpenAI
 try:
     from openai import OpenAI
 except Exception:
     OpenAI = None
 
+# Load environment variables
 load_dotenv()
 
+# === Database Setup ===
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+# === Models ===
 class Task(Base):
     __tablename__ = "tasks"
     id = Column(Integer, primary_key=True, index=True)
@@ -39,8 +46,10 @@ class AuditLog(Base):
     action = Column(String(50))
     detail = Column(Text)
 
+# ✅ Create all tables (includes users table too)
 Base.metadata.create_all(bind=engine)
 
+# === DB Session ===
 def get_db():
     db = SessionLocal()
     try:
@@ -48,8 +57,10 @@ def get_db():
     finally:
         db.close()
 
+# === FastAPI App ===
 app = FastAPI(title="FAT-EIBL (Edme) – API")
 
+# === CORS ===
 allow = os.getenv("ALLOW_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
@@ -59,7 +70,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Models
+# === Pydantic Schemas ===
 class TaskCreate(BaseModel):
     title: str
     department: str | None = None
@@ -79,14 +90,17 @@ class TaskOut(BaseModel):
     priority: str | None
     remarks: str | None
     attachment: str | None
+
     class Config:
         from_attributes = True
 
-# Health
-@app.get("/health")
-def health(): return { "status": "ok" }
+# === Routes ===
 
-# Tasks CRUD
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+# --- TASK CRUD ---
 @app.get("/tasks", response_model=list[TaskOut])
 def list_tasks(db: Session = Depends(get_db)):
     return db.query(Task).order_by(Task.due_date.is_(None), Task.due_date).all()
@@ -103,35 +117,44 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
 @app.put("/tasks/{task_id}", response_model=TaskOut)
 def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_db)):
     obj = db.get(Task, task_id)
-    if not obj: raise HTTPException(status_code=404, detail="Task not found")
-    for k, v in task.dict().items(): setattr(obj, k, v)
+    if not obj:
+        raise HTTPException(status_code=404, detail="Task not found")
+    for k, v in task.dict().items():
+        setattr(obj, k, v)
     db.add(AuditLog(action="update", detail=f"Task ID {task_id}"))
-    db.commit(); db.refresh(obj)
+    db.commit()
+    db.refresh(obj)
     return obj
 
 @app.delete("/tasks/{task_id}")
 def delete_task(task_id: int, db: Session = Depends(get_db)):
     obj = db.get(Task, task_id)
-    if not obj: raise HTTPException(status_code=404, detail="Task not found")
-    db.delete(obj); db.add(AuditLog(action="delete", detail=f"Task ID {task_id}"))
-    db.commit(); return { "ok": True }
+    if not obj:
+        raise HTTPException(status_code=404, detail="Task not found")
+    db.delete(obj)
+    db.add(AuditLog(action="delete", detail=f"Task ID {task_id}"))
+    db.commit()
+    return {"ok": True}
 
-# Uploads
-UPLOAD_DIR = os.path.join(os.getcwd(), "uploads"); os.makedirs(UPLOAD_DIR, exist_ok=True)
+# --- UPLOAD ---
+UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @app.post("/upload/{task_id}")
 async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
     obj = db.get(Task, task_id)
-    if not obj: raise HTTPException(status_code=404, detail="Task not found")
+    if not obj:
+        raise HTTPException(status_code=404, detail="Task not found")
     safe_name = f"task_{task_id}_" + os.path.basename(file.filename)
     dest = os.path.join(UPLOAD_DIR, safe_name)
-    with open(dest, "wb") as buffer: shutil.copyfileobj(file.file, buffer)
+    with open(dest, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
     obj.attachment = safe_name
     db.add(AuditLog(action="upload", detail=f"Task ID {task_id} file {safe_name}"))
     db.commit()
-    return { "task_id": task_id, "filename": safe_name }
+    return {"task_id": task_id, "filename": safe_name}
 
-# Seed
+# --- SEED ---
 @app.get("/seed")
 def seed(db: Session = Depends(get_db)):
     if db.query(Task).count() == 0:
@@ -143,21 +166,27 @@ def seed(db: Session = Depends(get_db)):
             db.add(t)
         db.add(AuditLog(action="seed", detail="Sample tasks added"))
         db.commit()
-    return { "seeded": True }
+    return {"seeded": True}
 
-# AI Chat (proxy to OpenAI if key provided)
+# --- AI CHAT ---
 @app.post("/ai/chat")
 def ai_chat(prompt: str = Form(...)):
     api_key = os.getenv("OPENAI_API_KEY", "")
     if not api_key or OpenAI is None:
-        return { "reply": "AI is not configured. Please set OPENAI_API_KEY in backend/.env." }
+        return {"reply": "AI is not configured. Please set OPENAI_API_KEY in backend/.env."}
     client = OpenAI(api_key=api_key)
     try:
         resp = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{"role":"system","content":"You are Vani, an AI assistant for an audit tracker."},
-                      {"role":"user","content":prompt}]
+            messages=[
+                {"role": "system", "content": "You are Vani, an AI assistant for an audit tracker."},
+                {"role": "user", "content": prompt}
+            ]
         )
-        return { "reply": resp.choices[0].message.content }
+        return {"reply": resp.choices[0].message.content}
     except Exception as e:
-        return { "reply": f"AI error: {e}" }
+        return {"reply": f"AI error: {e}"}
+
+# --- USER ROUTES ---
+app.include_router(users.router, prefix="/users", tags=["Users"])
+
