@@ -19,6 +19,7 @@ export default function App(){
       <div className="container">
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/ai" element={<AIChat />} />
         </Routes>
