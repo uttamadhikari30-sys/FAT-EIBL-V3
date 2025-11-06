@@ -4,8 +4,6 @@ services:
     name: fat-eibl-backend
     env: docker
     plan: free
-    repo: https://github.com/uttamadhikari30-sys/FAT-EIBL-V3
-    branch: main
     dockerfilePath: backend/Dockerfile
     buildContext: backend
     envVars:
