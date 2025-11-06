@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "frondend/src/assets/logo.png"; //
+import logo from "../assets/logo.png";
 
 export default function Login() {
   return (
