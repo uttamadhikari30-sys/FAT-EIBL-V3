@@ -8,7 +8,7 @@ export default function App(){
   return (
     <div>
       <div className="appbar">
-        <img src="/public/logo.png" alt="logo" />
+        <img src="/logo.png" alt="logo" />
         <div className="brand">FAT-EIBL</div>
         <nav style={{marginLeft:"auto"}}>
           <Link to="/">Dashboard</Link>
