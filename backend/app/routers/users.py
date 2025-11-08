@@ -45,3 +45,25 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     db.delete(user)
     db.commit()
     return {"ok": True}
+
+# ✅ Login route
+@router.post("/login")
+def login(
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.email == email).first()
+    if not user or not bcrypt.verify(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    return {
+        "status": "ok",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
+            "department": user.department,
+        }
+    }
