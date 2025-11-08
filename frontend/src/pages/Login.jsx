@@ -3,17 +3,62 @@ import logo from "../assets/logo.png";
 import "./Login.css";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  // ✅ TEMP ADMIN LOGIN (for testing)
+  const ADMIN_ID = "admin@edmeinsurance.com";
+  const ADMIN_PASS = "Admin@123";
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Replace this with your backend API call later
-    if (email === "admin@edmeinsurance.com" && password === "password123") {
+    setLoading(true);
+
+    // ✅ Step 1: Local hardcoded admin check (for testing)
+    if (username === ADMIN_ID && password === ADMIN_PASS) {
+      alert("Admin login successful!");
+      localStorage.setItem("role", "admin");
       window.location.href = "/dashboard";
-    } else {
-      alert("Invalid credentials");
+      setLoading(false);
+      return;
     }
+
+    // ✅ Step 2: (optional) Try backend login if not admin
+    try {
+      const response = await fetch(
+        "https://fat-eibl-backend.onrender.com/users/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("role", data.role);
+
+        if (data.role === "admin") {
+          window.location.href = "/dashboard";
+        } else {
+          window.location.href = "/user-dashboard";
+        }
+      } else {
+        alert(data.detail || "Invalid username or password");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Server error. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    alert("Forgot Password feature coming soon. Please contact Admin.");
   };
 
   return (
@@ -27,7 +72,11 @@ export default function Login() {
         backgroundColor: "#f5f9ff",
       }}
     >
-      <img src={logo} alt="Company Logo" style={{ width: "120px", marginBottom: "20px" }} />
+      <img
+        src={logo}
+        alt="Company Logo"
+        style={{ width: "120px", marginBottom: "20px" }}
+      />
       <h1 style={{ color: "#004aad" }}>Welcome to FAT-EIBL</h1>
       <p style={{ color: "#003b80", marginBottom: "30px" }}>
         Finance Audit Tracker – Edme Insurance Brokers Limited
@@ -45,10 +94,10 @@ export default function Login() {
         }}
       >
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Enter Username / Email"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           style={{
             width: "100%",
             padding: "10px",
@@ -60,7 +109,7 @@ export default function Login() {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Enter Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={{
@@ -72,6 +121,7 @@ export default function Login() {
           }}
           required
         />
+
         <button
           type="submit"
           style={{
@@ -83,9 +133,22 @@ export default function Login() {
             cursor: "pointer",
             width: "100%",
           }}
+          disabled={loading}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
+
+        <p
+          onClick={handleForgotPassword}
+          style={{
+            color: "#004aad",
+            marginTop: "15px",
+            cursor: "pointer",
+            textDecoration: "underline",
+          }}
+        >
+          Forgot Password?
+        </p>
       </form>
     </div>
   );

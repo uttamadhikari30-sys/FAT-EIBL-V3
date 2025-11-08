@@ -178,3 +178,4 @@ def ai_chat(prompt: str = Form(...)):
 
 # --- USER ROUTES ---
 app.include_router(users.router, prefix="/users", tags=["Users"])
+

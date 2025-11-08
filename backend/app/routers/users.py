@@ -1,17 +1,47 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException, Form
+from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
-from app.main import get_db
+from app.database import get_db
+from app.models.user import User
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter()
 
+# List all users
 @router.get("/")
 def list_users(db: Session = Depends(get_db)):
-    # For now, just a placeholder
-    return {"message": "User list (placeholder)"}
+    return db.query(User).all()
 
-@router.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db)):
-    # Simple fake login logic (replace later)
-    if username == "admin" and password == "admin123":
-        return {"message": "Login successful", "role": "admin"}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
+# Create new user
+@router.post("/")
+def create_user(
+    name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    department: str = Form(None),
+    role: str = Form("auditee"),
+    manager_email: str = Form(None),
+    db: Session = Depends(get_db),
+):
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="Email already exists")
+    user = User(
+        name=name,
+        email=email,
+        hashed_password=bcrypt.hash(password),
+        department=department,
+        role=role,
+        manager_email=manager_email,
+    )
+    db.add(user)
+    db.commit()
+    return {"ok": True}
+
+# Delete user
+@router.delete("/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(user)
+    db.commit()
+    return {"ok": True}
