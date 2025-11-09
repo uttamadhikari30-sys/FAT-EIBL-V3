@@ -57,3 +57,30 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     db.delete(user)
     db.commit()
     return {"ok": True, "message": "User deleted"}
+@router.get("/check-admin")
+def check_admin(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return {"count": len(users), "users": [u.email for u in users]}
+# ✅ Seed Admin User (one-time setup)
+@router.post("/seed-admin")
+def seed_admin(db: Session = Depends(get_db)):
+    from passlib.hash import bcrypt
+
+    email = "admin@edmeinsurance.com"
+    existing = db.query(User).filter(User.email == email).first()
+    if existing:
+        return {"ok": True, "note": "Admin already exists"}
+
+    admin = User(
+        name="Admin",
+        email=email,
+        hashed_password=bcrypt.hash("Edme@123"),
+        department="Finance",
+        role="admin",
+        manager_email=None,
+    )
+    db.add(admin)
+    db.commit()
+    return {"ok": True, "note": "Admin created"}
+
+
