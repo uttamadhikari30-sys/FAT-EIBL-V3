@@ -34,3 +34,15 @@ app.add_middleware(
 # at the bottom: include users router
 from app.routers import users
 app.include_router(users.router, prefix="/users", tags=["Users"])
+# --- TEMPORARY: Create Database Tables on Render ---
+from app.models.user import User
+from app.database import Base, engine
+
+@app.get("/create-db")
+def create_database():
+    try:
+        Base.metadata.create_all(bind=engine)
+        return {"ok": True, "message": "Database tables created successfully"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
