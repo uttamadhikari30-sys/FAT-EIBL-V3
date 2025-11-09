@@ -17,19 +17,22 @@ def create_user(
     manager_email: str = Form(None),
     db: Session = Depends(get_db),
 ):
-    if db.query(User).filter(User.email == email).first():
-        raise HTTPException(status_code=400, detail="Email already exists")
-    user = User(
-        name=name,
-        email=email,
-        hashed_password=bcrypt.hash(password),
-        department=department,
-        role=role,
-        manager_email=manager_email,
-    )
-    db.add(user)
-    db.commit()
-    return {"ok": True, "message": "User created successfully"}
+    try:
+        if db.query(User).filter(User.email == email).first():
+            raise HTTPException(status_code=400, detail="Email already exists")
+        user = User(
+            name=name,
+            email=email,
+            hashed_password=bcrypt.hash(password),
+            department=department,
+            role=role,
+            manager_email=manager_email,
+        )
+        db.add(user)
+        db.commit()
+        return {"ok": True, "message": "User created successfully"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 # ✅ Login route
 @router.post("/login")
@@ -38,49 +41,69 @@ def login_user(
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.email == email).first()
-    if not user or not bcrypt.verify(password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    return {"message": "Login successful", "user": {"id": user.id, "name": user.name, "role": user.role}}
+    try:
+        user = db.query(User).filter(User.email == email).first()
+        if not user or not bcrypt.verify(password, user.hashed_password):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        return {
+            "ok": True,
+            "message": "Login successful",
+            "user": {"id": user.id, "name": user.name, "role": user.role},
+        }
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 # ✅ Get all users
 @router.get("/")
 def list_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
+    try:
+        return db.query(User).all()
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 # ✅ Delete user
 @router.delete("/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.get(User, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    db.delete(user)
-    db.commit()
-    return {"ok": True, "message": "User deleted"}
+    try:
+        user = db.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        db.delete(user)
+        db.commit()
+        return {"ok": True, "message": "User deleted"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+# ✅ Check Admin Users
 @router.get("/check-admin")
 def check_admin(db: Session = Depends(get_db)):
-    users = db.query(User).all()
-    return {"count": len(users), "users": [u.email for u in users]}
-# ✅ Seed Admin User (one-time setup)
+    try:
+        users = db.query(User).all()
+        return {"count": len(users), "users": [u.email for u in users]}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+# ✅ Seed Admin User (One-Time Setup)
 @router.post("/seed-admin")
 def seed_admin(db: Session = Depends(get_db)):
-    from passlib.hash import bcrypt
+    try:
+        email = "admin@edmeinsurance.com"
+        existing = db.query(User).filter(User.email == email).first()
+        if existing:
+            return {"ok": True, "note": "Admin already exists"}
 
-    email = "admin@edmeinsurance.com"
-    existing = db.query(User).filter(User.email == email).first()
-    if existing:
-        return {"ok": True, "note": "Admin already exists"}
-
-    admin = User(
-        name="Admin",
-        email=email,
-        hashed_password=bcrypt.hash("Edme@123"),
-        department="Finance",
-        role="admin",
-        manager_email=None,
-    )
-    db.add(admin)
-    db.commit()
-    return {"ok": True, "note": "Admin created"}
+        admin = User(
+            name="Admin",
+            email=email,
+            hashed_password=bcrypt.hash("Edme@123"),
+            department="Finance",
+            role="admin",
+            manager_email=None,
+        )
+        db.add(admin)
+        db.commit()
+        return {"ok": True, "note": "Admin created"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 
