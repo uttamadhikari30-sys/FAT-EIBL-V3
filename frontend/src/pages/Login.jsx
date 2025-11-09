@@ -3,62 +3,57 @@ import logo from "../assets/logo.png";
 import "./Login.css";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // ✅ TEMP ADMIN LOGIN (for testing)
-  const ADMIN_ID = "admin@edmeinsurance.com";
-  const ADMIN_PASS = "Admin@123";
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
-    // ✅ Step 1: Local hardcoded admin check (for testing)
-    if (username === ADMIN_ID && password === ADMIN_PASS) {
-      alert("Admin login successful!");
-      localStorage.setItem("role", "admin");
-      window.location.href = "/dashboard";
-      setLoading(false);
-      return;
-    }
-
-    // ✅ Step 2: (optional) Try backend login if not admin
     try {
       const response = await fetch(
-        "https://fat-eibl-backend.onrender.com/users/login",
+        "https://fat-eibl-backend-x1sp.onrender.com/users/login",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
+          headers: {
+            Accept: "application/json",
+          },
+          body: new URLSearchParams({
+            email: email,
+            password: password,
+          }),
         }
       );
 
       const data = await response.json();
 
-      if (response.ok) {
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("role", data.role);
-
-        if (data.role === "admin") {
-          window.location.href = "/dashboard";
-        } else {
-          window.location.href = "/user-dashboard";
-        }
+      if (!response.ok) {
+        setError(data.detail || "Invalid credentials");
       } else {
-        alert(data.detail || "Invalid username or password");
+        alert(`Welcome ${data.user.name}!`);
+        // Save user info to localStorage (for future dashboard use)
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        // Redirect based on role
+        if (data.user.role === "admin") {
+          window.location.href = "/admin-dashboard";
+        } else {
+          window.location.href = "/dashboard";
+        }
       }
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Server error. Please try again later.");
+    } catch (err) {
+      setError("Unable to connect to server. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleForgotPassword = () => {
-    alert("Forgot Password feature coming soon. Please contact Admin.");
+    const mailtoLink = `mailto:support@edmeinsurance.com?subject=Forgot Password - FAT-EIBL&body=Dear Support,%0D%0A%0D%0AI forgot my password. Please help me reset it.%0D%0A%0D%0ARegistered Email: ${email}%0D%0A%0D%0AThank you.`;
+    window.location.href = mailtoLink;
   };
 
   return (
@@ -94,10 +89,10 @@ export default function Login() {
         }}
       >
         <input
-          type="text"
-          placeholder="Enter Username / Email"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           style={{
             width: "100%",
             padding: "10px",
@@ -109,23 +104,30 @@ export default function Login() {
         />
         <input
           type="password"
-          placeholder="Enter Password"
+          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           style={{
             width: "100%",
             padding: "10px",
-            marginBottom: "20px",
+            marginBottom: "15px",
             border: "1px solid #ccc",
             borderRadius: "8px",
           }}
           required
         />
 
+        {error && (
+          <p style={{ color: "red", fontSize: "0.9rem", marginBottom: "10px" }}>
+            {error}
+          </p>
+        )}
+
         <button
           type="submit"
+          disabled={loading}
           style={{
-            backgroundColor: "#004aad",
+            backgroundColor: loading ? "#7a9be6" : "#004aad",
             color: "white",
             border: "none",
             padding: "10px 20px",
@@ -133,7 +135,6 @@ export default function Login() {
             cursor: "pointer",
             width: "100%",
           }}
-          disabled={loading}
         >
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -142,8 +143,9 @@ export default function Login() {
           onClick={handleForgotPassword}
           style={{
             color: "#004aad",
-            marginTop: "15px",
             cursor: "pointer",
+            fontSize: "0.9rem",
+            marginTop: "12px",
             textDecoration: "underline",
           }}
         >
