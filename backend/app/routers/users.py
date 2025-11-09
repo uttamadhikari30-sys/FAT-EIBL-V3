@@ -6,12 +6,7 @@ from app.models.user import User
 
 router = APIRouter()
 
-# List all users
-@router.get("/")
-def list_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
-
-# Create new user
+# ✅ Create a new user
 @router.post("/")
 def create_user(
     name: str = Form(...),
@@ -34,9 +29,26 @@ def create_user(
     )
     db.add(user)
     db.commit()
-    return {"ok": True}
+    return {"ok": True, "message": "User created successfully"}
 
-# Delete user
+# ✅ Login route
+@router.post("/login")
+def login_user(
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.email == email).first()
+    if not user or not bcrypt.verify(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    return {"message": "Login successful", "user": {"id": user.id, "name": user.name, "role": user.role}}
+
+# ✅ Get all users
+@router.get("/")
+def list_users(db: Session = Depends(get_db)):
+    return db.query(User).all()
+
+# ✅ Delete user
 @router.delete("/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     user = db.get(User, user_id)
@@ -44,26 +56,4 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     db.delete(user)
     db.commit()
-    return {"ok": True}
-
-# ✅ Login route
-@router.post("/login")
-def login(
-    email: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db),
-):
-    user = db.query(User).filter(User.email == email).first()
-    if not user or not bcrypt.verify(password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    return {
-        "status": "ok",
-        "user": {
-            "id": user.id,
-            "name": user.name,
-            "email": user.email,
-            "role": user.role,
-            "department": user.department,
-        }
-    }
+    return {"ok": True, "message": "User deleted"}
