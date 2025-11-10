@@ -8,6 +8,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // ✅ Login function
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -18,9 +19,7 @@ export default function Login() {
         "https://fat-eibl-backend-x1sp.onrender.com/users/login",
         {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
+          headers: { Accept: "application/json" },
           body: new URLSearchParams({
             email: email,
             password: password,
@@ -34,10 +33,10 @@ export default function Login() {
         setError(data.detail || "Invalid credentials");
       } else {
         alert(`Welcome ${data.user.name}!`);
-        // Save user info to localStorage (for future dashboard use)
+        // ✅ Save user info for session
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        // Redirect based on role
+        // ✅ Redirect based on role
         if (data.user.role === "admin") {
           window.location.href = "/admin-dashboard";
         } else {
@@ -51,9 +50,9 @@ export default function Login() {
     }
   };
 
+  // ✅ Forgot password redirect (no Outlook)
   const handleForgotPassword = () => {
-    const mailtoLink = `mailto:support@edmeinsurance.com?subject=Forgot Password - FAT-EIBL&body=Dear Support,%0D%0A%0D%0AI forgot my password. Please help me reset it.%0D%0A%0D%0ARegistered Email: ${email}%0D%0A%0D%0AThank you.`;
-    window.location.href = mailtoLink;
+    window.location.href = "/forgot-password";
   };
 
   return (
@@ -67,16 +66,22 @@ export default function Login() {
         backgroundColor: "#f5f9ff",
       }}
     >
+      {/* ✅ Logo */}
       <img
         src={logo}
         alt="Company Logo"
         style={{ width: "120px", marginBottom: "20px" }}
       />
-      <h1 style={{ color: "#004aad" }}>Welcome to FAT-EIBL</h1>
-      <p style={{ color: "#003b80", marginBottom: "30px" }}>
+
+      {/* ✅ Title */}
+      <h1 style={{ color: "#004aad", marginBottom: "10px" }}>
+        Welcome to FAT-EIBL
+      </h1>
+      <p style={{ color: "#003b80", marginBottom: "30px", textAlign: "center" }}>
         Finance Audit Tracker – Edme Insurance Brokers Limited
       </p>
 
+      {/* ✅ Login form */}
       <form
         onSubmit={handleSubmit}
         style={{
@@ -88,6 +93,7 @@ export default function Login() {
           textAlign: "center",
         }}
       >
+        {/* Email field */}
         <input
           type="email"
           placeholder="Email"
@@ -102,6 +108,8 @@ export default function Login() {
           }}
           required
         />
+
+        {/* Password field */}
         <input
           type="password"
           placeholder="Password"
@@ -117,12 +125,20 @@ export default function Login() {
           required
         />
 
+        {/* Error message */}
         {error && (
-          <p style={{ color: "red", fontSize: "0.9rem", marginBottom: "10px" }}>
+          <p
+            style={{
+              color: "red",
+              fontSize: "0.9rem",
+              marginBottom: "10px",
+            }}
+          >
             {error}
           </p>
         )}
 
+        {/* Submit button */}
         <button
           type="submit"
           disabled={loading}
@@ -139,6 +155,7 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
+        {/* ✅ Forgot password redirect */}
         <p
           onClick={handleForgotPassword}
           style={{
