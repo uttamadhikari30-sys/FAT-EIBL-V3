@@ -4,30 +4,35 @@ import logo from "../assets/logo.png";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
-    setMessage("");
     setLoading(true);
+    setMessage("");
+    setError("");
 
     try {
       const response = await fetch(
         "https://fat-eibl-backend-x1sp.onrender.com/users/forgot-password",
         {
           method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({ email }),
         }
       );
 
       const data = await response.json();
-      if (response.ok && data.ok) {
+      if (response.ok) {
         setMessage(`✅ OTP sent to ${email}. Please check your inbox.`);
+        // Optionally redirect to reset page:
+        // setTimeout(() => (window.location.href = "/reset-password"), 2000);
       } else {
-        setMessage(`❌ ${data.detail || data.error || "Email not registered."}`);
+        setError(data.detail || "Email not found");
       }
     } catch {
-      setMessage("⚠️ Unable to reach the server. Please try again later.");
+      setError("⚠️ Unable to connect to server. Try again later.");
     } finally {
       setLoading(false);
     }
@@ -36,8 +41,8 @@ export default function ForgotPassword() {
   return (
     <div
       style={{
+        background: "linear-gradient(to bottom, #f4f8ff, #dce8ff)",
         height: "100vh",
-        background: "linear-gradient(180deg, #f6f9ff 0%, #e7efff 100%)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -46,31 +51,40 @@ export default function ForgotPassword() {
     >
       <div
         style={{
-          background: "#fff",
-          padding: "40px",
+          background: "white",
+          padding: "40px 35px",
           borderRadius: "16px",
-          boxShadow: "0 6px 16px rgba(0, 0, 0, 0.1)",
-          width: "380px",
+          boxShadow: "0 4px 25px rgba(0, 0, 0, 0.08)",
+          width: "360px",
           textAlign: "center",
         }}
       >
         <img
           src={logo}
           alt="Edme Logo"
-          style={{ width: "120px", marginBottom: "20px" }}
+          style={{ width: "120px", marginBottom: "15px" }}
         />
-        <h2 style={{ color: "#004aad", marginBottom: "10px" }}>
+
+        <h2
+          style={{
+            color: "#004aad",
+            fontSize: "1.6rem",
+            marginBottom: "10px",
+            fontWeight: 600,
+          }}
+        >
           Forgot Password
         </h2>
+
         <p
           style={{
-            fontSize: "14px",
             color: "#555",
+            fontSize: "0.9rem",
             marginBottom: "25px",
           }}
         >
-          Enter your registered email and we’ll send an OTP to reset your
-          password.
+          Enter your registered email address to receive an OTP for password
+          reset.
         </p>
 
         <form onSubmit={handleSendOTP}>
@@ -83,60 +97,62 @@ export default function ForgotPassword() {
             style={{
               width: "100%",
               padding: "12px",
-              borderRadius: "8px",
               border: "1px solid #ccc",
-              outlineColor: "#004aad",
+              borderRadius: "8px",
               marginBottom: "15px",
-              fontSize: "14px",
+              fontSize: "0.95rem",
+              textAlign: "center",
             }}
           />
+
+          {error && (
+            <p style={{ color: "red", fontSize: "0.85rem", marginBottom: "10px" }}>
+              {error}
+            </p>
+          )}
+          {message && (
+            <p
+              style={{
+                color: "green",
+                fontSize: "0.9rem",
+                marginBottom: "10px",
+              }}
+            >
+              {message}
+            </p>
+          )}
+
           <button
             type="submit"
             disabled={loading}
             style={{
               width: "100%",
               padding: "12px",
-              borderRadius: "8px",
-              backgroundColor: loading ? "#7a9be6" : "#004aad",
+              backgroundColor: loading ? "#7aa2f7" : "#004aad",
               color: "white",
-              fontWeight: 500,
+              fontWeight: "bold",
               border: "none",
+              borderRadius: "8px",
               cursor: "pointer",
-              fontSize: "15px",
+              fontSize: "1rem",
+              transition: "0.3s",
             }}
           >
             {loading ? "Sending..." : "Send OTP"}
           </button>
         </form>
 
-        {message && (
-          <p
-            style={{
-              color: message.includes("✅")
-                ? "green"
-                : message.includes("⚠️")
-                ? "#e67e22"
-                : "red",
-              fontSize: "14px",
-              marginTop: "15px",
-              lineHeight: "1.5",
-            }}
-          >
-            {message}
-          </p>
-        )}
-
         <p
-          onClick={() => (window.location.href = "/")}
           style={{
             color: "#004aad",
-            marginTop: "25px",
-            fontSize: "14px",
-            textDecoration: "underline",
+            fontSize: "0.9rem",
+            marginTop: "20px",
             cursor: "pointer",
+            textDecoration: "underline",
           }}
+          onClick={() => (window.location.href = "/")}
         >
-          ← Back to Login
+          Back to Login
         </p>
       </div>
     </div>
