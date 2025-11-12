@@ -1,226 +1,227 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 export default function AdminDashboard() {
-  const [users, setUsers] = useState([]);
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     department: "",
-    role: "",
     manager_email: "",
+    role: "auditee",
   });
   const [message, setMessage] = useState("");
 
-  // Fetch users list
-  useEffect(() => {
-    fetch("https://fat-eibl-backend-x1sp.onrender.com/users/")
-      .then((res) => res.json())
-      .then(setUsers)
-      .catch(() => setMessage("Failed to fetch users"));
-  }, []);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  // Handle form input change
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  // Handle user creation
-  const handleCreate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("Creating user...");
-
-    const body = new FormData();
-    for (const key in form) body.append(key, form[key]);
-
-    const res = await fetch(
-      "https://fat-eibl-backend-x1sp.onrender.com/users/",
-      {
-        method: "POST",
-        body,
+    try {
+      const res = await fetch(
+        "https://fat-eibl-backend-x1sp.onrender.com/users/",
+        {
+          method: "POST",
+          body: new URLSearchParams(formData),
+        }
+      );
+      const data = await res.json();
+      if (data.ok) {
+        setMessage("✅ User created successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          department: "",
+          manager_email: "",
+          role: "auditee",
+        });
+      } else {
+        setMessage(`❌ ${data.detail || data.error || "Failed to create user"}`);
       }
-    );
-    const data = await res.json();
-    if (data.ok) {
-      setMessage("✅ User created successfully");
-      setForm({
-        name: "",
-        email: "",
-        password: "",
-        department: "",
-        role: "",
-        manager_email: "",
-      });
-      const refreshed = await fetch(
-        "https://fat-eibl-backend-x1sp.onrender.com/users/"
-      ).then((r) => r.json());
-      setUsers(refreshed);
-    } else {
-      setMessage("❌ Error: " + (data.error || "Could not create user"));
+    } catch (err) {
+      setMessage("⚠️ Network error. Please try again later.");
     }
   };
 
-  // Handle user deletion
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
-    await fetch(`https://fat-eibl-backend-x1sp.onrender.com/users/${id}`, {
-      method: "DELETE",
-    });
-    const refreshed = await fetch(
-      "https://fat-eibl-backend-x1sp.onrender.com/users/"
-    ).then((r) => r.json());
-    setUsers(refreshed);
-  };
-
   return (
-    <div style={{ padding: "40px", background: "#f8faff", minHeight: "100vh" }}>
-      <h1 style={{ color: "#004aad", textAlign: "center" }}>
-        👨‍💼 Admin Dashboard
-      </h1>
-      <p style={{ textAlign: "center", color: "#555" }}>
-        Create and manage users by department
-      </p>
+    <div
+      style={{
+        backgroundColor: "#f7faff",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "40px 20px",
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
+      {/* Header */}
+      <div style={{ textAlign: "center", marginBottom: "30px" }}>
+        <h1 style={{ color: "#004aad", fontSize: "2rem", fontWeight: 700 }}>
+          👨‍💼 Admin Dashboard
+        </h1>
+        <p style={{ color: "#5a6a85", fontSize: "1rem" }}>
+          Manage users and assign departments efficiently.
+        </p>
+      </div>
 
+      {/* Card */}
       <div
         style={{
           background: "white",
-          padding: "25px",
-          borderRadius: "10px",
-          maxWidth: "600px",
-          margin: "30px auto",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          padding: "40px 30px",
+          borderRadius: "16px",
+          width: "100%",
+          maxWidth: "550px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+          transition: "0.3s ease-in-out",
         }}
       >
-        <h2>Create New User</h2>
-        <form onSubmit={handleCreate}>
-          <input
-            name="name"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-          />
-          <input
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-          />
-          <input
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-          />
-          <input
-            name="department"
-            placeholder="Department"
-            value={form.department}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-          />
-          <input
-            name="manager_email"
-            placeholder="Manager Email"
-            value={form.manager_email}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-          />
-          <select
-            name="role"
-            value={form.role}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-          >
-            <option value="">Select Role</option>
-            <option value="auditor">Auditor</option>
-            <option value="auditee">Auditee</option>
-            <option value="manager">Manager</option>
-          </select>
+        <h2
+          style={{
+            color: "#004aad",
+            marginBottom: "25px",
+            fontSize: "1.3rem",
+            borderBottom: "2px solid #004aad",
+            display: "inline-block",
+            paddingBottom: "5px",
+          }}
+        >
+          Create New User
+        </h2>
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: "15px" }}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            />
+          </div>
+
+          <div style={{ marginBottom: "15px" }}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            />
+          </div>
+
+          <div style={{ marginBottom: "15px" }}>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            />
+          </div>
+
+          <div style={{ marginBottom: "15px" }}>
+            <input
+              type="text"
+              name="department"
+              placeholder="Department"
+              value={formData.department}
+              onChange={handleChange}
+              style={inputStyle}
+            />
+          </div>
+
+          <div style={{ marginBottom: "15px" }}>
+            <input
+              type="email"
+              name="manager_email"
+              placeholder="Manager Email"
+              value={formData.manager_email}
+              onChange={handleChange}
+              style={inputStyle}
+            />
+          </div>
+
+          <div style={{ marginBottom: "20px" }}>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              style={{
+                ...inputStyle,
+                cursor: "pointer",
+                backgroundColor: "#fff",
+              }}
+            >
+              <option value="auditee">Auditee</option>
+              <option value="auditor">Auditor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
           <button
             type="submit"
             style={{
-              background: "#004aad",
-              color: "white",
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
               width: "100%",
+              backgroundColor: "#004aad",
+              color: "white",
+              padding: "12px",
+              fontSize: "1rem",
+              borderRadius: "10px",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: 600,
+              transition: "background 0.3s",
             }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#003b85")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#004aad")}
           >
             Create User
           </button>
         </form>
-        {message && <p style={{ marginTop: "10px" }}>{message}</p>}
+
+        {/* Message Display */}
+        {message && (
+          <p
+            style={{
+              marginTop: "20px",
+              textAlign: "center",
+              color: message.startsWith("✅")
+                ? "green"
+                : message.startsWith("⚠️")
+                ? "#c27b00"
+                : "red",
+              fontWeight: "500",
+            }}
+          >
+            {message}
+          </p>
+        )}
       </div>
 
-      <div
-        style={{
-          background: "white",
-          padding: "25px",
-          borderRadius: "10px",
-          maxWidth: "800px",
-          margin: "30px auto",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h2>Existing Users</h2>
-        <table
-          border="1"
-          cellPadding="8"
-          style={{ width: "100%", borderCollapse: "collapse" }}
-        >
-          <thead style={{ background: "#004aad", color: "white" }}>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Department</th>
-              <th>Role</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length === 0 ? (
-              <tr>
-                <td colSpan="6" align="center">
-                  No users found
-                </td>
-              </tr>
-            ) : (
-              users.map((u) => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.name}</td>
-                  <td>{u.email}</td>
-                  <td>{u.department}</td>
-                  <td>{u.role}</td>
-                  <td>
-                    <button
-                      onClick={() => handleDelete(u.id)}
-                      style={{
-                        background: "red",
-                        color: "white",
-                        border: "none",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Footer */}
+      <p style={{ marginTop: "40px", color: "#7c8ca5", fontSize: "0.9rem" }}>
+        © {new Date().getFullYear()} Edme Insurance Brokers Ltd | Finance Audit Tracker
+      </p>
     </div>
   );
 }
+
+const inputStyle = {
+  width: "100%",
+  padding: "10px 14px",
+  borderRadius: "10px",
+  border: "1px solid #ccc",
+  outline: "none",
+  fontSize: "1rem",
+  transition: "border 0.3s ease",
+};
