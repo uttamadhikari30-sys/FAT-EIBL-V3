@@ -107,7 +107,7 @@ export default function AdminDashboard() {
       >
         <div style={styles.navLeft}>
           <img
-            src="/edme_logo.png"
+            src={`${process.env.PUBLIC_URL}/edme_logo.png`}
             alt="FAT-EIBL Logo"
             style={{
               ...styles.logo,
