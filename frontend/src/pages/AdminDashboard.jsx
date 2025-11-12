@@ -14,9 +14,11 @@ export default function AdminDashboard() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Handle form change
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // Submit new user
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("Creating user...");
@@ -48,6 +50,7 @@ export default function AdminDashboard() {
     }
   };
 
+  // Fetch users
   const fetchUsers = async () => {
     try {
       const res = await fetch(
@@ -64,6 +67,7 @@ export default function AdminDashboard() {
     fetchUsers();
   }, []);
 
+  // Dropdown click outside handler
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -81,11 +85,11 @@ export default function AdminDashboard() {
 
   return (
     <div style={styles.container}>
-      {/* ====== STICKY NAVBAR ====== */}
+      {/* ===== NAVBAR ===== */}
       <nav style={styles.navbar}>
         <div style={styles.logoSection}>
           <img
-            src="https://i.ibb.co/BcQX07D/edme-logo-white.png" // Replace with your logo if needed
+            src="/logo.png"
             alt="FAT-EIBL Logo"
             style={styles.logo}
           />
@@ -93,30 +97,25 @@ export default function AdminDashboard() {
         </div>
 
         <div style={styles.navLinks}>
-          <a href="#" style={{ ...styles.navLinksBase, ...styles.linkActive }}>
+          <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>
             Dashboard
           </a>
-          <a href="#" style={styles.navLinksBase}>
-            Users
-          </a>
-          <a href="#" style={styles.navLinksBase}>
-            Departments
-          </a>
-          <a href="#" style={styles.navLinksBase}>
-            Reports
-          </a>
-          <a href="#" style={styles.navLinksBase}>
-            Settings
-          </a>
+          <a href="#" style={styles.navLink}>Users</a>
+          <a href="#" style={styles.navLink}>Departments</a>
+          <a href="#" style={styles.navLink}>Reports</a>
+          <a href="#" style={styles.navLink}>Settings</a>
         </div>
 
         <div style={styles.userSection} ref={dropdownRef}>
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-            alt="User Avatar"
-            style={styles.avatar}
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          />
+          <div style={styles.userWrapper} onClick={() => setDropdownOpen(!dropdownOpen)}>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+              alt="User Avatar"
+              style={styles.avatar}
+            />
+            <span style={styles.userName}>Admin</span>
+          </div>
+
           {dropdownOpen && (
             <div style={styles.dropdown}>
               <p style={styles.dropdownItem}>👤 Admin</p>
@@ -129,13 +128,12 @@ export default function AdminDashboard() {
         </div>
       </nav>
 
-      {/* ====== MAIN CONTENT ====== */}
+      {/* ===== MAIN CONTENT ===== */}
       <main style={styles.main}>
         <h1 style={styles.title}>Admin Dashboard</h1>
-        <p style={styles.subtitle}>
-          Manage users, departments, and system access.
-        </p>
+        <p style={styles.subtitle}>Manage users, departments, and system access.</p>
 
+        {/* CREATE USER CARD */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>Create New User</h2>
           <form onSubmit={handleSubmit} style={styles.form}>
@@ -223,12 +221,11 @@ export default function AdminDashboard() {
           )}
         </div>
 
+        {/* USERS TABLE */}
         <div style={styles.tableCard}>
           <h3 style={styles.tableTitle}>Registered Users</h3>
           {users.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#777" }}>
-              No users found.
-            </p>
+            <p style={{ textAlign: "center", color: "#777" }}>No users found.</p>
           ) : (
             <table style={styles.table}>
               <thead>
@@ -260,6 +257,7 @@ export default function AdminDashboard() {
   );
 }
 
+//
 // =======================
 //   STYLES
 // =======================
@@ -277,7 +275,7 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#003a85",
-    color: "#f0f4ff",
+    color: "#fff",
     padding: "10px 40px",
     boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
   },
@@ -287,44 +285,54 @@ const styles = {
     gap: "10px",
   },
   logo: {
-    width: "42px",
-    height: "42px",
+    width: "40px",
+    height: "40px",
+    borderRadius: "6px",
+    backgroundColor: "#fff",
+    padding: "4px",
     objectFit: "contain",
-    backgroundColor: "transparent",
   },
   logoText: {
-    fontSize: "1.4rem",
+    fontSize: "1.3rem",
     fontWeight: "700",
-    color: "#ffffff",
-    letterSpacing: "0.5px",
+    color: "#fff",
   },
   navLinks: {
     display: "flex",
-    gap: "30px",
+    gap: "25px",
     alignItems: "center",
   },
-  navLinksBase: {
+  navLink: {
     color: "#dbe9ff",
     textDecoration: "none",
     fontWeight: "500",
     fontSize: "1rem",
     transition: "color 0.2s ease",
   },
-  linkActive: {
+  activeLink: {
     color: "#ffffff",
-    fontWeight: "600",
+    fontWeight: "700",
     textDecoration: "underline",
   },
   userSection: {
     position: "relative",
+  },
+  userWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
     cursor: "pointer",
   },
   avatar: {
-    width: "40px",
-    height: "40px",
+    width: "38px",
+    height: "38px",
     borderRadius: "50%",
-    border: "2px solid #f0f4ff",
+    border: "2px solid #fff",
     boxShadow: "0 0 6px rgba(255,255,255,0.6)",
+  },
+  userName: {
+    color: "#fff",
+    fontWeight: "500",
   },
   dropdown: {
     position: "absolute",
@@ -335,7 +343,6 @@ const styles = {
     borderRadius: "10px",
     boxShadow: "0 3px 12px rgba(0,0,0,0.15)",
     minWidth: "150px",
-    overflow: "hidden",
     zIndex: 2000,
   },
   dropdownItem: {
