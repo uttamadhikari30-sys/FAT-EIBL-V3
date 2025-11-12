@@ -12,11 +12,9 @@ export default function AdminDashboard() {
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
 
-  // handle inputs
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // Create new user
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("Creating user...");
@@ -41,14 +39,13 @@ export default function AdminDashboard() {
           role: "auditee",
         });
       } else {
-        setMessage(`❌ ${data.detail || data.error || "Failed to create user"}`);
+        setMessage(`❌ ${data.detail || "Failed to create user"}`);
       }
-    } catch (err) {
+    } catch {
       setMessage("⚠️ Network error. Please try again later.");
     }
   };
 
-  // Fetch users
   const fetchUsers = async () => {
     try {
       const res = await fetch(
@@ -56,8 +53,8 @@ export default function AdminDashboard() {
       );
       const data = await res.json();
       if (data.ok) setUsers(data.users);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -67,30 +64,33 @@ export default function AdminDashboard() {
 
   return (
     <div style={styles.container}>
-      {/* Sidebar */}
-      <aside style={styles.sidebar}>
-        <div style={styles.logo}>💼 FAT-EIBL</div>
-        <nav>
-          <ul style={styles.navList}>
-            <li style={styles.active}>Dashboard</li>
-            <li>Users</li>
-            <li>Departments</li>
-            <li>Reports</li>
-            <li>Settings</li>
-          </ul>
-        </nav>
-      </aside>
+      {/* TOP NAVBAR */}
+      <nav style={styles.navbar}>
+        <div style={styles.logoSection}>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Blue_circle_logo.svg/120px-Blue_circle_logo.svg.png"
+            alt="logo"
+            style={styles.logo}
+          />
+          <span style={styles.logoText}>FAT-EIBL</span>
+        </div>
+        <div style={styles.navLinks}>
+          <a href="#" style={styles.linkActive}>Dashboard</a>
+          <a href="#">Users</a>
+          <a href="#">Departments</a>
+          <a href="#">Reports</a>
+          <a href="#">Settings</a>
+        </div>
+      </nav>
 
-      {/* Main content */}
+      {/* MAIN CONTENT */}
       <main style={styles.main}>
-        <header style={styles.header}>
-          <h1 style={styles.title}>Admin Dashboard</h1>
-          <p style={styles.subtitle}>
-            Manage users, departments, and system access.
-          </p>
-        </header>
+        <h1 style={styles.title}>Admin Dashboard</h1>
+        <p style={styles.subtitle}>
+          Manage users, departments, and system access.
+        </p>
 
-        {/* Create User Card */}
+        {/* FORM CARD */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>Create New User</h2>
           <form onSubmit={handleSubmit} style={styles.form}>
@@ -114,7 +114,6 @@ export default function AdminDashboard() {
                 required
               />
             </div>
-
             <div style={styles.row}>
               <input
                 type="password"
@@ -134,7 +133,6 @@ export default function AdminDashboard() {
                 style={styles.input}
               />
             </div>
-
             <div style={styles.row}>
               <input
                 type="email"
@@ -164,7 +162,8 @@ export default function AdminDashboard() {
           {message && (
             <p
               style={{
-                ...styles.message,
+                marginTop: "15px",
+                textAlign: "center",
                 color: message.startsWith("✅")
                   ? "green"
                   : message.startsWith("⚠️")
@@ -177,11 +176,11 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* User Table */}
+        {/* USER LIST */}
         <div style={styles.tableCard}>
           <h3 style={styles.tableTitle}>Registered Users</h3>
           {users.length === 0 ? (
-            <p style={{ color: "#777", textAlign: "center" }}>
+            <p style={{ textAlign: "center", color: "#777" }}>
               No users found.
             </p>
           ) : (
@@ -196,7 +195,10 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {users.map((u, i) => (
-                  <tr key={i} style={i % 2 ? styles.rowAlt : styles.rowNormal}>
+                  <tr
+                    key={i}
+                    style={i % 2 === 0 ? styles.rowNormal : styles.rowAlt}
+                  >
                     <td style={styles.td}>{u.name}</td>
                     <td style={styles.td}>{u.email}</td>
                     <td style={styles.td}>{u.department || "-"}</td>
@@ -212,60 +214,65 @@ export default function AdminDashboard() {
   );
 }
 
-// ====== STYLES =======
+// =======================
+//   STYLES
+// =======================
 const styles = {
   container: {
-    display: "flex",
-    backgroundColor: "#f4f7fb",
-    minHeight: "100vh",
     fontFamily: "'Inter', sans-serif",
+    backgroundColor: "#f5f8fc",
+    minHeight: "100vh",
   },
-  sidebar: {
-    width: "220px",
-    background: "#004aad",
-    color: "white",
-    padding: "20px 15px",
+  navbar: {
     display: "flex",
-    flexDirection: "column",
+    justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: "#004aad",
+    color: "white",
+    padding: "10px 40px",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+  },
+  logoSection: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
   },
   logo: {
-    fontWeight: 700,
+    width: "35px",
+    height: "35px",
+    borderRadius: "50%",
+    backgroundColor: "white",
+    objectFit: "cover",
+  },
+  logoText: {
     fontSize: "1.3rem",
-    marginBottom: "40px",
+    fontWeight: "700",
+    letterSpacing: "0.5px",
   },
-  navList: {
-    listStyle: "none",
-    padding: 0,
-    width: "100%",
-    textAlign: "left",
+  navLinks: {
+    display: "flex",
+    gap: "30px",
   },
-  active: {
-    background: "#003b80",
-    borderRadius: "8px",
-    padding: "10px 15px",
-    marginBottom: "10px",
-    cursor: "pointer",
+  linkActive: {
+    fontWeight: "600",
+    textDecoration: "underline",
   },
   main: {
-    flex: 1,
-    padding: "40px 60px",
-  },
-  header: {
-    marginBottom: "30px",
+    padding: "40px 80px",
   },
   title: {
     fontSize: "2rem",
-    color: "#003b80",
     fontWeight: "700",
+    color: "#003b80",
     marginBottom: "5px",
   },
   subtitle: {
     color: "#6b7a99",
     fontSize: "1rem",
+    marginBottom: "30px",
   },
   card: {
-    background: "white",
+    backgroundColor: "white",
     borderRadius: "12px",
     padding: "30px",
     boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
@@ -273,6 +280,7 @@ const styles = {
   },
   cardTitle: {
     color: "#004aad",
+    fontWeight: "600",
     borderBottom: "2px solid #004aad",
     display: "inline-block",
     marginBottom: "20px",
@@ -299,10 +307,9 @@ const styles = {
     borderRadius: "8px",
     border: "1px solid #d0d7e2",
     fontSize: "1rem",
-    backgroundColor: "white",
   },
   button: {
-    background: "#004aad",
+    backgroundColor: "#004aad",
     color: "white",
     border: "none",
     padding: "12px",
@@ -310,10 +317,9 @@ const styles = {
     fontSize: "1rem",
     fontWeight: "600",
     cursor: "pointer",
-    marginTop: "10px",
   },
   tableCard: {
-    background: "white",
+    backgroundColor: "white",
     borderRadius: "12px",
     padding: "25px",
     boxShadow: "0 3px 10px rgba(0,0,0,0.08)",
@@ -340,11 +346,10 @@ const styles = {
     color: "#333",
     fontSize: "0.95rem",
   },
-  rowAlt: { backgroundColor: "#f9faff" },
-  rowNormal: { backgroundColor: "white" },
-  message: {
-    marginTop: "15px",
-    textAlign: "center",
-    fontWeight: "500",
+  rowAlt: {
+    backgroundColor: "#f9faff",
+  },
+  rowNormal: {
+    backgroundColor: "white",
   },
 };
