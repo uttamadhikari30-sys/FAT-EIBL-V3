@@ -11,10 +11,28 @@ export default function AdminDashboard() {
   });
 
   const [message, setMessage] = useState("");
-  const [users, setUsers] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
   const dropdownRef = useRef(null);
+  const [logoSrc, setLogoSrc] = useState(""); // ✅ Dynamic logo handler
+
+  // === Logo handling ===
+  useEffect(() => {
+    const logoPath = `${import.meta.env.BASE_URL || "/"}edme_logo.png`;
+
+    // Check if logo exists on Render
+    fetch(logoPath)
+      .then((res) => {
+        if (res.ok) setLogoSrc(logoPath);
+        else throw new Error("Logo not found");
+      })
+      .catch(() => {
+        // fallback hosted logo
+        setLogoSrc(
+          "https://upload.wikimedia.org/wikipedia/commons/f/fc/Edme_logo_placeholder.png"
+        );
+      });
+  }, []);
 
   // === Handle Input Change ===
   const handleChange = (e) =>
@@ -35,7 +53,6 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (data.ok) {
         setMessage("✅ User created successfully!");
-        fetchUsers();
         setFormData({
           name: "",
           email: "",
@@ -52,24 +69,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // === Fetch Users ===
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch(
-        "https://fat-eibl-backend-x1sp.onrender.com/users/all"
-      );
-      const data = await res.json();
-      if (data.ok) setUsers(data.users);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  // === Handle Click Outside Dropdown ===
+  // === Handle Dropdown ===
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
       >
         <div style={styles.navLeft}>
           <img
-            src={`${process.env.PUBLIC_URL}/edme_logo.png`}
+            src={logoSrc}
             alt="FAT-EIBL Logo"
             style={{
               ...styles.logo,
@@ -259,9 +259,7 @@ export default function AdminDashboard() {
   );
 }
 
-//
-// === INLINE STYLES ===
-//
+// === STYLES ===
 const styles = {
   container: {
     background: "#f7f9fc",
@@ -291,7 +289,6 @@ const styles = {
     color: "#dce7ff",
     textDecoration: "none",
     fontWeight: "500",
-    transition: "color 0.3s ease",
   },
   activeLink: {
     color: "#fff",
@@ -300,18 +297,8 @@ const styles = {
     paddingBottom: "2px",
   },
   userMenu: { position: "relative" },
-  userWrapper: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    cursor: "pointer",
-  },
-  avatar: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "50%",
-    border: "2px solid #fff",
-  },
+  userWrapper: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" },
+  avatar: { width: "40px", height: "40px", borderRadius: "50%", border: "2px solid #fff" },
   userName: { color: "#fff", fontWeight: "500" },
   dropdown: {
     position: "absolute",
