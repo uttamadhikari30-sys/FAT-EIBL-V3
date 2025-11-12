@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./AdminDashboard.css"; // You can use CSS or keep inline styles
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
@@ -14,11 +13,14 @@ export default function AdminDashboard() {
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
   const dropdownRef = useRef(null);
 
+  // === Handle Input Change ===
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // === Handle Form Submit ===
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("Creating user...");
@@ -50,6 +52,7 @@ export default function AdminDashboard() {
     }
   };
 
+  // === Fetch Users ===
   const fetchUsers = async () => {
     try {
       const res = await fetch(
@@ -66,6 +69,7 @@ export default function AdminDashboard() {
     fetchUsers();
   }, []);
 
+  // === Handle Click Outside Dropdown ===
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -76,6 +80,13 @@ export default function AdminDashboard() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // === Compact Navbar on Scroll ===
+  useEffect(() => {
+    const handleScroll = () => setIsCompact(window.scrollY > 40);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     window.location.href = "/";
@@ -83,13 +94,26 @@ export default function AdminDashboard() {
 
   return (
     <div style={styles.container}>
-      {/* === TOP NAVBAR === */}
-      <header style={styles.navbar}>
+      {/* === NAVBAR === */}
+      <header
+        style={{
+          ...styles.navbar,
+          padding: isCompact ? "6px 30px" : "14px 40px",
+          transition: "all 0.3s ease",
+          boxShadow: isCompact
+            ? "0 3px 10px rgba(0,0,0,0.2)"
+            : "0 2px 6px rgba(0,0,0,0.08)",
+        }}
+      >
         <div style={styles.navLeft}>
           <img
-            src={`${process.env.PUBLIC_URL}/edme_logo.png`}
+            src="/edme_logo.png"
             alt="FAT-EIBL Logo"
-            style={styles.logo}
+            style={{
+              ...styles.logo,
+              width: isCompact ? "36px" : "46px",
+              height: isCompact ? "36px" : "46px",
+            }}
             onError={(e) => {
               e.target.src =
                 "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
@@ -143,7 +167,7 @@ export default function AdminDashboard() {
           Manage users, departments, and system access.
         </p>
 
-        {/* CREATE USER */}
+        {/* === CREATE USER CARD === */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>Create New User</h2>
           <form onSubmit={handleSubmit} style={styles.form}>
@@ -236,7 +260,7 @@ export default function AdminDashboard() {
 }
 
 //
-// === STYLES ===
+// === INLINE STYLES ===
 //
 const styles = {
   container: {
@@ -253,13 +277,9 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "12px 40px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
   },
   navLeft: { display: "flex", alignItems: "center", gap: "10px" },
   logo: {
-    width: "42px",
-    height: "42px",
     borderRadius: "6px",
     background: "#fff",
     padding: "4px",
@@ -268,7 +288,7 @@ const styles = {
   brand: { fontSize: "1.3rem", fontWeight: "700", color: "#fff" },
   navCenter: { display: "flex", gap: "25px" },
   navLink: {
-    color: "#dbe9ff",
+    color: "#dce7ff",
     textDecoration: "none",
     fontWeight: "500",
     transition: "color 0.3s ease",
@@ -276,11 +296,22 @@ const styles = {
   activeLink: {
     color: "#fff",
     fontWeight: "700",
-    textDecoration: "underline",
+    borderBottom: "2px solid white",
+    paddingBottom: "2px",
   },
   userMenu: { position: "relative" },
-  userWrapper: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" },
-  avatar: { width: "40px", height: "40px", borderRadius: "50%", border: "2px solid #fff" },
+  userWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    cursor: "pointer",
+  },
+  avatar: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    border: "2px solid #fff",
+  },
   userName: { color: "#fff", fontWeight: "500" },
   dropdown: {
     position: "absolute",
@@ -320,7 +351,7 @@ const styles = {
     marginBottom: "20px",
   },
   form: { display: "flex", flexDirection: "column", gap: "15px" },
-  row: { display: "flex", gap: "15px" },
+  row: { display: "flex", gap: "15px", flexWrap: "wrap" },
   input: {
     flex: 1,
     padding: "12px",
