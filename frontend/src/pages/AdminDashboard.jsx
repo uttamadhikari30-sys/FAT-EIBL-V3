@@ -12,9 +12,10 @@ export default function AdminDashboard() {
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Handle form change
+  // Handle input
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -67,7 +68,7 @@ export default function AdminDashboard() {
     fetchUsers();
   }, []);
 
-  // Dropdown click outside handler
+  // Dropdown outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -78,6 +79,19 @@ export default function AdminDashboard() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Auto-collapse sidebar on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100 && !sidebarCollapsed) {
+        setSidebarCollapsed(true);
+      } else if (window.scrollY < 80 && sidebarCollapsed) {
+        setSidebarCollapsed(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [sidebarCollapsed]);
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     window.location.href = "/";
@@ -85,378 +99,349 @@ export default function AdminDashboard() {
 
   return (
     <div style={styles.container}>
-      {/* ===== NAVBAR ===== */}
-      <nav style={styles.navbar}>
-        <div style={styles.logoSection}>
+      {/* === SIDEBAR === */}
+      <aside
+        style={{
+          ...styles.sidebar,
+          width: sidebarCollapsed ? "70px" : "220px",
+        }}
+      >
+        <div style={styles.sidebarHeader}>
           <img
             src="/logo.png"
-            alt="FAT-EIBL Logo"
-            style={styles.logo}
+            alt="Logo"
+            style={{
+              ...styles.sidebarLogo,
+              width: sidebarCollapsed ? "36px" : "42px",
+            }}
           />
-          <span style={styles.logoText}>FAT-EIBL</span>
+          {!sidebarCollapsed && <h2 style={styles.sidebarTitle}>FAT-EIBL</h2>}
         </div>
 
-        <div style={styles.navLinks}>
-          <a href="#" style={{ ...styles.navLink, ...styles.activeLink }}>
-            Dashboard
-          </a>
-          <a href="#" style={styles.navLink}>Users</a>
-          <a href="#" style={styles.navLink}>Departments</a>
-          <a href="#" style={styles.navLink}>Reports</a>
-          <a href="#" style={styles.navLink}>Settings</a>
+        <div style={styles.sidebarLinks}>
+          {["Dashboard", "Users", "Departments", "Reports", "Settings"].map(
+            (item) => (
+              <div
+                key={item}
+                style={styles.sidebarItem}
+                title={sidebarCollapsed ? item : ""}
+              >
+                <span style={styles.sidebarIcon}>📘</span>
+                {!sidebarCollapsed && <span>{item}</span>}
+              </div>
+            )
+          )}
         </div>
 
-        <div style={styles.userSection} ref={dropdownRef}>
-          <div style={styles.userWrapper} onClick={() => setDropdownOpen(!dropdownOpen)}>
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-              alt="User Avatar"
-              style={styles.avatar}
-            />
-            <span style={styles.userName}>Admin</span>
+        <button
+          style={styles.collapseBtn}
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        >
+          {sidebarCollapsed ? "»" : "«"}
+        </button>
+      </aside>
+
+      {/* === MAIN CONTENT === */}
+      <div style={styles.mainWrapper}>
+        {/* === NAVBAR === */}
+        <nav style={styles.navbar}>
+          <div style={styles.navTitle}>Admin Dashboard</div>
+          <div style={styles.userSection} ref={dropdownRef}>
+            <div
+              style={styles.userWrapper}
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                alt="User Avatar"
+                style={styles.avatar}
+              />
+              <span style={styles.userName}>Admin</span>
+            </div>
+
+            {dropdownOpen && (
+              <div style={styles.dropdown}>
+                <p style={styles.dropdownItem}>👤 Admin</p>
+                <hr style={styles.dropdownDivider} />
+                <button style={styles.logoutBtn} onClick={handleLogout}>
+                  🚪 Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* === CONTENT === */}
+        <main style={styles.main}>
+          <p style={styles.subtitle}>
+            Manage users, departments, and system access.
+          </p>
+
+          {/* CREATE USER */}
+          <div style={styles.card}>
+            <h2 style={styles.cardTitle}>Create New User</h2>
+            <form onSubmit={handleSubmit} style={styles.form}>
+              <div style={styles.row}>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                />
+              </div>
+
+              <div style={styles.row}>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                />
+                <input
+                  type="text"
+                  name="department"
+                  placeholder="Department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
+
+              <div style={styles.row}>
+                <input
+                  type="email"
+                  name="manager_email"
+                  placeholder="Manager Email"
+                  value={formData.manager_email}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  style={styles.select}
+                >
+                  <option value="auditee">Auditee</option>
+                  <option value="auditor">Auditor</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <button type="submit" style={styles.button}>
+                Create User
+              </button>
+            </form>
+
+            {message && (
+              <p
+                style={{
+                  marginTop: "15px",
+                  textAlign: "center",
+                  color: message.startsWith("✅")
+                    ? "green"
+                    : message.startsWith("⚠️")
+                    ? "#c27b00"
+                    : "red",
+                }}
+              >
+                {message}
+              </p>
+            )}
           </div>
 
-          {dropdownOpen && (
-            <div style={styles.dropdown}>
-              <p style={styles.dropdownItem}>👤 Admin</p>
-              <hr style={styles.dropdownDivider} />
-              <button style={styles.logoutBtn} onClick={handleLogout}>
-                🚪 Logout
-              </button>
-            </div>
-          )}
-        </div>
-      </nav>
-
-      {/* ===== MAIN CONTENT ===== */}
-      <main style={styles.main}>
-        <h1 style={styles.title}>Admin Dashboard</h1>
-        <p style={styles.subtitle}>Manage users, departments, and system access.</p>
-
-        {/* CREATE USER CARD */}
-        <div style={styles.card}>
-          <h2 style={styles.cardTitle}>Create New User</h2>
-          <form onSubmit={handleSubmit} style={styles.form}>
-            <div style={styles.row}>
-              <input
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={handleChange}
-                style={styles.input}
-                required
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                style={styles.input}
-                required
-              />
-            </div>
-
-            <div style={styles.row}>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                style={styles.input}
-                required
-              />
-              <input
-                type="text"
-                name="department"
-                placeholder="Department"
-                value={formData.department}
-                onChange={handleChange}
-                style={styles.input}
-              />
-            </div>
-
-            <div style={styles.row}>
-              <input
-                type="email"
-                name="manager_email"
-                placeholder="Manager Email"
-                value={formData.manager_email}
-                onChange={handleChange}
-                style={styles.input}
-              />
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                style={styles.select}
-              >
-                <option value="auditee">Auditee</option>
-                <option value="auditor">Auditor</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-
-            <button type="submit" style={styles.button}>
-              Create User
-            </button>
-          </form>
-
-          {message && (
-            <p
-              style={{
-                marginTop: "15px",
-                textAlign: "center",
-                color: message.startsWith("✅")
-                  ? "green"
-                  : message.startsWith("⚠️")
-                  ? "#c27b00"
-                  : "red",
-              }}
-            >
-              {message}
-            </p>
-          )}
-        </div>
-
-        {/* USERS TABLE */}
-        <div style={styles.tableCard}>
-          <h3 style={styles.tableTitle}>Registered Users</h3>
-          {users.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#777" }}>No users found.</p>
-          ) : (
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.th}>Name</th>
-                  <th style={styles.th}>Email</th>
-                  <th style={styles.th}>Department</th>
-                  <th style={styles.th}>Role</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u, i) => (
-                  <tr
-                    key={i}
-                    style={i % 2 === 0 ? styles.rowNormal : styles.rowAlt}
-                  >
-                    <td style={styles.td}>{u.name}</td>
-                    <td style={styles.td}>{u.email}</td>
-                    <td style={styles.td}>{u.department || "-"}</td>
-                    <td style={styles.td}>{u.role}</td>
+          {/* USERS TABLE */}
+          <div style={styles.tableCard}>
+            <h3 style={styles.tableTitle}>Registered Users</h3>
+            {users.length === 0 ? (
+              <p style={{ textAlign: "center", color: "#777" }}>
+                No users found.
+              </p>
+            ) : (
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Name</th>
+                    <th style={styles.th}>Email</th>
+                    <th style={styles.th}>Department</th>
+                    <th style={styles.th}>Role</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </main>
+                </thead>
+                <tbody>
+                  {users.map((u, i) => (
+                    <tr
+                      key={i}
+                      style={i % 2 === 0 ? styles.rowNormal : styles.rowAlt}
+                    >
+                      <td style={styles.td}>{u.name}</td>
+                      <td style={styles.td}>{u.email}</td>
+                      <td style={styles.td}>{u.department || "-"}</td>
+                      <td style={styles.td}>{u.role}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
 
 //
-// =======================
-//   STYLES
-// =======================
+// STYLES
+//
 const styles = {
-  container: {
-    fontFamily: "'Inter', sans-serif",
-    backgroundColor: "#f5f8fc",
-    minHeight: "100vh",
-  },
-  navbar: {
+  container: { display: "flex", minHeight: "100vh", background: "#f6f9fc" },
+  sidebar: {
+    backgroundColor: "#003b80",
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    transition: "width 0.3s ease",
     position: "sticky",
     top: 0,
-    zIndex: 1000,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#003a85",
-    color: "#fff",
-    padding: "10px 40px",
-    boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+    height: "100vh",
+    boxShadow: "2px 0 8px rgba(0,0,0,0.1)",
   },
-  logoSection: {
+  sidebarHeader: {
     display: "flex",
     alignItems: "center",
     gap: "10px",
+    padding: "20px",
   },
-  logo: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "6px",
-    backgroundColor: "#fff",
+  sidebarLogo: {
+    borderRadius: "8px",
+    background: "#fff",
     padding: "4px",
-    objectFit: "contain",
   },
-  logoText: {
-    fontSize: "1.3rem",
-    fontWeight: "700",
-    color: "#fff",
-  },
-  navLinks: {
+  sidebarTitle: { fontSize: "1.2rem", fontWeight: "700" },
+  sidebarLinks: { display: "flex", flexDirection: "column", padding: "10px" },
+  sidebarItem: {
     display: "flex",
-    gap: "25px",
     alignItems: "center",
+    gap: "10px",
+    padding: "12px 20px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "background 0.2s",
   },
-  navLink: {
-    color: "#dbe9ff",
-    textDecoration: "none",
-    fontWeight: "500",
-    fontSize: "1rem",
-    transition: "color 0.2s ease",
+  sidebarItemHover: { background: "#004aad" },
+  sidebarIcon: { fontSize: "1.2rem" },
+  collapseBtn: {
+    background: "#004aad",
+    color: "#fff",
+    border: "none",
+    padding: "10px",
+    cursor: "pointer",
+    borderRadius: "0 8px 8px 0",
   },
-  activeLink: {
-    color: "#ffffff",
-    fontWeight: "700",
-    textDecoration: "underline",
+  mainWrapper: { flex: 1, display: "flex", flexDirection: "column" },
+  navbar: {
+    position: "sticky",
+    top: 0,
+    background: "#fff",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "12px 30px",
+    zIndex: 1000,
   },
-  userSection: {
-    position: "relative",
-  },
+  navTitle: { fontSize: "1.3rem", fontWeight: 700, color: "#003b80" },
+  userSection: { position: "relative" },
   userWrapper: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "10px",
     cursor: "pointer",
   },
-  avatar: {
-    width: "38px",
-    height: "38px",
-    borderRadius: "50%",
-    border: "2px solid #fff",
-    boxShadow: "0 0 6px rgba(255,255,255,0.6)",
-  },
-  userName: {
-    color: "#fff",
-    fontWeight: "500",
-  },
+  avatar: { width: "40px", height: "40px", borderRadius: "50%" },
+  userName: { fontWeight: 500, color: "#003b80" },
   dropdown: {
     position: "absolute",
     right: 0,
     top: "50px",
-    backgroundColor: "white",
-    color: "#003b80",
+    background: "#fff",
     borderRadius: "10px",
-    boxShadow: "0 3px 12px rgba(0,0,0,0.15)",
+    boxShadow: "0 3px 12px rgba(0,0,0,0.1)",
     minWidth: "150px",
-    zIndex: 2000,
   },
-  dropdownItem: {
-    padding: "10px 15px",
-    margin: 0,
-    fontSize: "0.95rem",
-  },
-  dropdownDivider: {
-    margin: 0,
-    borderColor: "#eee",
-  },
+  dropdownItem: { padding: "10px 15px", margin: 0 },
+  dropdownDivider: { margin: 0 },
   logoutBtn: {
     width: "100%",
-    textAlign: "left",
-    background: "none",
     border: "none",
+    background: "none",
+    textAlign: "left",
     padding: "10px 15px",
     color: "#e11d48",
     cursor: "pointer",
-    fontSize: "0.95rem",
   },
-  main: {
-    padding: "40px 80px",
-  },
-  title: {
-    fontSize: "2rem",
-    fontWeight: "700",
-    color: "#003b80",
-    marginBottom: "5px",
-  },
-  subtitle: {
-    color: "#6b7a99",
-    fontSize: "1rem",
-    marginBottom: "30px",
-  },
+  main: { padding: "30px" },
+  subtitle: { color: "#6b7a99", marginBottom: "25px" },
   card: {
-    backgroundColor: "white",
+    background: "#fff",
+    padding: "25px",
     borderRadius: "12px",
-    padding: "30px",
-    boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
     marginBottom: "40px",
+    boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
   },
   cardTitle: {
     color: "#004aad",
-    fontWeight: "600",
     borderBottom: "2px solid #004aad",
     display: "inline-block",
     marginBottom: "20px",
   },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-  },
-  row: {
-    display: "flex",
-    gap: "15px",
-  },
+  form: { display: "flex", flexDirection: "column", gap: "15px" },
+  row: { display: "flex", gap: "15px" },
   input: {
     flex: 1,
     padding: "12px",
-    borderRadius: "8px",
     border: "1px solid #d0d7e2",
-    fontSize: "1rem",
+    borderRadius: "8px",
   },
   select: {
     flex: 1,
     padding: "12px",
-    borderRadius: "8px",
     border: "1px solid #d0d7e2",
-    fontSize: "1rem",
+    borderRadius: "8px",
   },
   button: {
-    backgroundColor: "#004aad",
+    background: "#004aad",
     color: "white",
-    border: "none",
     padding: "12px",
     borderRadius: "8px",
-    fontSize: "1rem",
+    border: "none",
     fontWeight: "600",
     cursor: "pointer",
   },
   tableCard: {
-    backgroundColor: "white",
+    background: "#fff",
     borderRadius: "12px",
     padding: "25px",
-    boxShadow: "0 3px 10px rgba(0,0,0,0.08)",
+    boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
   },
-  tableTitle: {
-    color: "#004aad",
-    borderBottom: "2px solid #004aad",
-    display: "inline-block",
-    marginBottom: "15px",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-  th: {
-    textAlign: "left",
-    padding: "10px",
-    color: "#003b80",
-    fontWeight: "600",
-    borderBottom: "2px solid #004aad",
-  },
-  td: {
-    padding: "10px",
-    color: "#333",
-    fontSize: "0.95rem",
-  },
-  rowAlt: {
-    backgroundColor: "#f9faff",
-  },
-  rowNormal: {
-    backgroundColor: "white",
-  },
+  table: { width: "100%", borderCollapse: "collapse" },
+  th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #004aad" },
+  td: { padding: "10px", color: "#333" },
+  rowAlt: { backgroundColor: "#f9faff" },
+  rowNormal: { backgroundColor: "white" },
 };
