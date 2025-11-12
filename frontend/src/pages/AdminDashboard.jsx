@@ -11,23 +11,22 @@ export default function AdminDashboard() {
   });
 
   const [message, setMessage] = useState("");
+  const [users, setUsers] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
+  const [activeTab, setActiveTab] = useState("Dashboard");
   const dropdownRef = useRef(null);
-  const [logoSrc, setLogoSrc] = useState(""); // ✅ Dynamic logo handler
+  const [logoSrc, setLogoSrc] = useState("");
 
   // === Logo handling ===
   useEffect(() => {
     const logoPath = `${import.meta.env.BASE_URL || "/"}edme_logo.png`;
-
-    // Check if logo exists on Render
     fetch(logoPath)
       .then((res) => {
         if (res.ok) setLogoSrc(logoPath);
         else throw new Error("Logo not found");
       })
       .catch(() => {
-        // fallback hosted logo
         setLogoSrc(
           "https://upload.wikimedia.org/wikipedia/commons/f/fc/Edme_logo_placeholder.png"
         );
@@ -53,6 +52,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (data.ok) {
         setMessage("✅ User created successfully!");
+        fetchUsers();
         setFormData({
           name: "",
           email: "",
@@ -68,6 +68,25 @@ export default function AdminDashboard() {
       setMessage("⚠️ Unable to connect to server.");
     }
   };
+
+  // === Fetch Users ===
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(
+        "https://fat-eibl-backend-x1sp.onrender.com/users/all"
+      );
+      const data = await res.json();
+      if (data.ok) setUsers(data.users);
+      else setUsers([]);
+    } catch (e) {
+      console.error(e);
+      setUsers([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   // === Handle Dropdown ===
   useEffect(() => {
@@ -123,15 +142,17 @@ export default function AdminDashboard() {
         </div>
 
         <nav style={styles.navCenter}>
-          {["Dashboard", "Users", "Departments", "Reports", "Settings"].map(
-            (link, i) => (
-              <a
+          {["Dashboard", "Users", "Departments", "Reports"].map(
+            (tab, i) => (
+              <span
                 key={i}
-                href="#"
-                style={i === 0 ? styles.activeLink : styles.navLink}
+                style={
+                  activeTab === tab ? styles.activeLink : styles.navLink
+                }
+                onClick={() => setActiveTab(tab)}
               >
-                {link}
-              </a>
+                {tab}
+              </span>
             )
           )}
         </nav>
@@ -162,98 +183,135 @@ export default function AdminDashboard() {
 
       {/* === MAIN CONTENT === */}
       <main style={styles.main}>
-        <h1 style={styles.title}>Admin Dashboard</h1>
+        <h1 style={styles.title}>{activeTab}</h1>
         <p style={styles.subtitle}>
-          Manage users, departments, and system access.
+          {activeTab === "Dashboard"
+            ? "Manage users, departments, and system access."
+            : activeTab === "Users"
+            ? "View and manage registered users."
+            : ""}
         </p>
 
-        {/* === CREATE USER CARD === */}
-        <div style={styles.card}>
-          <h2 style={styles.cardTitle}>Create New User</h2>
-          <form onSubmit={handleSubmit} style={styles.form}>
-            <div style={styles.row}>
-              <input
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                value={formData.name}
-                onChange={handleChange}
-                style={styles.input}
-                required
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                style={styles.input}
-                required
-              />
-            </div>
+        {/* === DASHBOARD === */}
+        {activeTab === "Dashboard" && (
+          <div style={styles.card}>
+            <h2 style={styles.cardTitle}>Create New User</h2>
+            <form onSubmit={handleSubmit} style={styles.form}>
+              <div style={styles.row}>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                />
+              </div>
 
-            <div style={styles.row}>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                style={styles.input}
-                required
-              />
-              <input
-                type="text"
-                name="department"
-                placeholder="Department"
-                value={formData.department}
-                onChange={handleChange}
-                style={styles.input}
-              />
-            </div>
+              <div style={styles.row}>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  style={styles.input}
+                  required
+                />
+                <input
+                  type="text"
+                  name="department"
+                  placeholder="Department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
 
-            <div style={styles.row}>
-              <input
-                type="email"
-                name="manager_email"
-                placeholder="Manager Email"
-                value={formData.manager_email}
-                onChange={handleChange}
-                style={styles.input}
-              />
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                style={styles.select}
+              <div style={styles.row}>
+                <input
+                  type="email"
+                  name="manager_email"
+                  placeholder="Manager Email"
+                  value={formData.manager_email}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  style={styles.select}
+                >
+                  <option value="auditee">Auditee</option>
+                  <option value="auditor">Auditor</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <button type="submit" style={styles.button}>
+                Create User
+              </button>
+            </form>
+
+            {message && (
+              <p
+                style={{
+                  marginTop: "15px",
+                  textAlign: "center",
+                  color: message.startsWith("✅")
+                    ? "green"
+                    : message.startsWith("⚠️")
+                    ? "#c27b00"
+                    : "red",
+                }}
               >
-                <option value="auditee">Auditee</option>
-                <option value="auditor">Auditor</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
+                {message}
+              </p>
+            )}
+          </div>
+        )}
 
-            <button type="submit" style={styles.button}>
-              Create User
-            </button>
-          </form>
-
-          {message && (
-            <p
-              style={{
-                marginTop: "15px",
-                textAlign: "center",
-                color: message.startsWith("✅")
-                  ? "green"
-                  : message.startsWith("⚠️")
-                  ? "#c27b00"
-                  : "red",
-              }}
-            >
-              {message}
-            </p>
-          )}
-        </div>
+        {/* === USERS TAB === */}
+        {activeTab === "Users" && (
+          <div style={styles.card}>
+            <h2 style={styles.cardTitle}>Registered Users</h2>
+            {users.length === 0 ? (
+              <p style={{ color: "#6b7a99" }}>No users found.</p>
+            ) : (
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u, i) => (
+                    <tr key={i}>
+                      <td>{u.name}</td>
+                      <td>{u.email}</td>
+                      <td>{u.department || "-"}</td>
+                      <td>{u.role}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
@@ -284,7 +342,7 @@ const styles = {
     objectFit: "contain",
   },
   brand: { fontSize: "1.3rem", fontWeight: "700", color: "#fff" },
-  navCenter: { display: "flex", gap: "25px" },
+  navCenter: { display: "flex", gap: "25px", cursor: "pointer" },
   navLink: {
     color: "#dce7ff",
     textDecoration: "none",
@@ -297,8 +355,18 @@ const styles = {
     paddingBottom: "2px",
   },
   userMenu: { position: "relative" },
-  userWrapper: { display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" },
-  avatar: { width: "40px", height: "40px", borderRadius: "50%", border: "2px solid #fff" },
+  userWrapper: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    cursor: "pointer",
+  },
+  avatar: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    border: "2px solid #fff",
+  },
   userName: { color: "#fff", fontWeight: "500" },
   dropdown: {
     position: "absolute",
@@ -337,30 +405,14 @@ const styles = {
     display: "inline-block",
     marginBottom: "20px",
   },
-  form: { display: "flex", flexDirection: "column", gap: "15px" },
-  row: { display: "flex", gap: "15px", flexWrap: "wrap" },
-  input: {
-    flex: 1,
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #d0d7e2",
-    fontSize: "1rem",
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    marginTop: "15px",
   },
-  select: {
-    flex: 1,
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #d0d7e2",
-    fontSize: "1rem",
-  },
-  button: {
-    background: "#004aad",
-    color: "white",
-    border: "none",
-    padding: "12px",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    fontWeight: "600",
-    cursor: "pointer",
+  "table th, table td": {
+    padding: "10px",
+    borderBottom: "1px solid #e5e7eb",
+    textAlign: "left",
   },
 };
