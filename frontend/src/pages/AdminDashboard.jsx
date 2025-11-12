@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 export default function AdminDashboard() {
   const [formData, setFormData] = useState({
@@ -11,6 +11,8 @@ export default function AdminDashboard() {
   });
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -62,35 +64,78 @@ export default function AdminDashboard() {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  };
+
   return (
     <div style={styles.container}>
-      {/* TOP NAVBAR */}
+      {/* ====== STICKY NAVBAR ====== */}
       <nav style={styles.navbar}>
         <div style={styles.logoSection}>
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Blue_circle_logo.svg/120px-Blue_circle_logo.svg.png"
-            alt="logo"
+            src="https://i.ibb.co/BcQX07D/edme-logo-white.png" // Replace with your logo if needed
+            alt="FAT-EIBL Logo"
             style={styles.logo}
           />
           <span style={styles.logoText}>FAT-EIBL</span>
         </div>
+
         <div style={styles.navLinks}>
-          <a href="#" style={styles.linkActive}>Dashboard</a>
-          <a href="#">Users</a>
-          <a href="#">Departments</a>
-          <a href="#">Reports</a>
-          <a href="#">Settings</a>
+          <a href="#" style={{ ...styles.navLinksBase, ...styles.linkActive }}>
+            Dashboard
+          </a>
+          <a href="#" style={styles.navLinksBase}>
+            Users
+          </a>
+          <a href="#" style={styles.navLinksBase}>
+            Departments
+          </a>
+          <a href="#" style={styles.navLinksBase}>
+            Reports
+          </a>
+          <a href="#" style={styles.navLinksBase}>
+            Settings
+          </a>
+        </div>
+
+        <div style={styles.userSection} ref={dropdownRef}>
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+            alt="User Avatar"
+            style={styles.avatar}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          />
+          {dropdownOpen && (
+            <div style={styles.dropdown}>
+              <p style={styles.dropdownItem}>👤 Admin</p>
+              <hr style={styles.dropdownDivider} />
+              <button style={styles.logoutBtn} onClick={handleLogout}>
+                🚪 Logout
+              </button>
+            </div>
+          )}
         </div>
       </nav>
 
-      {/* MAIN CONTENT */}
+      {/* ====== MAIN CONTENT ====== */}
       <main style={styles.main}>
         <h1 style={styles.title}>Admin Dashboard</h1>
         <p style={styles.subtitle}>
           Manage users, departments, and system access.
         </p>
 
-        {/* FORM CARD */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>Create New User</h2>
           <form onSubmit={handleSubmit} style={styles.form}>
@@ -114,6 +159,7 @@ export default function AdminDashboard() {
                 required
               />
             </div>
+
             <div style={styles.row}>
               <input
                 type="password"
@@ -133,6 +179,7 @@ export default function AdminDashboard() {
                 style={styles.input}
               />
             </div>
+
             <div style={styles.row}>
               <input
                 type="email"
@@ -176,7 +223,6 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* USER LIST */}
         <div style={styles.tableCard}>
           <h3 style={styles.tableTitle}>Registered Users</h3>
           {users.length === 0 ? (
@@ -224,38 +270,92 @@ const styles = {
     minHeight: "100vh",
   },
   navbar: {
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#004aad",
-    color: "white",
+    backgroundColor: "#003a85",
+    color: "#f0f4ff",
     padding: "10px 40px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+    boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
   },
   logoSection: {
     display: "flex",
     alignItems: "center",
-    gap: "12px",
+    gap: "10px",
   },
   logo: {
-    width: "35px",
-    height: "35px",
-    borderRadius: "50%",
-    backgroundColor: "white",
-    objectFit: "cover",
+    width: "42px",
+    height: "42px",
+    objectFit: "contain",
+    backgroundColor: "transparent",
   },
   logoText: {
-    fontSize: "1.3rem",
+    fontSize: "1.4rem",
     fontWeight: "700",
+    color: "#ffffff",
     letterSpacing: "0.5px",
   },
   navLinks: {
     display: "flex",
     gap: "30px",
+    alignItems: "center",
+  },
+  navLinksBase: {
+    color: "#dbe9ff",
+    textDecoration: "none",
+    fontWeight: "500",
+    fontSize: "1rem",
+    transition: "color 0.2s ease",
   },
   linkActive: {
+    color: "#ffffff",
     fontWeight: "600",
     textDecoration: "underline",
+  },
+  userSection: {
+    position: "relative",
+    cursor: "pointer",
+  },
+  avatar: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    border: "2px solid #f0f4ff",
+    boxShadow: "0 0 6px rgba(255,255,255,0.6)",
+  },
+  dropdown: {
+    position: "absolute",
+    right: 0,
+    top: "50px",
+    backgroundColor: "white",
+    color: "#003b80",
+    borderRadius: "10px",
+    boxShadow: "0 3px 12px rgba(0,0,0,0.15)",
+    minWidth: "150px",
+    overflow: "hidden",
+    zIndex: 2000,
+  },
+  dropdownItem: {
+    padding: "10px 15px",
+    margin: 0,
+    fontSize: "0.95rem",
+  },
+  dropdownDivider: {
+    margin: 0,
+    borderColor: "#eee",
+  },
+  logoutBtn: {
+    width: "100%",
+    textAlign: "left",
+    background: "none",
+    border: "none",
+    padding: "10px 15px",
+    color: "#e11d48",
+    cursor: "pointer",
+    fontSize: "0.95rem",
   },
   main: {
     padding: "40px 80px",
