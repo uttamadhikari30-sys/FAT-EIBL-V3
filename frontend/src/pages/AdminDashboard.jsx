@@ -1,6 +1,8 @@
+// frontend/src/pages/AdminDashboard.jsx
 import React, { useState, useEffect, useRef } from "react";
 
 export default function AdminDashboard() {
+  const [tab, setTab] = useState("dashboard"); // "dashboard" | "users" | ...
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -9,35 +11,74 @@ export default function AdminDashboard() {
     manager_email: "",
     role: "auditee",
   });
-
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
-  const [activeTab, setActiveTab] = useState("Dashboard");
-  const dropdownRef = useRef(null);
   const [logoSrc, setLogoSrc] = useState("");
+  const dropdownRef = useRef(null);
 
-  // === Logo handling ===
+  // Build public logo path, check existence and fallback
   useEffect(() => {
     const logoPath = `${import.meta.env.BASE_URL || "/"}edme_logo.png`;
-    fetch(logoPath)
-      .then((res) => {
-        if (res.ok) setLogoSrc(logoPath);
-        else throw new Error("Logo not found");
+    fetch(logoPath, { method: "HEAD" })
+      .then((r) => {
+        if (r.ok) setLogoSrc(logoPath);
+        else throw new Error("not found");
       })
-      .catch(() => {
+      .catch(() =>
         setLogoSrc(
-          "https://upload.wikimedia.org/wikipedia/commons/f/fc/Edme_logo_placeholder.png"
-        );
-      });
+          "https://upload.wikimedia.org/wikipedia/commons/6/6f/No_image_3x4.svg"
+        )
+      );
   }, []);
 
-  // === Handle Input Change ===
+  // Fetch users list
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(
+        "https://fat-eibl-backend-x1sp.onrender.com/users/all"
+      );
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.users)) {
+        setUsers(data.users);
+      } else {
+        // If API responds ok:false, still clear or show nothing
+        setUsers([]);
+      }
+    } catch (e) {
+      console.error("fetchUsers error:", e);
+      setUsers([]);
+    }
+  };
+
+  useEffect(() => {
+    // Only fetch users initially so table has data when user opens Users tab
+    fetchUsers();
+  }, []);
+
+  // scroll compact navbar
+  useEffect(() => {
+    const onScroll = () => setIsCompact(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // click outside to close dropdown
+  useEffect(() => {
+    const handler = (evt) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(evt.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // === Handle Form Submit ===
+  // Create user
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("Creating user...");
@@ -52,7 +93,6 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (data.ok) {
         setMessage("✅ User created successfully!");
-        fetchUsers();
         setFormData({
           name: "",
           email: "",
@@ -61,50 +101,38 @@ export default function AdminDashboard() {
           manager_email: "",
           role: "auditee",
         });
+        // refresh users list
+        fetchUsers();
       } else {
         setMessage(`❌ ${data.detail || "Failed to create user"}`);
       }
-    } catch {
+    } catch (err) {
+      console.error("create user error:", err);
       setMessage("⚠️ Unable to connect to server.");
     }
+    // auto-hide message after 4s
+    setTimeout(() => setMessage(""), 4000);
   };
 
-  // === Fetch Users ===
-  const fetchUsers = async () => {
+  // Delete user helper (optional)
+  const handleDelete = async (userId) => {
+    if (!confirm("Delete this user?")) return;
     try {
       const res = await fetch(
-        "https://fat-eibl-backend-x1sp.onrender.com/users/all"
+        `https://fat-eibl-backend-x1sp.onrender.com/users/${userId}`,
+        { method: "DELETE" }
       );
       const data = await res.json();
-      if (data.ok) setUsers(data.users);
-      else setUsers([]);
+      if (data.ok) {
+        fetchUsers();
+      } else {
+        alert("Failed to delete user");
+      }
     } catch (e) {
+      alert("Error deleting user");
       console.error(e);
-      setUsers([]);
     }
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  // === Handle Dropdown ===
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // === Compact Navbar on Scroll ===
-  useEffect(() => {
-    const handleScroll = () => setIsCompact(window.scrollY > 40);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -113,58 +141,75 @@ export default function AdminDashboard() {
 
   return (
     <div style={styles.container}>
-      {/* === NAVBAR === */}
+      {/* NAV */}
       <header
         style={{
           ...styles.navbar,
-          padding: isCompact ? "6px 30px" : "14px 40px",
-          transition: "all 0.3s ease",
+          padding: isCompact ? "6px 24px" : "14px 40px",
+          transition: "all 220ms ease",
           boxShadow: isCompact
-            ? "0 3px 10px rgba(0,0,0,0.2)"
-            : "0 2px 6px rgba(0,0,0,0.08)",
+            ? "0 4px 14px rgba(0,0,0,0.12)"
+            : "0 2px 6px rgba(0,0,0,0.06)",
         }}
       >
         <div style={styles.navLeft}>
           <img
             src={logoSrc}
-            alt="FAT-EIBL Logo"
+            alt="Edme"
             style={{
               ...styles.logo,
-              width: isCompact ? "36px" : "46px",
-              height: isCompact ? "36px" : "46px",
+              width: isCompact ? 36 : 46,
+              height: isCompact ? 36 : 46,
             }}
-            onError={(e) => {
-              e.target.src =
-                "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
-            }}
+            onError={(e) =>
+              (e.target.src =
+                "https://upload.wikimedia.org/wikipedia/commons/6/6f/No_image_3x4.svg")
+            }
           />
           <span style={styles.brand}>FAT-EIBL</span>
         </div>
 
         <nav style={styles.navCenter}>
-          {["Dashboard", "Users", "Departments", "Reports"].map(
-            (tab, i) => (
-              <span
-                key={i}
-                style={
-                  activeTab === tab ? styles.activeLink : styles.navLink
-                }
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </span>
-            )
-          )}
+          <button
+            onClick={() => setTab("dashboard")}
+            style={tab === "dashboard" ? styles.activeNavBtn : styles.navBtn}
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => setTab("users")}
+            style={tab === "users" ? styles.activeNavBtn : styles.navBtn}
+          >
+            Users
+          </button>
+          <button
+            onClick={() => setTab("departments")}
+            style={tab === "departments" ? styles.activeNavBtn : styles.navBtn}
+          >
+            Departments
+          </button>
+          <button
+            onClick={() => setTab("reports")}
+            style={tab === "reports" ? styles.activeNavBtn : styles.navBtn}
+          >
+            Reports
+          </button>
+          <button
+            onClick={() => setTab("settings")}
+            style={tab === "settings" ? styles.activeNavBtn : styles.navBtn}
+          >
+            Settings
+          </button>
         </nav>
 
         <div style={styles.userMenu} ref={dropdownRef}>
           <div
             style={styles.userWrapper}
-            onClick={() => setDropdownOpen(!dropdownOpen)}
+            onClick={() => setDropdownOpen((s) => !s)}
           >
             <img
               src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-              alt="User"
+              alt="user"
               style={styles.avatar}
             />
             <span style={styles.userName}>Admin</span>
@@ -181,238 +226,234 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* === MAIN CONTENT === */}
+      {/* PAGE */}
       <main style={styles.main}>
-        <h1 style={styles.title}>{activeTab}</h1>
-        <p style={styles.subtitle}>
-          {activeTab === "Dashboard"
-            ? "Manage users, departments, and system access."
-            : activeTab === "Users"
-            ? "View and manage registered users."
-            : ""}
-        </p>
-
-        {/* === DASHBOARD === */}
-        {activeTab === "Dashboard" && (
-          <div style={styles.card}>
-            <h2 style={styles.cardTitle}>Create New User</h2>
-            <form onSubmit={handleSubmit} style={styles.form}>
-              <div style={styles.row}>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Full Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  style={styles.input}
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  style={styles.input}
-                  required
-                />
+        {tab === "dashboard" && (
+          <>
+            <h1 style={styles.title}>Admin Dashboard</h1>
+            <p style={styles.subtitle}>
+              Manage users, departments, and system access.
+            </p>
+            <div style={styles.summaryRow}>
+              <div style={styles.summaryCard}>
+                <div style={styles.summaryNumber}>{users.length}</div>
+                <div style={styles.summaryLabel}>Registered users</div>
               </div>
-
-              <div style={styles.row}>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  style={styles.input}
-                  required
-                />
-                <input
-                  type="text"
-                  name="department"
-                  placeholder="Department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  style={styles.input}
-                />
-              </div>
-
-              <div style={styles.row}>
-                <input
-                  type="email"
-                  name="manager_email"
-                  placeholder="Manager Email"
-                  value={formData.manager_email}
-                  onChange={handleChange}
-                  style={styles.input}
-                />
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  style={styles.select}
-                >
-                  <option value="auditee">Auditee</option>
-                  <option value="auditor">Auditor</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-
-              <button type="submit" style={styles.button}>
-                Create User
-              </button>
-            </form>
-
-            {message && (
-              <p
-                style={{
-                  marginTop: "15px",
-                  textAlign: "center",
-                  color: message.startsWith("✅")
-                    ? "green"
-                    : message.startsWith("⚠️")
-                    ? "#c27b00"
-                    : "red",
-                }}
-              >
-                {message}
-              </p>
-            )}
-          </div>
+              {/* Add more summary cards as needed */}
+            </div>
+          </>
         )}
 
-        {/* === USERS TAB === */}
-        {activeTab === "Users" && (
-          <div style={styles.card}>
-            <h2 style={styles.cardTitle}>Registered Users</h2>
-            {users.length === 0 ? (
-              <p style={{ color: "#6b7a99" }}>No users found.</p>
-            ) : (
-              <table style={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Department</th>
-                    <th>Role</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((u, i) => (
-                    <tr key={i}>
-                      <td>{u.name}</td>
-                      <td>{u.email}</td>
-                      <td>{u.department || "-"}</td>
-                      <td>{u.role}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+        {tab === "users" && (
+          <>
+            <h1 style={styles.title}>Users</h1>
+            <p style={styles.subtitle}>Create and manage users.</p>
+
+            <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+              {/* Create user form */}
+              <div style={{ flex: 1, minWidth: 360 }}>
+                <div style={styles.card}>
+                  <h2 style={styles.cardTitle}>Create New User</h2>
+                  <form onSubmit={handleSubmit} style={styles.form}>
+                    <div style={styles.row}>
+                      <input
+                        name="name"
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        style={styles.input}
+                        required
+                      />
+                      <input
+                        name="email"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        style={styles.input}
+                        required
+                      />
+                    </div>
+                    <div style={styles.row}>
+                      <input
+                        name="password"
+                        type="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        style={styles.input}
+                        required
+                      />
+                      <input
+                        name="department"
+                        placeholder="Department"
+                        value={formData.department}
+                        onChange={handleChange}
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.row}>
+                      <input
+                        name="manager_email"
+                        placeholder="Manager Email"
+                        value={formData.manager_email}
+                        onChange={handleChange}
+                        style={styles.input}
+                      />
+                      <select
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
+                        style={styles.select}
+                      >
+                        <option value="auditee">Auditee</option>
+                        <option value="auditor">Auditor</option>
+                        <option value="admin">Admin</option>
+                        <option value="Manager">Manager</option>
+                        <option value="CFO">CFO</option>
+                        <option value="Partner">Partner</option>
+                      </select>
+                    </div>
+
+                    <button type="submit" style={styles.button}>
+                      Create User
+                    </button>
+
+                    {message && (
+                      <div
+                        style={{
+                          marginTop: 12,
+                          color:
+                            message.startsWith("✅")
+                              ? "green"
+                              : message.startsWith("⚠️")
+                              ? "#c27b00"
+                              : "red",
+                        }}
+                      >
+                        {message}
+                      </div>
+                    )}
+                  </form>
+                </div>
+              </div>
+
+              {/* Users list */}
+              <div style={{ flex: 1.1, minWidth: 420 }}>
+                <div style={styles.card}>
+                  <h2 style={styles.cardTitle}>Registered Users</h2>
+                  {users.length === 0 ? (
+                    <div style={{ padding: 24, color: "#6b7a99" }}>
+                      No users found.
+                    </div>
+                  ) : (
+                    <table style={styles.table}>
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Dept</th>
+                          <th>Role</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {users.map((u) => (
+                          <tr key={u.id || u.email}>
+                            <td>{u.name || "-"}</td>
+                            <td>{u.email}</td>
+                            <td>{u.department || "-"}</td>
+                            <td>{u.role || "-"}</td>
+                            <td>
+                              <button
+                                style={styles.smallBtn}
+                                onClick={() =>
+                                  alert(
+                                    `Edit not implemented yet for ${u.email}`
+                                  )
+                                }
+                              >
+                                Edit
+                              </button>
+                              <button
+                                style={{ ...styles.smallBtn, ...styles.dangerBtn }}
+                                onClick={() => handleDelete(u.id)}
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {tab === "departments" && (
+          <>
+            <h1 style={styles.title}>Departments</h1>
+            <p style={styles.subtitle}>Department management coming soon.</p>
+          </>
+        )}
+
+        {tab === "reports" && (
+          <>
+            <h1 style={styles.title}>Reports</h1>
+            <p style={styles.subtitle}>Reports coming soon.</p>
+          </>
+        )}
+
+        {tab === "settings" && (
+          <>
+            <h1 style={styles.title}>Settings</h1>
+            <p style={styles.subtitle}>Application settings.</p>
+          </>
         )}
       </main>
     </div>
   );
 }
 
-// === STYLES ===
+// === STYLES (inline) ===
 const styles = {
-  container: {
-    background: "#f7f9fc",
-    minHeight: "100vh",
-    fontFamily: "'Inter', sans-serif",
-  },
-  navbar: {
-    position: "sticky",
-    top: 0,
-    zIndex: 999,
-    background: "#003b80",
-    color: "#fff",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  navLeft: { display: "flex", alignItems: "center", gap: "10px" },
-  logo: {
-    borderRadius: "6px",
-    background: "#fff",
-    padding: "4px",
-    objectFit: "contain",
-  },
-  brand: { fontSize: "1.3rem", fontWeight: "700", color: "#fff" },
-  navCenter: { display: "flex", gap: "25px", cursor: "pointer" },
-  navLink: {
-    color: "#dce7ff",
-    textDecoration: "none",
-    fontWeight: "500",
-  },
-  activeLink: {
-    color: "#fff",
-    fontWeight: "700",
-    borderBottom: "2px solid white",
-    paddingBottom: "2px",
-  },
+  container: { background: "#f7f9fc", minHeight: "100vh", fontFamily: "'Inter', Arial, sans-serif" },
+  navbar: { position: "sticky", top: 0, zIndex: 999, background: "#003b80", color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center" },
+  navLeft: { display: "flex", alignItems: "center", gap: 12 },
+  logo: { borderRadius: 10, background: "#fff", padding: 6, objectFit: "contain" },
+  brand: { color: "#fff", fontWeight: 700, fontSize: 18, marginLeft: 6 },
+  navCenter: { display: "flex", gap: 18, alignItems: "center" },
+  navBtn: { background: "transparent", border: "none", color: "#dce7ff", fontWeight: 600, cursor: "pointer", padding: "8px 12px" },
+  activeNavBtn: { background: "transparent", border: "none", color: "#fff", fontWeight: 800, textDecoration: "underline", padding: "8px 12px" },
   userMenu: { position: "relative" },
-  userWrapper: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    cursor: "pointer",
-  },
-  avatar: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "50%",
-    border: "2px solid #fff",
-  },
-  userName: { color: "#fff", fontWeight: "500" },
-  dropdown: {
-    position: "absolute",
-    right: 0,
-    top: "50px",
-    background: "#fff",
-    color: "#003b80",
-    borderRadius: "10px",
-    boxShadow: "0 3px 12px rgba(0,0,0,0.15)",
-    minWidth: "150px",
-  },
-  dropdownItem: { padding: "10px 15px", margin: 0 },
+  userWrapper: { display: "flex", alignItems: "center", gap: 10, cursor: "pointer" },
+  avatar: { width: 40, height: 40, borderRadius: "50%", border: "2px solid #fff" },
+  userName: { color: "#fff", fontWeight: 600 },
+  dropdown: { position: "absolute", right: 0, top: 50, background: "#fff", color: "#003b80", borderRadius: 8, boxShadow: "0 6px 18px rgba(0,0,0,0.12)", minWidth: 160 },
+  dropdownItem: { padding: "10px 14px", margin: 0 },
   dropdownDivider: { margin: 0, borderColor: "#eee" },
-  logoutBtn: {
-    width: "100%",
-    border: "none",
-    background: "none",
-    textAlign: "left",
-    padding: "10px 15px",
-    color: "#e11d48",
-    cursor: "pointer",
-  },
-  main: { padding: "40px 80px" },
-  title: { fontSize: "2rem", fontWeight: "700", color: "#003b80" },
-  subtitle: { color: "#6b7a99", fontSize: "1rem", marginBottom: "30px" },
-  card: {
-    background: "#fff",
-    borderRadius: "12px",
-    padding: "30px",
-    boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
-    marginBottom: "40px",
-  },
-  cardTitle: {
-    color: "#004aad",
-    borderBottom: "2px solid #004aad",
-    display: "inline-block",
-    marginBottom: "20px",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    marginTop: "15px",
-  },
-  "table th, table td": {
-    padding: "10px",
-    borderBottom: "1px solid #e5e7eb",
-    textAlign: "left",
-  },
+  logoutBtn: { width: "100%", padding: "10px 14px", border: "none", background: "transparent", color: "#e11d48", textAlign: "left", cursor: "pointer" },
+
+  main: { padding: "34px 48px" },
+  title: { fontSize: 36, color: "#0b4a86", margin: "6px 0 6px" },
+  subtitle: { color: "#6b7a99", marginBottom: 18 },
+
+  summaryRow: { display: "flex", gap: 18, marginBottom: 20 },
+  summaryCard: { background: "#fff", padding: 18, borderRadius: 10, minWidth: 160, boxShadow: "0 4px 12px rgba(0,0,0,0.06)" },
+  summaryNumber: { fontSize: 22, fontWeight: 700, color: "#003b80" },
+  summaryLabel: { color: "#6b7a99", marginTop: 6 },
+
+  card: { background: "#fff", borderRadius: 12, padding: 18, boxShadow: "0 6px 24px rgba(16,24,40,0.06)" },
+  cardTitle: { color: "#004aad", borderBottom: "2px solid #004aad", display: "inline-block", marginBottom: 12, paddingBottom: 6 },
+  form: { display: "flex", flexDirection: "column", gap: 12 },
+  row: { display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" },
+  input: { flex: 1, padding: "11px 12px", borderRadius: 8, border: "1px solid #d7dee8", fontSize: 15, minWidth: 160 },
+  select: { flex: 1, padding: "11px 12px", borderRadius: 8, border: "1px solid #d7dee8", fontSize: 15, minWidth: 160 },
+  button: { background: "#004aad", color: "#fff", border: "none", padding: "12px 14px", borderRadius: 8, fontWeight: 700, cursor: "pointer", marginTop: 6 },
+
+  table: { width: "100%", borderCollapse: "collapse", marginTop: 6 },
+  smallBtn: { marginRight: 8, padding: "6px 10px", borderRadius: 6, border: "1px solid #ccd7ef", background: "#fff", cursor: "pointer" },
+  dangerBtn: { background: "#ffecec", borderColor: "#ffb3b3", color: "#c0392b" },
 };
