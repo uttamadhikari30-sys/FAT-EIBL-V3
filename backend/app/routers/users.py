@@ -1,117 +1,51 @@
-from fastapi import APIRouter, Depends, HTTPException, Form
-from passlib.hash import bcrypt
+# app/routers/users.py (or your existing users router)
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
+from app.utils.auth import hash_password, generate_otp, otp_expiry, send_otp_email
+from datetime import datetime
 
-# ✅ Define router (this line is crucial)
 router = APIRouter()
 
-# ✅ Create a new user
 @router.post("/")
 def create_user(
-    name: str = Form(...),
-    email: str = Form(...),
-    password: str = Form(...),
-    department: str = Form(None),
-    role: str = Form("auditee"),
-    manager_email: str = Form(None),
+    name: str,
+    email: str,
+    password: str,
+    department: str = None,
+    manager_email: str = None,
+    role: str = "auditee",
     db: Session = Depends(get_db),
 ):
+    # check exist
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    hashed = hash_password(password)
+    otp = generate_otp()
+    expiry = otp_expiry(10)
+
+    user = User(
+        name=name,
+        email=email,
+        password=hashed,
+        department=department,
+        manager_email=manager_email,
+        role=role,
+        otp_code=otp,
+        otp_expires_at=expiry,
+        first_login=True,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    # send mail (async if you prefer background task)
     try:
-        if db.query(User).filter(User.email == email).first():
-            raise HTTPException(status_code=400, detail="Email already exists")
-        user = User(
-            name=name,
-            email=email,
-            hashed_password=bcrypt.hash(password),
-            department=department,
-            role=role,
-            manager_email=manager_email,
-        )
-        db.add(user)
-        db.commit()
-        return {"ok": True, "message": "User created successfully"}
+        send_otp_email(email, otp)
     except Exception as e:
-        return {"ok": False, "error": str(e)}
+        # log error but user exists now — you can rollback if you prefer
+        print("Warning: failed to send OTP", e)
 
-# ✅ Login route
-@router.post("/login")
-def login_user(
-    email: str = Form(...),
-    password: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    try:
-        user = db.query(User).filter(User.email == email).first()
-        if not user or not bcrypt.verify(password, user.hashed_password):
-            raise HTTPException(status_code=401, detail="Invalid email or password")
-        return {
-            "ok": True,
-            "message": "Login successful",
-            "user": {"id": user.id, "name": user.name, "role": user.role},
-        }
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
-
-# ✅ Get all users
-@router.get("/")
-def list_users(db: Session = Depends(get_db)):
-    try:
-        return db.query(User).all()
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
-
-# ✅ Delete user
-@router.delete("/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    try:
-        user = db.get(User, user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        db.delete(user)
-        db.commit()
-        return {"ok": True, "message": "User deleted"}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
-
-# ✅ Check Admin Users
-@router.get("/check-admin")
-def check_admin(db: Session = Depends(get_db)):
-    try:
-        users = db.query(User).all()
-        return {"count": len(users), "users": [u.email for u in users]}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
-
-# ✅ Seed Admin User (One-Time Setup) – FIXED bcrypt byte issue
-@router.post("/seed-admin")
-def seed_admin(db: Session = Depends(get_db)):
-    try:
-        email = "admin@edmeinsurance.com"
-        existing = db.query(User).filter(User.email == email).first()
-        if existing:
-            return {"ok": True, "note": "Admin already exists"}
-
-        # --- Fix bcrypt 72-byte password limit ---
-        raw_password = "Edme@123"
-        encoded = raw_password.encode("utf-8")
-        if len(encoded) > 72:
-            encoded = encoded[:72]
-        safe_password = encoded.decode("utf-8", "ignore")
-        hashed_password = bcrypt.hash(safe_password)
-        # ------------------------------------------
-
-        admin = User(
-            name="Admin",
-            email=email,
-            hashed_password=hashed_password,
-            department="Finance",
-            role="admin",
-            manager_email=None,
-        )
-        db.add(admin)
-        db.commit()
-        return {"ok": True, "note": "Admin created successfully"}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+    return {"ok": True, "message": "User created and OTP sent"}
