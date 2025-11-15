@@ -19,11 +19,11 @@ services:
     name: fat-eibl-frontend
     env: node
     plan: free
+    rootDir: frontend
     buildCommand: |
-      cd frontend
       npm install --legacy-peer-deps
       npm run build
-    startCommand: npx serve -s frontend/dist
+    startCommand: npx serve -s dist
     envVars:
       - key: VITE_API_URL
         value: https://fat-eibl-backend.onrender.com
