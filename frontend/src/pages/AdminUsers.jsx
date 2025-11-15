@@ -6,12 +6,12 @@ export default function AdminUsers() {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    password: "",
     department: "",
     role: "auditee",
     manager_email: "",
   });
 
+  // Load existing users
   const loadUsers = async () => {
     const res = await fetch(`${API}/users`);
     const data = await res.json();
@@ -22,15 +22,29 @@ export default function AdminUsers() {
     loadUsers();
   }, []);
 
+  // NEW: Invite user instead of creating with password
   const createUser = async (e) => {
     e.preventDefault();
-    const fd = new FormData();
-    Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-    const res = await fetch(`${API}/users`, { method: "POST", body: fd });
+
+    const res = await fetch(`${API}/users/invite`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
     if (res.ok) {
-      alert("User created");
+      alert("Invite sent to user email!");
+      setForm({
+        name: "",
+        email: "",
+        department: "",
+        role: "auditee",
+        manager_email: "",
+      });
       loadUsers();
-    } else alert("Error creating user");
+    } else {
+      alert("Error sending invite");
+    }
   };
 
   const deleteUser = async (id) => {
@@ -42,19 +56,43 @@ export default function AdminUsers() {
   return (
     <div style={{ maxWidth: "800px", margin: "40px auto" }}>
       <h2>Admin – User Management</h2>
+      
       <form onSubmit={createUser} style={{ display: "grid", gap: 10 }}>
-        <input placeholder="Name" onChange={(e) => setForm({ ...form, name: e.target.value })} />
-        <input placeholder="Email" onChange={(e) => setForm({ ...form, email: e.target.value })} />
-        <input type="password" placeholder="Password" onChange={(e) => setForm({ ...form, password: e.target.value })} />
-        <input placeholder="Department" onChange={(e) => setForm({ ...form, department: e.target.value })} />
-        <input placeholder="Manager Email" onChange={(e) => setForm({ ...form, manager_email: e.target.value })} />
-        <select onChange={(e) => setForm({ ...form, role: e.target.value })}>
+        <input
+          placeholder="Name"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+
+        <input
+          placeholder="Email"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+
+        <input
+          placeholder="Department"
+          value={form.department}
+          onChange={(e) => setForm({ ...form, department: e.target.value })}
+        />
+
+        <input
+          placeholder="Manager Email"
+          value={form.manager_email}
+          onChange={(e) => setForm({ ...form, manager_email: e.target.value })}
+        />
+
+        <select
+          value={form.role}
+          onChange={(e) => setForm({ ...form, role: e.target.value })}
+        >
           <option value="auditee">Auditee</option>
           <option value="auditor">Auditor</option>
           <option value="manager">Manager</option>
           <option value="admin">Admin</option>
         </select>
-        <button>Create User</button>
+
+        <button>Create User (Send Invite)</button>
       </form>
 
       <h3 style={{ marginTop: "20px" }}>User List</h3>
@@ -69,6 +107,7 @@ export default function AdminUsers() {
             <th>Delete</th>
           </tr>
         </thead>
+
         <tbody>
           {users.map((u) => (
             <tr key={u.id}>
@@ -83,6 +122,7 @@ export default function AdminUsers() {
             </tr>
           ))}
         </tbody>
+
       </table>
     </div>
   );
