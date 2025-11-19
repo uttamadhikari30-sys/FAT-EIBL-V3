@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./pages/App.jsx";
+import App from "./App.jsx";    // FIXED PATH
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -8,8 +8,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <App />
   </React.StrictMode>
 );
-import AdminUsers from "./pages/AdminUsers.jsx";
-
-// Add inside Routes:
-<Route path="/admin/users" element={<AdminUsers />} />
-
