@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.jsx";    // FIXED PATH
+import App from "./pages/App.jsx";   // ✅ FIXED PATH
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
