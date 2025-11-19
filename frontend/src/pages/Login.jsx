@@ -10,14 +10,14 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 🔵 LOGIN HANDLER — calls FastAPI /login
+  // LOGIN FUNCTION
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const response = await fetch(`${API}/login`, {
+      const response = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -32,39 +32,40 @@ export default function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.detail || "Invalid credentials");
+        setError(data.detail || "Invalid email or password");
+        setLoading(false);
+        return;
+      }
+
+      // Construct user object
+      const user = {
+        id: data.user_id,
+        role: data.role,
+        first_login: data.first_login,
+        email,
+      };
+
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // First login → redirect to password reset
+      if (user.first_login) {
+        window.location.href = `/reset-password?user_id=${user.id}`;
+        return;
+      }
+
+      // Redirect by role
+      if (user.role === "admin") {
+        window.location.href = "/admin-dashboard";
       } else {
-        // 🌟 Create a consistent user object
-        const userData = {
-          id: data.user_id,
-          role: data.role,
-          first_login: data.first_login,
-          email: email,
-        };
-
-        localStorage.setItem("user", JSON.stringify(userData));
-
-        // 🌟 First-time login → Force reset password
-        if (data.first_login) {
-          window.location.href = `/reset-password?user_id=${data.user_id}`;
-          return;
-        }
-
-        // 🌟 Redirect based on role
-        if (data.role === "admin") {
-          window.location.href = "/admin-dashboard";
-        } else {
-          window.location.href = "/dashboard";
-        }
+        window.location.href = "/dashboard";
       }
     } catch (err) {
-      setError("Unable to connect to server. Please try again later.");
+      setError("Unable to connect to server. Try again later.");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔵 Forgot password redirects to page (NO Outlook dependency)
   const handleForgotPassword = () => {
     window.location.href = "/forgot-password";
   };
@@ -137,19 +138,12 @@ export default function Login() {
           }}
         />
 
-        {/* Error Message */}
+        {/* Error */}
         {error && (
-          <p
-            style={{
-              color: "red",
-              fontSize: "0.9rem",
-              marginBottom: "10px",
-            }}
-          >
-            {error}
-          </p>
+          <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>
         )}
 
+        {/* Login Button */}
         <button
           type="submit"
           disabled={loading}
