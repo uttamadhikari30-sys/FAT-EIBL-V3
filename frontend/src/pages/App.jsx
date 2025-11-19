@@ -7,6 +7,7 @@ import ResetPassword from "./ResetPassword.jsx";
 import SetPassword from "./SetPassword.jsx";
 import AdminDashboard from "./AdminDashboard.jsx";
 import Dashboard from "./Dashboard.jsx";
+import AdminUsers from "./AdminUsers.jsx";   // ✅ MISSING IMPORT ADDED
 
 export default function App() {
   console.log("App.jsx loaded");
@@ -28,7 +29,10 @@ export default function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
 
-        {/* Catch-all route */}
+        {/* User Management (Admin Users Page) */}
+        <Route path="/admin/users" element={<AdminUsers />} /> {/* ✅ MISSING ROUTE ADDED */}
+
+        {/* Catch-all */}
         <Route path="*" element={<h2>Page Not Found</h2>} />
       </Routes>
     </BrowserRouter>
