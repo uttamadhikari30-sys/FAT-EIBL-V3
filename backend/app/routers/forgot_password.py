@@ -1,30 +1,65 @@
-from passlib.hash import bcrypt
-from datetime import datetime
-from app.models.otp import OtpModel
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models.user import User
+from app.utils.auth import hash_password, send_invite_email
+from datetime import datetime, timedelta
+import secrets, hashlib
 
-@router.post("/reset-password")
-def reset_password(
-    email: str = Form(...),
-    otp: str = Form(...),
-    new_password: str = Form(...),
-    db: Session = Depends(get_db),
-):
-    # Check user exists
+router = APIRouter()
+
+
+# -------------------------------
+# REQUEST PASSWORD RESET EMAIL
+# -------------------------------
+@router.post("/forgot-password")
+def forgot_password(email: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == email).first()
+
     if not user:
-        raise HTTPException(status_code=404, detail="Email not registered")
+        raise HTTPException(status_code=404, detail="Email not found")
 
-    # Verify OTP
-    otp_entry = db.query(OtpModel).filter(OtpModel.email == email, OtpModel.otp == otp).first()
-    if not otp_entry:
-        raise HTTPException(status_code=400, detail="Invalid OTP")
+    # Generate reset token
+    token_raw = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(token_raw.encode()).hexdigest()
+    expiry = datetime.utcnow() + timedelta(minutes=30)
 
-    if datetime.utcnow() > otp_entry.expires_at:
-        raise HTTPException(status_code=400, detail="OTP expired")
+    # Save
+    user.reset_token_hash = token_hash
+    user.reset_expires_at = expiry
+    db.commit()
 
-    # Update password
-    user.hashed_password = bcrypt.hash(new_password)
-    db.delete(otp_entry)  # Remove OTP after successful use
+    # Create link
+    reset_link = f"https://fat-eibl-frontend.onrender.com/reset-password?email={email}&token={token_raw}"
+
+    send_invite_email(email, reset_link)
+
+    return {"ok": True, "message": "Password reset email sent"}
+
+
+# -------------------------------
+# RESET PASSWORD (Frontend form)
+# -------------------------------
+@router.post("/reset-password")
+def reset_password(email: str, token: str, new_password: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == email).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # expired?
+    if user.reset_expires_at < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Reset token expired")
+
+    # wrong token?
+    if hashlib.sha256(token.encode()).hexdigest() != user.reset_token_hash:
+        raise HTTPException(status_code=400, detail="Invalid reset token")
+
+    # update password
+    user.hashed_password = hash_password(new_password)
+    user.reset_token_hash = None
+    user.reset_expires_at = None
+
     db.commit()
 
     return {"ok": True, "message": "Password reset successfully"}
