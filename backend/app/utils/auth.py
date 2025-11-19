@@ -1,53 +1,52 @@
-# app/utils/auth.py
-import random
-from datetime import datetime, timedelta
+import smtplib
+from email.message import EmailMessage
+import os
 from passlib.context import CryptContext
-import os, smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
-pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def hash_password(plain):
-    return pwd_ctx.hash(plain)
 
-def verify_password(plain, hashed):
-    return pwd_ctx.verify(plain, hashed)
+def hash_password(password: str):
+    return pwd_context.hash(password)
 
-def generate_otp():
-    return f"{random.randint(100000, 999999)}"  # 6-digit string
 
-def otp_expiry(minutes=10):
-    return datetime.utcnow() + timedelta(minutes=minutes)
-
-def send_otp_email(recipient_email: str, otp: str):
-    # Configure via env vars
-    sender_email = os.getenv("SMTP_SENDER_EMAIL")
-    sender_password = os.getenv("SMTP_PASSWORD")
-    smtp_server = os.getenv("SMTP_SERVER", "smtp.office365.com")
-    smtp_port = int(os.getenv("SMTP_PORT", 587))
-
-    subject = "Your FAT-EIBL one-time password (OTP)"
-    body = f"""
-    Hello,
-
-    Use this one-time password (OTP) to sign in to FAT-EIBL: {otp}
-
-    This OTP will expire in 10 minutes.
-
-    If you didn't request this, contact your admin.
-
-    Regards,
-    FAT-EIBL
+def send_invite_email(to_email: str, invite_link: str):
+    """
+    Sends invitation email to user using SMTP.
+    Env vars required:
+    SMTP_HOST
+    SMTP_PORT
+    SMTP_USER
+    SMTP_PASS
+    EMAIL_FROM
     """
 
-    msg = MIMEMultipart()
-    msg["From"] = sender_email
-    msg["To"] = recipient_email
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain"))
+    msg = EmailMessage()
+    msg["Subject"] = "Your FAT-EIBL Account Invitation"
+    msg["From"] = os.getenv("EMAIL_FROM")
+    msg["To"] = to_email
+    msg.set_content(
+        f"""
+Hello,
 
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.send_message(msg)
+You have been invited to FAT-EIBL.
+
+Please set your password using the link below:
+
+{invite_link}
+
+This link expires in 24 hours.
+
+Regards,
+EIBL Audit Team
+"""
+    )
+
+    try:
+        with smtplib.SMTP(os.getenv("SMTP_HOST"), int(os.getenv("SMTP_PORT"))) as smtp:
+            smtp.starttls()
+            smtp.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
+            smtp.send_message(msg)
+    except Exception as e:
+        print("Email sending failed:", e)
+        raise e
