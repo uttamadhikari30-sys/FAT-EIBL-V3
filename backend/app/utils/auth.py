@@ -3,17 +3,30 @@ from email.message import EmailMessage
 import os
 from passlib.context import CryptContext
 
+# Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
+# ---------------------------------------------
+# HASH PASSWORD
+# ---------------------------------------------
 def hash_password(password: str):
     return pwd_context.hash(password)
 
 
+# ---------------------------------------------
+# VERIFY PASSWORD (Required for /auth/login)
+# ---------------------------------------------
+def verify_password(plain: str, hashed: str):
+    return pwd_context.verify(plain, hashed)
+
+
+# ---------------------------------------------
+# SEND INVITATION EMAIL
+# ---------------------------------------------
 def send_invite_email(to_email: str, invite_link: str):
     """
-    Sends invitation email to user using SMTP.
-    Env vars required:
+    Sends invitation email using SMTP.
+    Required ENV:
     SMTP_HOST
     SMTP_PORT
     SMTP_USER
@@ -22,9 +35,10 @@ def send_invite_email(to_email: str, invite_link: str):
     """
 
     msg = EmailMessage()
-    msg["Subject"] = "Your FAT-EIBL Account Invitation"
+    msg["Subject"] = "FAT-EIBL Account Invitation"
     msg["From"] = os.getenv("EMAIL_FROM")
     msg["To"] = to_email
+
     msg.set_content(
         f"""
 Hello,
@@ -38,7 +52,7 @@ Please set your password using the link below:
 This link expires in 24 hours.
 
 Regards,
-EIBL Audit Team
+FAT-EIBL Audit Team
 """
     )
 

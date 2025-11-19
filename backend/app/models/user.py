@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from app.database import Base
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -8,17 +9,25 @@ class User(Base):
     name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
 
-    # Password stored only after user sets it
+    # Main password
     hashed_password = Column(String(255), nullable=True)
 
     department = Column(String(255), nullable=True)
     role = Column(String(50), nullable=False, default="auditee")
     manager_email = Column(String(255), nullable=True)
 
-    # Invite flow fields
+    # Invite fields
     status = Column(String(50), nullable=False, default="invited")  # invited / active
     invite_token_hash = Column(String(255), nullable=True)
     invite_expires_at = Column(DateTime, nullable=True)
 
-    # REQUIRED FIELD
+    # First login flag
     first_login = Column(Boolean, default=True)
+
+    # Password reset fields
+    reset_token_hash = Column(String(255), nullable=True)
+    reset_expires_at = Column(DateTime, nullable=True)
+
+    # OTP login fields
+    otp_code = Column(String(20), nullable=True)
+    otp_expires_at = Column(DateTime, nullable=True)

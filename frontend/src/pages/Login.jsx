@@ -3,41 +3,55 @@ import logo from "../assets/logo.png";
 import "./Login.css";
 
 export default function Login() {
+  const API = import.meta.env.VITE_API_URL;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ Login function
+  // 🔵 LOGIN HANDLER — calls FastAPI /login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const response = await fetch(
-        "https://fat-eibl-backend-x1sp.onrender.com/users/login",
-        {
-          method: "POST",
-          headers: { Accept: "application/json" },
-          body: new URLSearchParams({
-            email: email,
-            password: password,
-          }),
-        }
-      );
+      const response = await fetch(`${API}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+        body: new URLSearchParams({
+          email: email,
+          password: password,
+        }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
         setError(data.detail || "Invalid credentials");
       } else {
-        alert(`Welcome ${data.user.name}!`);
-        // ✅ Save user info for session
-        localStorage.setItem("user", JSON.stringify(data.user));
+        // 🌟 Create a consistent user object
+        const userData = {
+          id: data.user_id,
+          role: data.role,
+          first_login: data.first_login,
+          email: email,
+        };
 
-        // ✅ Redirect based on role
-        if (data.user.role === "admin") {
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        // 🌟 First-time login → Force reset password
+        if (data.first_login) {
+          window.location.href = `/reset-password?user_id=${data.user_id}`;
+          return;
+        }
+
+        // 🌟 Redirect based on role
+        if (data.role === "admin") {
           window.location.href = "/admin-dashboard";
         } else {
           window.location.href = "/dashboard";
@@ -50,7 +64,7 @@ export default function Login() {
     }
   };
 
-  // ✅ Forgot password redirect (no Outlook)
+  // 🔵 Forgot password redirects to page (NO Outlook dependency)
   const handleForgotPassword = () => {
     window.location.href = "/forgot-password";
   };
@@ -66,14 +80,13 @@ export default function Login() {
         backgroundColor: "#f5f9ff",
       }}
     >
-      {/* ✅ Logo */}
+      {/* Logo */}
       <img
         src={logo}
         alt="Company Logo"
         style={{ width: "120px", marginBottom: "20px" }}
       />
 
-      {/* ✅ Title */}
       <h1 style={{ color: "#004aad", marginBottom: "10px" }}>
         Welcome to FAT-EIBL
       </h1>
@@ -81,7 +94,6 @@ export default function Login() {
         Finance Audit Tracker – Edme Insurance Brokers Limited
       </p>
 
-      {/* ✅ Login form */}
       <form
         onSubmit={handleSubmit}
         style={{
@@ -93,12 +105,13 @@ export default function Login() {
           textAlign: "center",
         }}
       >
-        {/* Email field */}
+        {/* Email */}
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
           style={{
             width: "100%",
             padding: "10px",
@@ -106,15 +119,15 @@ export default function Login() {
             border: "1px solid #ccc",
             borderRadius: "8px",
           }}
-          required
         />
 
-        {/* Password field */}
+        {/* Password */}
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
           style={{
             width: "100%",
             padding: "10px",
@@ -122,10 +135,9 @@ export default function Login() {
             border: "1px solid #ccc",
             borderRadius: "8px",
           }}
-          required
         />
 
-        {/* Error message */}
+        {/* Error Message */}
         {error && (
           <p
             style={{
@@ -138,7 +150,6 @@ export default function Login() {
           </p>
         )}
 
-        {/* Submit button */}
         <button
           type="submit"
           disabled={loading}
@@ -155,7 +166,6 @@ export default function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        {/* ✅ Forgot password redirect */}
         <p
           onClick={handleForgotPassword}
           style={{

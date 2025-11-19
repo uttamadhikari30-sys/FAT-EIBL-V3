@@ -12,7 +12,6 @@ import shutil
 # ================================================
 load_dotenv()
 
-# ❗ IMPORT SHARED BASE + ENGINE (do NOT create Base here)
 from app.database import Base, engine, SessionLocal
 
 # ================================================
@@ -45,7 +44,7 @@ class AuditLog(Base):
 # ================================================
 app = FastAPI(title="FAT-EIBL (Edme) – API")
 
-# CORS setup
+# CORS
 allowed_origins = os.getenv("ALLOW_ORIGINS", "*").split(",")
 
 app.add_middleware(
@@ -55,7 +54,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # ================================================
 # 4️⃣ Database Dependency
@@ -69,12 +67,18 @@ def get_db():
 
 
 # ================================================
-# 5️⃣ Routers
+# 5️⃣ Routers (Users + Auth + Forgot Password)
 # ================================================
-from app.routers import users, forgot_password
+from app.routers import users, forgot_password, auth
 
+# Users API
 app.include_router(users.router, prefix="/users", tags=["Users"])
+
+# Forgot Password API
 app.include_router(forgot_password.router, prefix="/auth", tags=["Forgot Password"])
+
+# Authentication + Login API
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 
 
 # ================================================
@@ -90,7 +94,6 @@ def health_check():
 # ================================================
 UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-
 
 @app.post("/upload/{task_id}")
 async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -112,7 +115,7 @@ async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = 
 
 
 # ================================================
-# 8️⃣ Create All Tables
+# 8️⃣ Create All Tables (manual)
 # ================================================
 from app.models.user import User
 from app.models.otp import OtpModel
