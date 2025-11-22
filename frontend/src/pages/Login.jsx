@@ -18,7 +18,9 @@ export default function Login() {
     try {
       const response = await fetch(`${API}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: new URLSearchParams({ email, password }),
       });
 
@@ -40,7 +42,7 @@ export default function Login() {
 
       window.location.href = user.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (err) {
-      setError("Server not responding. Try again.");
+      setError("Server error — Try again");
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,7 @@ export default function Login() {
   return (
     <div className="login-container">
       <form className="login-card" onSubmit={handleSubmit}>
-        <img src={logo} alt="Logo" className="login-logo" />
+        <img src={logo} className="login-logo" alt="Logo" />
 
         <h2>Password Login</h2>
 
@@ -59,16 +61,16 @@ export default function Login() {
           type="email"
           placeholder="Email"
           value={email}
-          required
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
           type="password"
           placeholder="Password"
           value={password}
-          required
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
         <button type="submit" disabled={loading}>

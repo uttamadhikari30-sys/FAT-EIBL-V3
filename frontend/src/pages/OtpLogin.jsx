@@ -7,13 +7,13 @@ export function OtpLogin() {
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const sendOtp = async () => {
-    setLoading(true);
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch(`${API}/auth/generate-otp`, {
@@ -23,21 +23,23 @@ export function OtpLogin() {
       });
 
       const data = await response.json();
+
       if (!response.ok) {
-        setError(data.detail || "Failed to send OTP");
+        setError(data.detail || "OTP sending failed");
       } else {
         setOtpSent(true);
       }
-    } catch {
-      setError("Unable to send OTP");
+    } catch (e) {
+      setError("Server error — Try again");
     }
+
     setLoading(false);
   };
 
   const verifyOtp = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch(`${API}/auth/login-otp`, {
@@ -50,29 +52,23 @@ export function OtpLogin() {
 
       if (!response.ok) {
         setError(data.detail || "Invalid OTP");
-        setLoading(false);
-        return;
+      } else {
+        const user = data.user;
+        localStorage.setItem("user", JSON.stringify(user));
+
+        window.location.href = user.role === "admin" ? "/admin-dashboard" : "/dashboard";
       }
-
-      const user = data.user;
-      localStorage.setItem("user", JSON.stringify(user));
-
-      if (user.first_login) {
-        window.location.href = `/reset-password?user_id=${user.id}`;
-        return;
-      }
-
-      window.location.href = user.role === "admin" ? "/admin-dashboard" : "/dashboard";
-    } catch {
-      setError("OTP verification failed");
+    } catch (e) {
+      setError("Server error — Try again");
     }
+
     setLoading(false);
   };
 
   return (
     <div className="login-container">
       <form className="login-card" onSubmit={verifyOtp}>
-        <img src={logo} alt="Logo" className="login-logo" />
+        <img src={logo} className="login-logo" alt="Logo" />
 
         <h2>OTP Login</h2>
 
@@ -82,24 +78,25 @@ export function OtpLogin() {
           type="email"
           placeholder="Email"
           value={email}
-          required
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
-        {!otpSent ? (
+        {!otpSent && (
           <button type="button" onClick={sendOtp} disabled={loading}>
             {loading ? "Sending..." : "Send OTP"}
           </button>
-        ) : (
+        )}
+
+        {otpSent && (
           <>
             <input
               type="text"
               placeholder="Enter OTP"
               value={otp}
-              required
               onChange={(e) => setOtp(e.target.value)}
+              required
             />
-
             <button type="submit" disabled={loading}>
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
