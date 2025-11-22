@@ -1,109 +1,123 @@
-/* FULL-PAGE BLUE GRADIENT */
+/* PremiumLogin.css - blue gradient + subtle animations */
+:root {
+  --blue-dark: #003a8c;
+  --blue-mid: #0057d9;
+  --blue-light: #0b8bff;
+  --card-bg: #ffffff;
+  --muted: #6b7280;
+}
+
+* { box-sizing: border-box; }
+
 .premium-bg {
-  height: 100vh;
-  width: 100%;
-  background: linear-gradient(135deg, #003b80 0%, #007bff 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #012440 0%, #0467d1 40%, #0493ff 100%);
+  padding: 40px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.premium-card {
+  width: 1020px;
+  max-width: 96%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.98));
+  border-radius: 12px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(2, 6, 23, 0.28);
+  transform: translateY(0);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.premium-left {
+  flex: 1;
+  padding: 48px 56px;
+  min-width: 420px;
+}
+
+.premium-right {
+  width: 360px;
+  background: linear-gradient(180deg, rgba(6,24,55,0.98), rgba(3,62,120,0.92));
+  color: white;
+  padding: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* CARD */
-.premium-card {
-  width: 420px;
-  background: white;
-  padding: 40px;
-  border-radius: 18px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-  text-align: center;
-  animation: fadeIn 0.8s ease;
-}
-
-.animate {
-  transform: translateY(20px);
-  opacity: 0;
-  animation: slideUp 0.6s forwards ease-out;
-}
-
-@keyframes slideUp {
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* LOGO GLOW */
-.premium-logo-glow {
-  width: 110px;
-  filter: drop-shadow(0 0 12px rgba(0, 123, 255, 0.6));
-  margin-bottom: 15px;
+.premium-logo {
+  width: 130px;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,0.25));
 }
 
 .premium-title {
-  font-size: 28px;
+  font-size: 34px;
+  color: var(--blue-dark);
+  margin: 8px 0 6px;
   font-weight: 700;
-  color: #003b80;
 }
 
 .premium-sub {
-  color: #777;
-  margin-bottom: 25px;
+  color: var(--muted);
+  margin-bottom: 22px;
 }
 
-/* INPUT */
-.premium-input {
-  width: 100%;
-  padding: 14px;
-  border-radius: 8px;
-  border: 1px solid #ccd9ff;
-  margin-bottom: 16px;
-  font-size: 15px;
-}
+.premium-form { display: grid; gap: 14px; }
 
-.premium-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-}
-
-/* BUTTON */
-.premium-btn {
-  width: 100%;
-  background: #004aad;
-  color: white;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  margin-top: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.premium-btn:hover {
-  background: #003b80;
-}
-
-/* LINK ACTIONS */
-.premium-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  color: #004aad;
-}
-
-.premium-actions span {
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-/* ERROR BOX */
 .premium-error {
-  background: #ffe2e2;
-  color: #c40000;
-  padding: 10px;
-  font-size: 14px;
+  padding: 12px 14px;
+  background: #ffecec;
+  color: #b91c1c;
+  border-left: 6px solid #ff6b6b;
   border-radius: 8px;
-  margin-bottom: 12px;
-  border-left: 4px solid red;
+  margin-bottom: 8px;
 }
+
+.premium-input {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e6eefc;
+  background: #f4f8ff;
+  font-size: 16px;
+  outline: none;
+  width: 100%;
+}
+
+.premium-primary-btn {
+  margin-top: 6px;
+  background: linear-gradient(90deg, var(--blue-mid), var(--blue-light));
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(3, 75, 162, 0.28);
+}
+
+.premium-secondary-btn {
+  background: #073b8a;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.premium-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.promo h3 { margin: 0 0 8px; font-size: 20px; }
+.promo p { opacity: 0.95; line-height:1.4; font-size: 14px; }
