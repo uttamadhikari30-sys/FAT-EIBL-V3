@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
-import "./Login.css";
+import "./Login.css"; // make sure CSS is created
 
 export default function Login() {
-  const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
+  const API =
+    import.meta.env.VITE_API_URL ||
+    "https://fat-eibl-backend-x1sp.onrender.com";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,15 +14,13 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch(`${API}/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email, password }),
       });
 
@@ -40,51 +40,59 @@ export default function Login() {
         return;
       }
 
-      window.location.href = user.role === "admin" ? "/admin-dashboard" : "/dashboard";
-    } catch (err) {
-      setError("Server error — Try again");
+      window.location.href =
+        user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+    } catch (e) {
+      setError("Unable to connect to server");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <form className="login-card" onSubmit={handleSubmit}>
-        <img src={logo} className="login-logo" alt="Logo" />
+    <div className="login-bg">
+      <div className="login-box animate-fade">
+        <img src={logo} alt="logo" className="login-logo" />
 
-        <h2>Password Login</h2>
+        <h2 className="login-title">Password Login</h2>
 
-        {error && <p className="error-text">{error}</p>}
+        {error && <p className="error-msg">{error}</p>}
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="input-box"
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="input-box"
+          />
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <button type="submit" className="btn-login" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
 
-        <p className="switch-link" onClick={() => (window.location.href = "/otp-login")}>
+        <p onClick={() => (window.location.href = "/otp-login")} className="link">
           Login with OTP
         </p>
 
-        <p className="switch-link" onClick={() => (window.location.href = "/forgot-password")}>
+        <p
+          onClick={() => (window.location.href = "/forgot-password")}
+          className="link"
+        >
           Forgot Password?
         </p>
-      </form>
+      </div>
     </div>
   );
 }

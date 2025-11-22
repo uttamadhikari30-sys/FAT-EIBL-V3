@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import "./Login.css";
 
-export function OtpLogin() {
-  const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
+export default function OtpLogin() {
+  const API =
+    import.meta.env.VITE_API_URL ||
+    "https://fat-eibl-backend-x1sp.onrender.com";
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -12,25 +14,21 @@ export function OtpLogin() {
   const [error, setError] = useState("");
 
   const sendOtp = async () => {
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
-      const response = await fetch(`${API}/auth/generate-otp`, {
+      const res = await fetch(`${API}/auth/generate-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.detail || "OTP sending failed");
-      } else {
-        setOtpSent(true);
-      }
-    } catch (e) {
-      setError("Server error — Try again");
+      const data = await res.json();
+      if (!res.ok) setError(data.detail);
+      else setOtpSent(true);
+    } catch {
+      setError("Cannot send OTP. Try again.");
     }
 
     setLoading(false);
@@ -38,75 +36,82 @@ export function OtpLogin() {
 
   const verifyOtp = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
-      const response = await fetch(`${API}/auth/login-otp`, {
+      const res = await fetch(`${API}/auth/login-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email, otp }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.detail || "Invalid OTP");
-      } else {
-        const user = data.user;
-        localStorage.setItem("user", JSON.stringify(user));
-
-        window.location.href = user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail);
+        setLoading(false);
+        return;
       }
-    } catch (e) {
-      setError("Server error — Try again");
+
+      const user = data.user;
+      localStorage.setItem("user", JSON.stringify(user));
+
+      window.location.href =
+        user.first_login
+          ? `/reset-password?user_id=${user.id}`
+          : user.role === "admin"
+          ? "/admin-dashboard"
+          : "/dashboard";
+    } catch {
+      setError("Unable to verify OTP");
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="login-container">
-      <form className="login-card" onSubmit={verifyOtp}>
-        <img src={logo} className="login-logo" alt="Logo" />
+    <div className="login-bg">
+      <div className="login-box animate-fade">
+        <img src={logo} alt="logo" className="login-logo" />
 
-        <h2>OTP Login</h2>
+        <h2 className="login-title">OTP Login</h2>
 
-        {error && <p className="error-text">{error}</p>}
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        {error && <p className="error-msg">{error}</p>}
 
         {!otpSent && (
-          <button type="button" onClick={sendOtp} disabled={loading}>
-            {loading ? "Sending..." : "Send OTP"}
-          </button>
-        )}
-
-        {otpSent && (
           <>
             <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
+              type="email"
+              placeholder="Enter Email"
+              className="input-box"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <button type="submit" disabled={loading}>
-              {loading ? "Verifying..." : "Verify OTP"}
+            <button onClick={sendOtp} className="btn-login">
+              {loading ? "Sending..." : "Send OTP"}
             </button>
           </>
         )}
 
-        <p className="switch-link" onClick={() => (window.location.href = "/")}>
+        {otpSent && (
+          <form onSubmit={verifyOtp}>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              className="input-box"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <button type="submit" className="btn-login" disabled={loading}>
+              {loading ? "Verifying..." : "Verify OTP"}
+            </button>
+          </form>
+        )}
+
+        <p onClick={() => (window.location.href = "/")} className="link">
           Login with Password
         </p>
-      </form>
+      </div>
     </div>
   );
 }
