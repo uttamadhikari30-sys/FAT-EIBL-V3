@@ -3,9 +3,7 @@ import logo from "../assets/logo.png";
 import "./Login.css";
 
 export default function Login() {
-  const API =
-    import.meta.env.VITE_API_URL ||
-    "https://fat-eibl-backend-x1sp.onrender.com";
+  const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,10 +38,9 @@ export default function Login() {
         return;
       }
 
-      window.location.href =
-        user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+      window.location.href = user.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (err) {
-      setError("Unable to connect to server. Try again later.");
+      setError("Server not responding. Try again.");
     } finally {
       setLoading(false);
     }
@@ -62,33 +59,27 @@ export default function Login() {
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
           required
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
           required
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        <p
-          className="switch-link"
-          onClick={() => (window.location.href = "/otp-login")}
-        >
+        <p className="switch-link" onClick={() => (window.location.href = "/otp-login")}>
           Login with OTP
         </p>
 
-        <p
-          className="switch-link"
-          onClick={() => (window.location.href = "/forgot-password")}
-        >
+        <p className="switch-link" onClick={() => (window.location.href = "/forgot-password")}>
           Forgot Password?
         </p>
       </form>
