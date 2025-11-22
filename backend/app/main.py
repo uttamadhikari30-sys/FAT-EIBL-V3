@@ -1,4 +1,3 @@
-# backend/app/main.py
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import Column, Integer, String, Date, Text
@@ -8,34 +7,15 @@ from dotenv import load_dotenv
 import os
 import shutil
 
-# ================================================
-# 1️⃣ Load Environment Variables
-# ================================================
+# Load ENV
 load_dotenv()
 
 from app.database import Base, engine, SessionLocal
 
-# ================================================
-# 2️⃣ FastAPI App Init
-# ================================================
-app = FastAPI(title="FAT-EIBL (Edme) – API")
 
-# ================================================
-# 3️⃣ CORRECT CORS CONFIG (FIX FOR RENDER)
-# ================================================
-FRONTEND_URL = "https://fat-eibl-frontend-x1sp.onrender.com"
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "*"],   # allow your frontend + local
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# ================================================
-# 4️⃣ Shared Models (Task + Audit Log)
-# ================================================
+# ----------------------------------------------------
+#  MODELS
+# ----------------------------------------------------
 class Task(Base):
     __tablename__ = "tasks"
 
@@ -57,9 +37,34 @@ class AuditLog(Base):
     action = Column(String(50))
     detail = Column(Text)
 
-# ================================================
-# 5️⃣ Database Dependency
-# ================================================
+
+# ----------------------------------------------------
+#  APP INIT
+# ----------------------------------------------------
+app = FastAPI(title="FAT-EIBL API")
+
+# ------------------------ CORS FIX ------------------------
+# Render requires EXACT WHITELISTED ORIGIN
+# Wildcards * DO NOT WORK when allow_credentials = True
+
+allowed_frontend = [
+    "https://fat-eibl-frontend-x1sp.onrender.com",
+    "http://localhost:5173"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_frontend,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# ------------------------------------------------------------
+
+
+# ----------------------------------------------------
+#  DB SESSION
+# ----------------------------------------------------
 def get_db():
     db = SessionLocal()
     try:
@@ -67,27 +72,31 @@ def get_db():
     finally:
         db.close()
 
-# ================================================
-# 6️⃣ Routers (Users + Forgot Password + Auth)
-# ================================================
+
+# ----------------------------------------------------
+#  ROUTERS
+# ----------------------------------------------------
 from app.routers import users, forgot_password, auth
 
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(forgot_password.router, prefix="/auth", tags=["Forgot Password"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 
-# ================================================
-# 7️⃣ Health Check
-# ================================================
+
+# ----------------------------------------------------
+#  HEALTH CHECK
+# ----------------------------------------------------
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "message": "Backend running"}
+    return {"status": "ok"}
 
-# ================================================
-# 8️⃣ File Upload Endpoint
-# ================================================
+
+# ----------------------------------------------------
+#  FILE UPLOAD
+# ----------------------------------------------------
 UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 
 @app.post("/upload/{task_id}")
 async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -107,11 +116,13 @@ async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = 
 
     return {"ok": True, "filename": filename}
 
-# ================================================
-# 9️⃣ Create DB Tables Manually
-# ================================================
+
+# ----------------------------------------------------
+#  MANUAL TABLE CREATION
+# ----------------------------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
+
 
 @app.get("/create-db")
 def create_db():
