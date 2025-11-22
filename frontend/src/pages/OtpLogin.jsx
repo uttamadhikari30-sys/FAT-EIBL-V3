@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import "../styles/Login.css";
 
-export default function OtpLogin() {   // <== REQUIRED LINE (DEFAULT EXPORT)
+export default function OtpLogin() {
   const API =
     import.meta.env.VITE_API_URL ||
     "https://fat-eibl-backend-x1sp.onrender.com";
@@ -13,10 +13,11 @@ export default function OtpLogin() {   // <== REQUIRED LINE (DEFAULT EXPORT)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Send OTP
+  // SEND OTP
   const sendOtp = async () => {
     setError("");
     setLoading(true);
+
     try {
       const res = await fetch(`${API}/auth/generate-otp`, {
         method: "POST",
@@ -25,22 +26,24 @@ export default function OtpLogin() {   // <== REQUIRED LINE (DEFAULT EXPORT)
       });
 
       const data = await res.json();
+
       if (!res.ok) {
         setError(data.detail || "Failed to send OTP");
       } else {
         setOtpSent(true);
       }
-    } catch {
-      setError("Unable to send OTP");
+    } catch (e) {
+      setError("Server not reachable");
     }
+
     setLoading(false);
   };
 
-  // Verify OTP
+  // VERIFY OTP
   const verifyOtp = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
       const res = await fetch(`${API}/auth/login-otp`, {
@@ -50,6 +53,7 @@ export default function OtpLogin() {   // <== REQUIRED LINE (DEFAULT EXPORT)
       });
 
       const data = await res.json();
+
       if (!res.ok) {
         setError(data.detail || "Invalid OTP");
         setLoading(false);
@@ -66,7 +70,7 @@ export default function OtpLogin() {   // <== REQUIRED LINE (DEFAULT EXPORT)
 
       window.location.href =
         user.role === "admin" ? "/admin-dashboard" : "/dashboard";
-    } catch {
+    } catch (e) {
       setError("Unable to verify OTP");
     }
 
@@ -77,8 +81,9 @@ export default function OtpLogin() {   // <== REQUIRED LINE (DEFAULT EXPORT)
     <div className="premium-bg">
       <div className="premium-card">
         <div className="premium-left">
-          <img src={logo} alt="Logo" className="premium-logo" />
+          <img src={logo} alt="Edme Logo" className="premium-logo" />
           <h1 className="premium-title">OTP Login</h1>
+          <p className="premium-sub">Quick access via one-time-password</p>
 
           <form className="premium-form" onSubmit={verifyOtp}>
             {error && <div className="premium-error">{error}</div>}
@@ -93,12 +98,7 @@ export default function OtpLogin() {   // <== REQUIRED LINE (DEFAULT EXPORT)
             />
 
             {!otpSent ? (
-              <button
-                type="button"
-                onClick={sendOtp}
-                disabled={loading}
-                className="premium-btn"
-              >
+              <button className="premium-btn" type="button" onClick={sendOtp} disabled={loading}>
                 {loading ? "Sending..." : "Send OTP"}
               </button>
             ) : (
@@ -111,25 +111,25 @@ export default function OtpLogin() {   // <== REQUIRED LINE (DEFAULT EXPORT)
                   required
                   onChange={(e) => setOtp(e.target.value)}
                 />
-                <button type="submit" disabled={loading} className="premium-btn">
+                <button className="premium-btn" type="submit" disabled={loading}>
                   {loading ? "Verifying..." : "Verify OTP"}
                 </button>
               </>
             )}
 
-            <button
-              type="button"
-              className="link-btn"
-              onClick={() => (window.location.href = "/")}
-            >
-              ← Login with Password
-            </button>
+            <div className="premium-actions">
+              <button type="button" className="link-btn" onClick={() => (window.location.href = "/")}>
+                Login with Password
+              </button>
+            </div>
           </form>
         </div>
 
-        <div className="premium-right">
-          <h3>Secure OTP Login</h3>
-          <p>Your OTP is valid for a limited time. Check your inbox/spam.</p>
+        <div className="premium-right" aria-hidden>
+          <div className="promo">
+            <h3>OTP Security</h3>
+            <p>OTP expires quickly for secure logins. Check your inbox/spam.</p>
+          </div>
         </div>
       </div>
     </div>
