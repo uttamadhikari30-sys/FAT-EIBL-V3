@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
+import "./Login.css";
 
 export default function OtpLogin() {
   const API =
@@ -8,47 +9,56 @@ export default function OtpLogin() {
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  // STEP 1 — SEND OTP
   const sendOtp = async () => {
     setError("");
     setLoading(true);
 
     try {
-      const response = await fetch(`${API}/auth/generate-otp`, {
+      const res = await fetch(`${API}/auth/generate-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email }),
       });
 
-      const data = await response.json();
-      if (!response.ok) return setError(data.detail || "Unable to send OTP");
+      const data = await res.json();
 
-      setOtpSent(true);
-    } catch (err) {
-      setError("Server error");
+      if (!res.ok) {
+        setError(data.detail || "Failed to send OTP");
+      } else {
+        setOtpSent(true);
+      }
+    } catch (e) {
+      setError("Server not reachable");
     }
 
     setLoading(false);
   };
 
+  // STEP 2 — VERIFY OTP
   const verifyOtp = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
-      const response = await fetch(`${API}/auth/login-otp`, {
+      const res = await fetch(`${API}/auth/login-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email, otp }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) return setError(data.detail || "Invalid OTP");
+      if (!res.ok) {
+        setError(data.detail || "Invalid OTP");
+        setLoading(false);
+        return;
+      }
 
       const user = data.user;
       localStorage.setItem("user", JSON.stringify(user));
@@ -60,8 +70,8 @@ export default function OtpLogin() {
 
       window.location.href =
         user.role === "admin" ? "/admin-dashboard" : "/dashboard";
-    } catch (err) {
-      setError("Connection error");
+    } catch (e) {
+      setError("Unable to verify OTP");
     }
 
     setLoading(false);
@@ -72,19 +82,25 @@ export default function OtpLogin() {
       <form className="login-card" onSubmit={verifyOtp}>
         <img src={logo} alt="Logo" className="login-logo" />
 
-        <h2>OTP Login</h2>
+        <h2 style={{ color: "#004aad", marginBottom: "15px" }}>OTP Login</h2>
+
         {error && <p className="error-text">{error}</p>}
 
         <input
           type="email"
           placeholder="Enter Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
           required
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         {!otpSent && (
-          <button type="button" disabled={loading} onClick={sendOtp}>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={sendOtp}
+            className="wide-button"
+          >
             {loading ? "Sending..." : "Send OTP"}
           </button>
         )}
@@ -95,18 +111,21 @@ export default function OtpLogin() {
               type="text"
               placeholder="Enter OTP"
               value={otp}
-              onChange={(e) => setOtp(e.target.value)}
               required
+              onChange={(e) => setOtp(e.target.value)}
             />
 
-            <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading} className="wide-button">
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </>
         )}
 
-        <p className="switch-link" onClick={() => (window.location.href = "/")}>
-          Login with Password
+        <p
+          className="switch-link"
+          onClick={() => (window.location.href = "/")}
+        >
+          ← Login with Password
         </p>
       </form>
     </div>
