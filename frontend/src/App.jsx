@@ -1,8 +1,8 @@
+// frontend/src/App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Login from "./pages/Login";
-import OtpLogin from "./pages/OtpLogin";    // ✅ FIXED — no curly braces
+import OtpLogin from "./pages/OtpLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -13,7 +13,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/otp-login" element={<OtpLogin />} />   {/* ✅ FIXED */}
+        <Route path="/otp-login" element={<OtpLogin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
