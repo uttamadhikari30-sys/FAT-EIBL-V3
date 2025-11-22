@@ -1,11 +1,10 @@
+// frontend/src/pages/Login.jsx
 import React, { useState } from "react";
 import "../styles/PremiumLogin.css";
 import logo from "../assets/logo.png";
 
 export default function Login() {
-  const API =
-    import.meta.env.VITE_API_URL ||
-    "https://fat-eibl-backend-x1sp.onrender.com";
+  const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,39 +19,37 @@ export default function Login() {
     try {
       const response = await fetch(`${API}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },   // FIXED
-        body: JSON.stringify({ email, password }),         // FIXED
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        setError(data.detail || "Login failed");
+        setError((data && (data.detail || data.message)) || "Login failed");
         setLoading(false);
         return;
       }
 
+      // store user and redirect
       localStorage.setItem("user", JSON.stringify(data.user));
-
-      if (data.user.first_login) {
+      if (data.user && data.user.first_login) {
         window.location.href = `/reset-password?user_id=${data.user.id}`;
         return;
       }
-
-      window.location.href =
-        data.user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+      window.location.href = data.user && data.user.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (err) {
       setError("Failed to connect to server");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
     <div className="premium-bg">
       <div className="premium-card">
         <div className="premium-left">
-          <img src={logo} className="premium-logo" />
+          <img src={logo} className="premium-logo" alt="Edme logo" />
 
           <h1 className="premium-title">Welcome back</h1>
           <p className="premium-sub">Sign in to continue to FAT-EIBL</p>
@@ -63,10 +60,11 @@ export default function Login() {
             <input
               className="premium-input"
               type="email"
-              placeholder="admin@edmeinsurance.com"
+              placeholder="Email"
               value={email}
               required
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
             />
 
             <input
@@ -76,6 +74,7 @@ export default function Login() {
               value={password}
               required
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
             />
 
             <button className="premium-btn" type="submit" disabled={loading}>
@@ -102,7 +101,7 @@ export default function Login() {
           </form>
         </div>
 
-        <div className="premium-right">
+        <div className="premium-right" aria-hidden>
           <h3>Secure Access</h3>
           <p>Industry-grade encryption & audit-ready protection.</p>
         </div>
