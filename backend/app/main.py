@@ -1,60 +1,44 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import Column, Integer, String, Date, Text
 from sqlalchemy.orm import Session
-from datetime import date
 from dotenv import load_dotenv
 import os
 import shutil
+from datetime import date
 
-# Load env
+# Load .env
 load_dotenv()
 
 from app.database import Base, engine, SessionLocal
 
-# Models using shared Base (your existing models can stay)
-class Task(Base):
-    __tablename__ = "tasks"
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)
-    department = Column(String(100), nullable=True)
-    assignee = Column(String(100), nullable=True)
-    status = Column(String(50), nullable=False, default="Pending")
-    due_date = Column(Date, nullable=True)
-    priority = Column(String(20), nullable=True)
-    remarks = Column(Text, nullable=True)
-    attachment = Column(String(255), nullable=True)
+# ---------------------------------------------------------
+# 1️⃣ INITIALIZE APP
+# ---------------------------------------------------------
+app = FastAPI(title="FAT-EIBL API", version="3.0")
 
-class AuditLog(Base):
-    __tablename__ = "audit_logs"
-    id = Column(Integer, primary_key=True)
-    action = Column(String(50))
-    detail = Column(Text)
+# ---------------------------------------------------------
+# 2️⃣ FIXED — FULL CORS FOR FRONTEND + OTP + LOGIN
+# ---------------------------------------------------------
 
-app = FastAPI(title="FAT-EIBL (Edme) – API")
+# ⭐ IMPORTANT: Add your Render frontend domain here ⭐
+allowed_origins = [
+    "https://fat-eibl-frontend-x1sp.onrender.com",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "*"     # keep this for safe wildcard
+]
 
-# ========= CORS =========
-# ALLOW_ORIGINS env value can be:
-#   "*"                -> allow any origin
-#   "https://a,https://b" -> comma separated list
-raw = os.getenv("ALLOW_ORIGINS", "*").strip()
-
-if raw == "*" or raw == "":
-    allow_origins = ["*"]
-else:
-    # split, strip, remove empty entries
-    allow_origins = [u.strip() for u in raw.split(",") if u.strip()]
-
-# Add middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allow_origins,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# DB dependency
+# ---------------------------------------------------------
+# 3️⃣ DATABASE SESSION
+# ---------------------------------------------------------
 def get_db():
     db = SessionLocal()
     try:
@@ -62,41 +46,30 @@ def get_db():
     finally:
         db.close()
 
-# Routers
-from app.routers import users, forgot_password, auth
+# ---------------------------------------------------------
+# 4️⃣ ROUTERS
+# ---------------------------------------------------------
+from app.routers import auth, users, forgot_password
 
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(forgot_password.router, prefix="/auth", tags=["Forgot Password"])
-app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 
+# ---------------------------------------------------------
+# 5️⃣ HEALTH CHECK
+# ---------------------------------------------------------
 @app.get("/health")
-def health_check():
-    return {"status": "ok", "message": "Backend running"}
+def health():
+    return {"ok": True, "message": "Backend running"}
 
-# File upload endpoint (existing)
-UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-@app.post("/upload/{task_id}")
-async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
-    task = db.get(Task, task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-    filename = f"task_{task_id}_" + os.path.basename(file.filename)
-    path = os.path.join(UPLOAD_DIR, filename)
-    with open(path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    task.attachment = filename
-    db.add(AuditLog(action="upload", detail=f"File uploaded for task {task_id}"))
-    db.commit()
-    return {"ok": True, "filename": filename}
-
-# create tables endpoint (existing)
+# ---------------------------------------------------------
+# 6️⃣ CREATE TABLES
+# ---------------------------------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
 
 @app.get("/create-db")
-def create_db():
+def create_tables():
     try:
         Base.metadata.create_all(bind=engine)
         return {"ok": True, "message": "Tables created"}
