@@ -7,15 +7,15 @@ from dotenv import load_dotenv
 import os
 import shutil
 
+# ================================================
 # Load ENV
+# ================================================
 load_dotenv()
-
 from app.database import Base, engine, SessionLocal
 
-
-# ----------------------------------------------------
-#  MODELS
-# ----------------------------------------------------
+# ================================================
+# MODELS
+# ================================================
 class Task(Base):
     __tablename__ = "tasks"
 
@@ -38,33 +38,29 @@ class AuditLog(Base):
     detail = Column(Text)
 
 
-# ----------------------------------------------------
-#  APP INIT
-# ----------------------------------------------------
-app = FastAPI(title="FAT-EIBL API")
+# ================================================
+# FASTAPI APP
+# ================================================
+app = FastAPI(title="FAT-EIBL Backend API")
 
-# ------------------------ CORS FIX ------------------------
-# Render requires EXACT WHITELISTED ORIGIN
-# Wildcards * DO NOT WORK when allow_credentials = True
-
-allowed_frontend = [
-    "https://fat-eibl-frontend-x1sp.onrender.com",
-    "http://localhost:5173"
-]
-
+# ================================================
+# FIXED CORS (VERY IMPORTANT)
+# ================================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_frontend,
+    allow_origins=[
+        "https://fat-eibl-frontend-x1sp.onrender.com",   # your frontend
+        "http://localhost:5173",                         # local dev
+        "*",                                             # fallback
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# ------------------------------------------------------------
 
-
-# ----------------------------------------------------
-#  DB SESSION
-# ----------------------------------------------------
+# ================================================
+# DATABASE SESSION
+# ================================================
 def get_db():
     db = SessionLocal()
     try:
@@ -73,9 +69,9 @@ def get_db():
         db.close()
 
 
-# ----------------------------------------------------
-#  ROUTERS
-# ----------------------------------------------------
+# ================================================
+# ROUTERS
+# ================================================
 from app.routers import users, forgot_password, auth
 
 app.include_router(users.router, prefix="/users", tags=["Users"])
@@ -83,20 +79,19 @@ app.include_router(forgot_password.router, prefix="/auth", tags=["Forgot Passwor
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 
 
-# ----------------------------------------------------
-#  HEALTH CHECK
-# ----------------------------------------------------
+# ================================================
+# HEALTH CHECK
+# ================================================
 @app.get("/health")
-def health_check():
-    return {"status": "ok"}
+def health():
+    return {"status": "ok", "message": "Backend running"}
 
 
-# ----------------------------------------------------
-#  FILE UPLOAD
-# ----------------------------------------------------
+# ================================================
+# FILE UPLOAD
+# ================================================
 UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-
 
 @app.post("/upload/{task_id}")
 async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -107,8 +102,8 @@ async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = 
     filename = f"task_{task_id}_" + os.path.basename(file.filename)
     path = os.path.join(UPLOAD_DIR, filename)
 
-    with open(path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    with open(path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
 
     task.attachment = filename
     db.add(AuditLog(action="upload", detail=f"File uploaded for task {task_id}"))
@@ -117,17 +112,13 @@ async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = 
     return {"ok": True, "filename": filename}
 
 
-# ----------------------------------------------------
-#  MANUAL TABLE CREATION
-# ----------------------------------------------------
+# ================================================
+# CREATE TABLES (DEV ONLY)
+# ================================================
 from app.models.user import User
 from app.models.otp import OtpModel
 
-
 @app.get("/create-db")
 def create_db():
-    try:
-        Base.metadata.create_all(bind=engine)
-        return {"ok": True, "message": "Tables created"}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+    Base.metadata.create_all(bind=engine)
+    return {"ok": True, "message": "Tables created"}
