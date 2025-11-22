@@ -1,33 +1,34 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
-import "../styles/Login.css";
+import "../styles/PremiumLogin.css";
 
-export default function OtpLogin() {          // ✅ DEFAULT EXPORT
-  const API =
-    import.meta.env.VITE_API_URL ||
-    "https://fat-eibl-backend-x1sp.onrender.com";
+export default function OtpLogin() {
+  const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const sendOtp = async () => {
     setError("");
     setLoading(true);
+
     try {
       const res = await fetch(`${API}/auth/generate-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email }),
       });
+
       const data = await res.json();
-      if (!res.ok) setError(data.detail || "Failed to send OTP");
+      if (!res.ok) setError(data.detail || "Unable to send OTP");
       else setOtpSent(true);
-    } catch (e) {
-      setError("Unable to send OTP");
+    } catch {
+      setError("Server unreachable. Try again.");
     }
+
     setLoading(false);
   };
 
@@ -35,6 +36,7 @@ export default function OtpLogin() {          // ✅ DEFAULT EXPORT
     e.preventDefault();
     setError("");
     setLoading(true);
+
     try {
       const res = await fetch(`${API}/auth/login-otp`, {
         method: "POST",
@@ -49,7 +51,7 @@ export default function OtpLogin() {          // ✅ DEFAULT EXPORT
         return;
       }
 
-      const user = data.user || data;
+      const user = data.user;
       localStorage.setItem("user", JSON.stringify(user));
 
       if (user.first_login) {
@@ -57,53 +59,60 @@ export default function OtpLogin() {          // ✅ DEFAULT EXPORT
         return;
       }
 
-      window.location.href =
-        user.role === "admin" ? "/admin-dashboard" : "/dashboard";
-    } catch (e) {
-      setError("Unable to verify OTP");
+      window.location.href = user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+    } catch {
+      setError("OTP verification failed.");
     }
+
     setLoading(false);
   };
 
   return (
-    <div className="login-container">
-      <form className="login-card" onSubmit={verifyOtp}>
-        <img src={logo} alt="Logo" className="login-logo" />
-        <h2 style={{ color: "#004aad", marginBottom: "15px" }}>OTP Login</h2>
+    <div className="premium-bg">
+      <div className="premium-card animate">
+        <img src={logo} alt="Logo" className="premium-logo-glow" />
 
-        {error && <p className="error-text">{error}</p>}
+        <h1 className="premium-title">OTP Login</h1>
+        <p className="premium-sub">Quick access using One-Time Password</p>
 
-        <input
-          type="email"
-          placeholder="Enter Email"
-          value={email}
-          required
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form onSubmit={verifyOtp} className="premium-form">
+          {error && <div className="premium-error">{error}</div>}
 
-        {!otpSent ? (
-          <button type="button" disabled={loading} onClick={sendOtp}>
-            {loading ? "Sending..." : "Send OTP"}
-          </button>
-        ) : (
-          <>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              required
-              onChange={(e) => setOtp(e.target.value)}
-            />
-            <button type="submit" disabled={loading}>
-              {loading ? "Verifying..." : "Verify OTP"}
+          <input
+            className="premium-input"
+            type="email"
+            placeholder="Email ID"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          {!otpSent ? (
+            <button className="premium-btn" type="button" disabled={loading} onClick={sendOtp}>
+              {loading ? "Sending..." : "Send OTP"}
             </button>
-          </>
-        )}
+          ) : (
+            <>
+              <input
+                className="premium-input"
+                type="text"
+                placeholder="Enter OTP"
+                required
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
 
-        <p className="switch-link" onClick={() => (window.location.href = "/")}>
-          ← Login with Password
-        </p>
-      </form>
+              <button className="premium-btn" disabled={loading}>
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+            </>
+          )}
+
+          <div className="premium-actions">
+            <span onClick={() => (window.location.href = "/")}>← Login with Password</span>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
