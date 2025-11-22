@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import "../styles/Login.css";
 
-export default function OtpLogin() {
+export default function OtpLogin() {          // ✅ DEFAULT EXPORT
   const API =
     import.meta.env.VITE_API_URL ||
     "https://fat-eibl-backend-x1sp.onrender.com";
@@ -13,38 +13,28 @@ export default function OtpLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // SEND OTP
   const sendOtp = async () => {
     setError("");
     setLoading(true);
-
     try {
       const res = await fetch(`${API}/auth/generate-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email }),
       });
-
       const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.detail || "Failed to send OTP");
-      } else {
-        setOtpSent(true);
-      }
+      if (!res.ok) setError(data.detail || "Failed to send OTP");
+      else setOtpSent(true);
     } catch (e) {
       setError("Unable to send OTP");
     }
-
     setLoading(false);
   };
 
-  // VERIFY OTP
   const verifyOtp = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const res = await fetch(`${API}/auth/login-otp`, {
         method: "POST",
@@ -53,7 +43,6 @@ export default function OtpLogin() {
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         setError(data.detail || "Invalid OTP");
         setLoading(false);
@@ -73,7 +62,6 @@ export default function OtpLogin() {
     } catch (e) {
       setError("Unable to verify OTP");
     }
-
     setLoading(false);
   };
 
@@ -81,7 +69,6 @@ export default function OtpLogin() {
     <div className="login-container">
       <form className="login-card" onSubmit={verifyOtp}>
         <img src={logo} alt="Logo" className="login-logo" />
-
         <h2 style={{ color: "#004aad", marginBottom: "15px" }}>OTP Login</h2>
 
         {error && <p className="error-text">{error}</p>}
@@ -95,12 +82,7 @@ export default function OtpLogin() {
         />
 
         {!otpSent ? (
-          <button
-            type="button"
-            disabled={loading}
-            onClick={sendOtp}
-            className="wide-button"
-          >
+          <button type="button" disabled={loading} onClick={sendOtp}>
             {loading ? "Sending..." : "Send OTP"}
           </button>
         ) : (
@@ -112,16 +94,13 @@ export default function OtpLogin() {
               required
               onChange={(e) => setOtp(e.target.value)}
             />
-            <button type="submit" disabled={loading} className="wide-button">
+            <button type="submit" disabled={loading}>
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </>
         )}
 
-        <p
-          className="switch-link"
-          onClick={() => (window.location.href = "/")}
-        >
+        <p className="switch-link" onClick={() => (window.location.href = "/")}>
           ← Login with Password
         </p>
       </form>
