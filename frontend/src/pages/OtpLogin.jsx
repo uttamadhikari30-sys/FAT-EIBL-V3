@@ -1,10 +1,11 @@
-// frontend/src/pages/OtpLogin.jsx
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import "../styles/PremiumLogin.css";
 
 export default function OtpLogin() {
-  const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
+  const API =
+    import.meta.env.VITE_API_URL ||
+    "https://fat-eibl-backend.onrender.com";
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -12,7 +13,6 @@ export default function OtpLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // STEP 1: send OTP (JSON)
   const sendOtp = async () => {
     setError("");
     setLoading(true);
@@ -22,9 +22,9 @@ export default function OtpLogin() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json().catch(() => ({}));
+      const data = await res.json();
       if (!res.ok) {
-        setError((data && (data.detail || data.message)) || "Failed to send OTP");
+        setError(data.detail || "Failed to send OTP");
       } else {
         setOtpSent(true);
       }
@@ -35,7 +35,6 @@ export default function OtpLogin() {
     }
   };
 
-  // STEP 2: verify OTP (JSON)
   const verifyOtp = async (e) => {
     e.preventDefault();
     setError("");
@@ -46,19 +45,19 @@ export default function OtpLogin() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
       });
-      const data = await res.json().catch(() => ({}));
+      const data = await res.json();
       if (!res.ok) {
-        setError((data && (data.detail || data.message)) || "Invalid OTP");
+        setError(data.detail || "Invalid OTP");
         setLoading(false);
         return;
       }
-      const user = data.user || data;
+      const user = data.user;
       localStorage.setItem("user", JSON.stringify(user));
-      if (user && user.first_login) {
+      if (user?.first_login) {
         window.location.href = `/reset-password?user_id=${user.id}`;
         return;
       }
-      window.location.href = user && user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+      window.location.href = user?.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (e) {
       setError("Unable to verify OTP. Try again later.");
     } finally {
@@ -70,9 +69,9 @@ export default function OtpLogin() {
     <div className="premium-bg">
       <div className="premium-card">
         <div className="premium-left">
-          <img src={logo} className="premium-logo" alt="Edme logo" />
+          <img src={logo} className="premium-logo" alt="Edme Logo" />
           <h1 className="premium-title">OTP Login</h1>
-          <p className="premium-sub">Quick access via one-time password</p>
+          <p className="premium-sub">Quick access via one-time-password</p>
 
           <form className="premium-form" onSubmit={verifyOtp}>
             {error && <div className="premium-error">{error}</div>}
@@ -115,8 +114,10 @@ export default function OtpLogin() {
         </div>
 
         <div className="premium-right" aria-hidden>
-          <h3>OTP Security</h3>
-          <p>OTP expires quickly for secure logins. Check your inbox/spam folder.</p>
+          <div className="promo">
+            <h3>OTP Security</h3>
+            <p>OTP expires quickly for secure logins. Check your inbox/spam.</p>
+          </div>
         </div>
       </div>
     </div>
