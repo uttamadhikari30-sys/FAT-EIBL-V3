@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
-import "../styles/Login.css";   // or "./Login.css" depending on your setup
+import "../styles/Login.css";
 
-export default function OtpLogin() {    // ✔ DEFAULT EXPORT FIXED
+export default function OtpLogin() {
   const API =
     import.meta.env.VITE_API_URL ||
     "https://fat-eibl-backend-x1sp.onrender.com";
@@ -13,9 +13,11 @@ export default function OtpLogin() {    // ✔ DEFAULT EXPORT FIXED
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // SEND OTP
   const sendOtp = async () => {
     setError("");
     setLoading(true);
+
     try {
       const res = await fetch(`${API}/auth/generate-otp`, {
         method: "POST",
@@ -24,14 +26,20 @@ export default function OtpLogin() {    // ✔ DEFAULT EXPORT FIXED
       });
 
       const data = await res.json();
-      if (!res.ok) setError(data.detail || "Failed to send OTP");
-      else setOtpSent(true);
+
+      if (!res.ok) {
+        setError(data.detail || "Failed to send OTP");
+      } else {
+        setOtpSent(true);
+      }
     } catch (e) {
-      setError("Unable to send OTP. Try again later.");
+      setError("Unable to send OTP");
     }
+
     setLoading(false);
   };
 
+  // VERIFY OTP
   const verifyOtp = async (e) => {
     e.preventDefault();
     setError("");
@@ -45,23 +53,27 @@ export default function OtpLogin() {    // ✔ DEFAULT EXPORT FIXED
       });
 
       const data = await res.json();
+
       if (!res.ok) {
         setError(data.detail || "Invalid OTP");
         setLoading(false);
         return;
       }
 
-      const user = data.user;
+      const user = data.user || data;
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (user.first_login)
-        return (window.location.href = `/reset-password?user_id=${user.id}`);
+      if (user.first_login) {
+        window.location.href = `/reset-password?user_id=${user.id}`;
+        return;
+      }
 
       window.location.href =
         user.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (e) {
-      setError("Unable to verify OTP. Try again later.");
+      setError("Unable to verify OTP");
     }
+
     setLoading(false);
   };
 
@@ -83,7 +95,12 @@ export default function OtpLogin() {    // ✔ DEFAULT EXPORT FIXED
         />
 
         {!otpSent ? (
-          <button type="button" disabled={loading} onClick={sendOtp}>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={sendOtp}
+            className="wide-button"
+          >
             {loading ? "Sending..." : "Send OTP"}
           </button>
         ) : (
@@ -95,8 +112,7 @@ export default function OtpLogin() {    // ✔ DEFAULT EXPORT FIXED
               required
               onChange={(e) => setOtp(e.target.value)}
             />
-
-            <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading} className="wide-button">
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </>
