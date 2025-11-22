@@ -6,7 +6,7 @@ import logo from "../assets/logo.png";
 export default function Login() {
   const API =
     import.meta.env.VITE_API_URL ||
-    "https://fat-eibl-backend.onrender.com";
+    "https://fat-eibl-backend-x1sp.onrender.com";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

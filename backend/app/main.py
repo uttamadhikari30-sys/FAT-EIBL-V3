@@ -24,9 +24,9 @@ app = FastAPI(title="FAT-EIBL (Edme) – API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://fat-eibl-frontend-x1sp.onrender.com",  # FRONTEND LIVE URL
-        "http://localhost:5173",                         # Local dev
-        "*"                                              # Fallback
+        "https://fat-eibl-frontend-x1sp.onrender.com",
+        "http://localhost:5173",
+        "*"
     ],
     allow_credentials=True,
     allow_methods=["*"],
