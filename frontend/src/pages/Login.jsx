@@ -3,7 +3,9 @@ import logo from "../assets/logo.png";
 import "./Login.css";
 
 export default function Login() {
-  const API = import.meta.env.VITE_API_URL;
+  const API =
+    import.meta.env.VITE_API_URL ||
+    "https://fat-eibl-backend-x1sp.onrender.com";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,8 +26,8 @@ export default function Login() {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          email: email,
-          password: password,
+          email,
+          password,
         }),
       });
 
@@ -47,7 +49,7 @@ export default function Login() {
 
       localStorage.setItem("user", JSON.stringify(user));
 
-      // First login → redirect to password reset
+      // First login → redirect
       if (user.first_login) {
         window.location.href = `/reset-password?user_id=${user.id}`;
         return;
@@ -106,7 +108,6 @@ export default function Login() {
           textAlign: "center",
         }}
       >
-        {/* Email */}
         <input
           type="email"
           placeholder="Email"
@@ -122,7 +123,6 @@ export default function Login() {
           }}
         />
 
-        {/* Password */}
         <input
           type="password"
           placeholder="Password"
@@ -138,12 +138,10 @@ export default function Login() {
           }}
         />
 
-        {/* Error */}
         {error && (
           <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>
         )}
 
-        {/* Login Button */}
         <button
           type="submit"
           disabled={loading}

@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import logo from "../assets/logo.png";
 
 export default function ResetPassword() {
+  const API =
+    import.meta.env.VITE_API_URL ||
+    "https://fat-eibl-backend-x1sp.onrender.com";
+
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -16,31 +20,29 @@ export default function ResetPassword() {
     setMessage("");
 
     try {
-      const response = await fetch(
-        "https://fat-eibl-backend-x1sp.onrender.com/users/reset-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Accept: "application/json",
-          },
-          body: new URLSearchParams({
-            email,
-            otp,
-            new_password: newPassword,
-          }),
-        }
-      );
+      const response = await fetch(`${API}/auth/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+        body: new URLSearchParams({
+          email,
+          otp,
+          new_password: newPassword,
+        }),
+      });
 
       const data = await response.json();
+
       if (response.ok) {
         setMessage("✅ Password successfully reset! Redirecting to login...");
-        setTimeout(() => (window.location.href = "/"), 2500);
+        setTimeout(() => (window.location.href = "/"), 2000);
       } else {
         setError(data.detail || data.error || "Invalid OTP or expired link");
       }
     } catch (err) {
-      setError("Unable to connect to server. Try again later.");
+      setError("⚠ Unable to connect to the server.");
     } finally {
       setLoading(false);
     }
@@ -73,11 +75,13 @@ export default function ResetPassword() {
           alt="Edme Logo"
           style={{ width: "100px", marginBottom: "10px" }}
         />
+
         <h2 style={{ color: "#004aad", marginBottom: "10px" }}>
           Reset Your Password
         </h2>
+
         <p style={{ color: "#444", fontSize: "0.9rem", marginBottom: "20px" }}>
-          Enter your email, OTP, and new password to reset access.
+          Enter your Email, OTP, and New Password.
         </p>
 
         <form onSubmit={handleResetPassword}>
@@ -89,14 +93,16 @@ export default function ResetPassword() {
             required
             style={inputStyle}
           />
+
           <input
             type="text"
-            placeholder="Enter OTP"
+            placeholder="OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             required
             style={inputStyle}
           />
+
           <input
             type="password"
             placeholder="New Password"
