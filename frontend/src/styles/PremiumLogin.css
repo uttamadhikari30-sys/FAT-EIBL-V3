@@ -1,0 +1,109 @@
+/* FULL-PAGE BLUE GRADIENT */
+.premium-bg {
+  height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #003b80 0%, #007bff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CARD */
+.premium-card {
+  width: 420px;
+  background: white;
+  padding: 40px;
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+.animate {
+  transform: translateY(20px);
+  opacity: 0;
+  animation: slideUp 0.6s forwards ease-out;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* LOGO GLOW */
+.premium-logo-glow {
+  width: 110px;
+  filter: drop-shadow(0 0 12px rgba(0, 123, 255, 0.6));
+  margin-bottom: 15px;
+}
+
+.premium-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #003b80;
+}
+
+.premium-sub {
+  color: #777;
+  margin-bottom: 25px;
+}
+
+/* INPUT */
+.premium-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccd9ff;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.premium-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* BUTTON */
+.premium-btn {
+  width: 100%;
+  background: #004aad;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.premium-btn:hover {
+  background: #003b80;
+}
+
+/* LINK ACTIONS */
+.premium-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  color: #004aad;
+}
+
+.premium-actions span {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ERROR BOX */
+.premium-error {
+  background: #ffe2e2;
+  color: #c40000;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border-left: 4px solid red;
+}
