@@ -19,20 +19,20 @@ from app.database import Base, engine, SessionLocal
 app = FastAPI(title="FAT-EIBL (Edme) – API")
 
 # ------------------------------
-# 🔥 FIXED CORS — FINAL
+# ⭐ FINAL WORKING CORS SETUP ⭐
 # ------------------------------
+from fastapi.middleware.cors import CORSMiddleware
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://fat-eibl-frontend-x1sp.onrender.com",
-        "http://localhost:5173",
-        "*"
+        "https://fat-eibl-frontend-x1sp.onrender.com",  # LIVE FRONTEND
+        "http://localhost:5173",                        # LOCAL DEV
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # ------------------------------
 # DB Session
 # ------------------------------
