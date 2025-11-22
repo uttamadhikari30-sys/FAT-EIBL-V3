@@ -1,3 +1,4 @@
+# backend/app/main.py
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import Column, Integer, String, Date, Text
@@ -8,14 +9,32 @@ import os
 import shutil
 
 # ================================================
-# 1️⃣ Load Environment Variables + Shared Database
+# 1️⃣ Load Environment Variables
 # ================================================
 load_dotenv()
 
 from app.database import Base, engine, SessionLocal
 
 # ================================================
-# 2️⃣ Models (Task + AuditLog) using shared Base
+# 2️⃣ FastAPI App Init
+# ================================================
+app = FastAPI(title="FAT-EIBL (Edme) – API")
+
+# ================================================
+# 3️⃣ CORRECT CORS CONFIG (FIX FOR RENDER)
+# ================================================
+FRONTEND_URL = "https://fat-eibl-frontend-x1sp.onrender.com"
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[FRONTEND_URL, "*"],   # allow your frontend + local
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ================================================
+# 4️⃣ Shared Models (Task + Audit Log)
 # ================================================
 class Task(Base):
     __tablename__ = "tasks"
@@ -38,25 +57,8 @@ class AuditLog(Base):
     action = Column(String(50))
     detail = Column(Text)
 
-
 # ================================================
-# 3️⃣ FastAPI App Init
-# ================================================
-app = FastAPI(title="FAT-EIBL (Edme) – API")
-
-# CORS
-allowed_origins = os.getenv("ALLOW_ORIGINS", "*").split(",")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# ================================================
-# 4️⃣ Database Dependency
+# 5️⃣ Database Dependency
 # ================================================
 def get_db():
     db = SessionLocal()
@@ -65,32 +67,24 @@ def get_db():
     finally:
         db.close()
 
-
 # ================================================
-# 5️⃣ Routers (Users + Auth + Forgot Password)
+# 6️⃣ Routers (Users + Forgot Password + Auth)
 # ================================================
 from app.routers import users, forgot_password, auth
 
-# Users API
 app.include_router(users.router, prefix="/users", tags=["Users"])
-
-# Forgot Password API
 app.include_router(forgot_password.router, prefix="/auth", tags=["Forgot Password"])
-
-# Authentication + Login API
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 
-
 # ================================================
-# 6️⃣ Health Check
+# 7️⃣ Health Check
 # ================================================
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "Backend running"}
 
-
 # ================================================
-# 7️⃣ File Upload
+# 8️⃣ File Upload Endpoint
 # ================================================
 UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -113,9 +107,8 @@ async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = 
 
     return {"ok": True, "filename": filename}
 
-
 # ================================================
-# 8️⃣ Create All Tables (manual)
+# 9️⃣ Create DB Tables Manually
 # ================================================
 from app.models.user import User
 from app.models.otp import OtpModel
