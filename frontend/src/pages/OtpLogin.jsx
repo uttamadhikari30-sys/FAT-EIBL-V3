@@ -5,7 +5,7 @@ import "../styles/PremiumLogin.css";
 export default function OtpLogin() {
   const API =
     import.meta.env.VITE_API_URL ||
-    "https://fat-eibl-backend.onrender.com";
+    "https://fat-eibl-frontend-x1sp.onrender.com",
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
