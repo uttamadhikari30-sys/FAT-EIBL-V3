@@ -15,24 +15,15 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Login */}
         <Route path="/" element={<Login />} />
-
-        {/* User sets password from invite */}
         <Route path="/set-password" element={<SetPassword />} />
-
-        {/* Forgot + Reset password flow */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
-        {/* Admin */}
+        
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<AdminUsers />} />
-
-        {/* Normal user dashboard */}
         <Route path="/dashboard" element={<Dashboard />} />
 
-        {/* Fallback */}
         <Route path="*" element={<h2>Page Not Found</h2>} />
       </Routes>
     </BrowserRouter>
