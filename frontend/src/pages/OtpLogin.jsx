@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import "../styles/Login.css";
 
-export default function OtpLogin() {
+  export default function OtpLogin() { ... }
   const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
