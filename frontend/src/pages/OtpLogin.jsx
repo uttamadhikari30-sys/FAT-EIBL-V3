@@ -3,9 +3,7 @@ import logo from "../assets/logo.png";
 import "../styles/PremiumLogin.css";
 
 export default function OtpLogin() {
-  const API =
-    import.meta.env.VITE_API_URL ||
-    "https://fat-eibl-backend.onrender.com";
+  const API = import.meta.env.VITE_API_URL;
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -13,7 +11,6 @@ export default function OtpLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // SEND OTP
   const sendOtp = async () => {
     setError("");
     setLoading(true);
@@ -26,20 +23,18 @@ export default function OtpLogin() {
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         setError(data.detail || "Failed to send OTP");
       } else {
         setOtpSent(true);
       }
     } catch (e) {
-      setError("Unable to connect to server");
+      setError("Unable to send OTP");
     }
 
     setLoading(false);
   };
 
-  // VERIFY OTP
   const verifyOtp = async (e) => {
     e.preventDefault();
     setError("");
@@ -53,25 +48,23 @@ export default function OtpLogin() {
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         setError(data.detail || "Invalid OTP");
         setLoading(false);
         return;
       }
 
-      const user = data.user;
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      if (user.first_login) {
-        window.location.href = `/reset-password?user_id=${user.id}`;
+      if (data.user.first_login) {
+        window.location.href = `/reset-password?user_id=${data.user.id}`;
         return;
       }
 
       window.location.href =
-        user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+        data.user.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (e) {
-      setError("Unable to verify OTP");
+      setError("Failed to verify OTP");
     }
 
     setLoading(false);
@@ -82,47 +75,46 @@ export default function OtpLogin() {
       <div className="premium-card">
         <div className="premium-left">
           <img src={logo} className="premium-logo" />
+
           <h1 className="premium-title">OTP Login</h1>
-          <p className="premium-sub">Quick secure login using OTP</p>
+          <p className="premium-sub">Sign in using one-time password</p>
 
           {error && <div className="premium-error">{error}</div>}
 
-          <form onSubmit={verifyOtp} className="premium-form">
+          <form className="premium-form" onSubmit={verifyOtp}>
             <input
               className="premium-input"
               type="email"
-              placeholder="Enter Email"
+              placeholder="Enter email"
               value={email}
-              required
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
 
-            {!otpSent ? (
+            {!otpSent && (
               <button
-                className="premium-btn"
                 type="button"
+                className="premium-btn"
                 onClick={sendOtp}
                 disabled={loading}
               >
-                {loading ? "Sending..." : "Send OTP"}
+                {loading ? "Sending…" : "Send OTP"}
               </button>
-            ) : (
+            )}
+
+            {otpSent && (
               <>
                 <input
                   className="premium-input"
                   type="text"
                   placeholder="Enter OTP"
                   value={otp}
-                  required
                   onChange={(e) => setOtp(e.target.value)}
+                  required
                 />
 
-                <button
-                  className="premium-btn"
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? "Verifying..." : "Verify OTP"}
+                <button className="premium-btn" disabled={loading}>
+                  {loading ? "Verifying…" : "Verify OTP"}
                 </button>
               </>
             )}
@@ -133,15 +125,15 @@ export default function OtpLogin() {
                 className="link-btn"
                 onClick={() => (window.location.href = "/")}
               >
-                ← Login With Password
+                Login with Password
               </button>
             </div>
           </form>
         </div>
 
         <div className="premium-right">
-          <h3>Secure Access</h3>
-          <p>OTP expires within minutes. Check your inbox/spam.</p>
+          <h3>Secure OTP</h3>
+          <p>OTP is valid for a few minutes only.</p>
         </div>
       </div>
     </div>
