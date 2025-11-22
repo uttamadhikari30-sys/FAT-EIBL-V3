@@ -1,9 +1,8 @@
-// frontend/src/App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
-import OtpLogin from "./pages/OtpLogin";
+import OtpLogin from "./pages/OtpLogin";   // ✅ FIXED
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/AdminDashboard";
