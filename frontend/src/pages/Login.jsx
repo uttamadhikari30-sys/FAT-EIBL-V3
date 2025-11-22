@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import logo from "../assets/logo.png";
 import "../styles/PremiumLogin.css";
+import logo from "../assets/logo.png";
 
 export default function Login() {
   const API =
@@ -9,8 +9,8 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,48 +18,48 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await fetch(`${API}/auth/login`, {
+      const response = await fetch(`${API}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        headers: { "Content-Type": "application/json" },   // FIXED
+        body: JSON.stringify({ email, password }),         // FIXED
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
+      if (!response.ok) {
         setError(data.detail || "Login failed");
         setLoading(false);
         return;
       }
 
-      const user = data.user;
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      if (user.first_login) {
-        window.location.href = `/reset-password?user_id=${user.id}`;
+      if (data.user.first_login) {
+        window.location.href = `/reset-password?user_id=${data.user.id}`;
         return;
       }
 
       window.location.href =
-        user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+        data.user.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (err) {
       setError("Failed to connect to server");
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   return (
     <div className="premium-bg">
       <div className="premium-card">
         <div className="premium-left">
-          <img src={logo} className="premium-logo" alt="Logo" />
+          <img src={logo} className="premium-logo" />
+
           <h1 className="premium-title">Welcome back</h1>
           <p className="premium-sub">Sign in to continue to FAT-EIBL</p>
 
           {error && <div className="premium-error">{error}</div>}
 
-          <form className="premium-form" onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} className="premium-form">
             <input
               className="premium-input"
               type="email"
@@ -72,32 +72,34 @@ export default function Login() {
             <input
               className="premium-input"
               type="password"
-              placeholder="Enter password"
+              placeholder="Password"
               value={password}
               required
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            <button className="premium-btn" disabled={loading}>
+            <button className="premium-btn" type="submit" disabled={loading}>
               {loading ? "Signing in..." : "Sign in"}
             </button>
+
+            <div className="premium-actions">
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => (window.location.href = "/otp-login")}
+              >
+                Use OTP
+              </button>
+
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => (window.location.href = "/forgot-password")}
+              >
+                Forgot password?
+              </button>
+            </div>
           </form>
-
-          <div className="premium-actions">
-            <button
-              className="link-btn"
-              onClick={() => (window.location.href = "/otp-login")}
-            >
-              Use OTP
-            </button>
-
-            <button
-              className="link-btn"
-              onClick={() => (window.location.href = "/forgot-password")}
-            >
-              Forgot password?
-            </button>
-          </div>
         </div>
 
         <div className="premium-right">
