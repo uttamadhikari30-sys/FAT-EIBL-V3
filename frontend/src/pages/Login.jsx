@@ -21,12 +21,13 @@ export default function Login() {
       const res = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),  // IMPORTANT FIX
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
+
       if (!res.ok) {
-        setError(data.detail || "Invalid email or password");
+        setError(data.detail || "Login failed");
         setLoading(false);
         return;
       }
@@ -43,16 +44,16 @@ export default function Login() {
         user.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (err) {
       setError("Failed to connect to server");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
     <div className="premium-bg">
       <div className="premium-card">
         <div className="premium-left">
-          <img src={logo} alt="Logo" className="premium-logo" />
+          <img src={logo} className="premium-logo" alt="Logo" />
           <h1 className="premium-title">Welcome back</h1>
           <p className="premium-sub">Sign in to continue to FAT-EIBL</p>
 
@@ -62,7 +63,7 @@ export default function Login() {
             <input
               className="premium-input"
               type="email"
-              placeholder="Email address"
+              placeholder="admin@edmeinsurance.com"
               value={email}
               required
               onChange={(e) => setEmail(e.target.value)}
@@ -71,7 +72,7 @@ export default function Login() {
             <input
               className="premium-input"
               type="password"
-              placeholder="Password"
+              placeholder="Enter password"
               value={password}
               required
               onChange={(e) => setPassword(e.target.value)}
@@ -80,28 +81,26 @@ export default function Login() {
             <button className="premium-btn" disabled={loading}>
               {loading ? "Signing in..." : "Sign in"}
             </button>
-
-            <div className="premium-actions">
-              <button
-                type="button"
-                className="link-btn"
-                onClick={() => (window.location.href = "/otp-login")}
-              >
-                Use OTP
-              </button>
-
-              <button
-                type="button"
-                className="link-btn"
-                onClick={() => (window.location.href = "/forgot-password")}
-              >
-                Forgot password?
-              </button>
-            </div>
           </form>
+
+          <div className="premium-actions">
+            <button
+              className="link-btn"
+              onClick={() => (window.location.href = "/otp-login")}
+            >
+              Use OTP
+            </button>
+
+            <button
+              className="link-btn"
+              onClick={() => (window.location.href = "/forgot-password")}
+            >
+              Forgot password?
+            </button>
+          </div>
         </div>
 
-        <div className="premium-right" aria-hidden>
+        <div className="premium-right">
           <h3>Secure Access</h3>
           <p>Industry-grade encryption & audit-ready protection.</p>
         </div>
