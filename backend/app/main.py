@@ -1,33 +1,26 @@
+# backend/app/main.py
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
-import os
-import shutil
+import os, shutil
+from datetime import date
 
 load_dotenv()
 
 from app.database import Base, engine, SessionLocal
 
-# -------------------------------------
-# Initialize App
-# -------------------------------------
 app = FastAPI(title="FAT-EIBL Backend API")
 
-# -------------------------------------
-# CORS (temporary allow all)
-# -------------------------------------
+# --- TEMP: Allow everyone (fix CORS) ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # <-- Once stable, change to your frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# -------------------------------------
-# DB Dependency
-# -------------------------------------
 def get_db():
     db = SessionLocal()
     try:
@@ -35,9 +28,7 @@ def get_db():
     finally:
         db.close()
 
-# -------------------------------------
-# Models inside main (Task, AuditLog)
-# -------------------------------------
+# ------------ INTERNAL MODELS (Tasks + Logs) ------------
 from sqlalchemy import Column, Integer, String, Date, Text
 
 class Task(Base):
@@ -52,35 +43,24 @@ class Task(Base):
     remarks = Column(Text)
     attachment = Column(String(255))
 
-
 class AuditLog(Base):
     __tablename__ = "audit_logs"
     id = Column(Integer, primary_key=True)
     action = Column(String(50))
     detail = Column(Text)
 
-
-# -------------------------------------
-# Routers
-# -------------------------------------
+# ------------ ROUTERS ------------
 from app.routers import auth, users, forgot_password
-
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(forgot_password.router, prefix="/forgot", tags=["Forgot Password"])
 
-
-# -------------------------------------
-# Health Check
-# -------------------------------------
+# ------------ HEALTH CHECK ------------
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
-
-# -------------------------------------
-# Upload File
-# -------------------------------------
+# ------------ FILE UPLOAD ------------
 UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -101,22 +81,16 @@ async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = 
 
     return {"ok": True, "file": filename}
 
-
-# -------------------------------------
-# Create DB Tables
-# -------------------------------------
+# ------------ CREATE TABLES ------------
 from app.models.user import User
 from app.models.otp import OtpModel
 
 @app.get("/create-db")
 def create_db():
     Base.metadata.create_all(bind=engine)
-    return {"ok": True, "msg": "Tables created"}
+    return {"ok": True, "msg": "All tables created"}
 
-
-# -------------------------------------
-# Seed Admin User (one-time)
-# -------------------------------------
+# ------------ SEED ADMIN USER ------------
 SEED_SECRET = os.getenv("SEED_SECRET", "devseed123")
 
 @app.get("/seed-admin")
@@ -126,10 +100,9 @@ def seed_admin(secret: str = Query(None), db: Session = Depends(get_db)):
 
     from app.utils.auth import hash_password
 
-    # Check if exists
-    existing = db.query(User).filter(User.email == "admin@edmeinsurance.com").first()
-    if existing:
-        return {"ok": True, "msg": "Admin already exists"}
+    exists = db.query(User).filter(User.email == "admin@edmeinsurance.com").first()
+    if exists:
+        return {"ok": True, "message": "Admin already exists"}
 
     admin = User(
         email="admin@edmeinsurance.com",
@@ -137,7 +110,7 @@ def seed_admin(secret: str = Query(None), db: Session = Depends(get_db)):
         role="admin",
         first_login=False
     )
-
     db.add(admin)
     db.commit()
-    return {"ok": True, "msg": "Admin created"}
+
+    return {"ok": True, "message": "Admin created"}
