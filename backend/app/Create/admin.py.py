@@ -4,11 +4,11 @@ from app.utils.auth import hash_password
 
 db = SessionLocal()
 
-# Check if admin already exists
+# Check if admin exists
 existing = db.query(User).filter(User.email == "admin@edmeinsurance.com").first()
 
 if existing:
-    print("Admin user already exists.")
+    print("Admin already exists!")
 else:
     admin = User(
         email="admin@edmeinsurance.com",
@@ -19,6 +19,6 @@ else:
 
     db.add(admin)
     db.commit()
-    print("Admin user created successfully!")
+    print("Admin created successfully!")
 
 db.close()

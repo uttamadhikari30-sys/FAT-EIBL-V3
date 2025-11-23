@@ -61,6 +61,7 @@ FAT-EIBL Audit Team
             smtp.starttls()
             smtp.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
             smtp.send_message(msg)
+
     except Exception as e:
         print("Email sending failed:", e)
         raise e
