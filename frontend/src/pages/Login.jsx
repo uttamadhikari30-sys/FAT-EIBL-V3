@@ -5,8 +5,8 @@ import logo from "../assets/logo.png";
 export default function Login() {
   const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
 
-  const [email, setEmail] = useState("admin@edmeinsurance.com"); // default for quick test
-  const [password, setPassword] = useState("Edme@123");         // default for quick test
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,89 +22,76 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      // If backend returns non-json body at 500 it will throw — handle generically
-      let data;
-      try {
-        data = await response.json();
-      } catch (err) {
-        throw new Error(`Server returned ${response.status}`);
-      }
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(data.detail || data.message || "Login failed");
+        setError(data.detail || "Login failed");
         setLoading(false);
         return;
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      if (data.user?.first_login) {
+
+      if (data.user.first_login) {
         window.location.href = `/reset-password?user_id=${data.user.id}`;
         return;
       }
-      window.location.href = data.user?.role === "admin" ? "/admin-dashboard" : "/dashboard";
+
+      window.location.href =
+        data.user.role === "admin" ? "/admin-dashboard" : "/dashboard";
     } catch (err) {
-      setError("Failed to connect to server");
-      console.error("Login error:", err);
-    } finally {
-      setLoading(false);
+      setError("Failed to fetch");
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="premium-bg">
-      <div className="premium-card">
-        <div className="premium-left">
-          <img src={logo} className="premium-logo" alt="Edme logo" />
+    <div className="page-container">
+      <div className="login-card">
+        
+        <img src={logo} className="login-logo" />
 
-          <h1 className="premium-title">Welcome back</h1>
-          <p className="premium-sub">Sign in to continue to FAT-EIBL</p>
+        <h1 className="title">Welcome back</h1>
+        <p className="subtitle">Sign in to continue to FAT-EIBL</p>
 
-          {error && <div className="premium-error" role="alert">{error}</div>}
+        {error && <div className="error-box">{error}</div>}
 
-          <form onSubmit={handleLogin} className="premium-form">
-            <input
-              className="premium-input"
-              type="email"
-              placeholder="Email"
-              value={email}
-              required
-              onChange={(e) => setEmail(e.target.value)}
-            />
+        <form onSubmit={handleLogin} className="form-box">
 
-            <input
-              className="premium-input"
-              type="password"
-              placeholder="Password"
-              value={password}
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <input
+            className="input-box"
+            type="email"
+            placeholder="admin@edmeinsurance.com"
+            value={email}
+            required
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-            <button className="premium-btn" type="submit" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
+          <input
+            className="input-box"
+            type="password"
+            placeholder="Password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-            <div className="premium-actions">
-              <button
-                type="button"
-                className="link-btn"
-                onClick={() => (window.location.href = "/otp-login")}
-              >
-                Use OTP
-              </button>
+          <button className="login-btn" type="submit" disabled={loading}>
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
 
-              <button
-                type="button"
-                className="link-btn"
-                onClick={() => (window.location.href = "/forgot-password")}
-              >
-                Forgot password?
-              </button>
-            </div>
-          </form>
+        <div className="link-row">
+          <button className="simple-link" onClick={() => (window.location.href = "/otp-login")}>
+            Use OTP
+          </button>
+          <button className="simple-link" onClick={() => (window.location.href = "/forgot-password")}>
+            Forgot password?
+          </button>
         </div>
 
-        <div className="premium-right" aria-hidden>
+        <div className="footer-text">
           <h3>Secure Access</h3>
           <p>Industry-grade encryption & audit-ready protection.</p>
         </div>
