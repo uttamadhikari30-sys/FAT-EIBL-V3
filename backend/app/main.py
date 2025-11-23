@@ -1,38 +1,33 @@
-# backend/app/main.py
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import os
 import shutil
-from datetime import date
 
-# Load env
 load_dotenv()
 
 from app.database import Base, engine, SessionLocal
 
-# -------------------------------------------------------------------
-# App init
-# -------------------------------------------------------------------
+# -------------------------------------
+# Initialize App
+# -------------------------------------
 app = FastAPI(title="FAT-EIBL Backend API")
 
-# -------------------------------------------------------------------
-# CORS - allow everything for debugging; change to production origins later
-# -------------------------------------------------------------------
-# NOTE: For quick debugging set allow_origins=["*"]. After confirm working,
-# set to your exact frontend URL(s) e.g. ["https://fat-eibl-frontend-x1sp.onrender.com"].
+# -------------------------------------
+# CORS (temporary allow all)
+# -------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # <-- change to specific origin list in production
+    allow_origins=["*"],   # <-- Once stable, change to your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# -------------------------------------------------------------------
-# DB dependency
-# -------------------------------------------------------------------
+# -------------------------------------
+# DB Dependency
+# -------------------------------------
 def get_db():
     db = SessionLocal()
     try:
@@ -40,9 +35,9 @@ def get_db():
     finally:
         db.close()
 
-# -------------------------------------------------------------------
-# Minimal internal models used in this file
-# -------------------------------------------------------------------
+# -------------------------------------
+# Models inside main (Task, AuditLog)
+# -------------------------------------
 from sqlalchemy import Column, Integer, String, Date, Text
 
 class Task(Base):
@@ -57,33 +52,35 @@ class Task(Base):
     remarks = Column(Text)
     attachment = Column(String(255))
 
+
 class AuditLog(Base):
     __tablename__ = "audit_logs"
     id = Column(Integer, primary_key=True)
     action = Column(String(50))
     detail = Column(Text)
 
-# -------------------------------------------------------------------
+
+# -------------------------------------
 # Routers
-# -------------------------------------------------------------------
+# -------------------------------------
 from app.routers import auth, users, forgot_password
 
-# keep router prefixes same as frontend expects: /auth/...
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
-# your forgot password router previously used prefix "/forgot" - keep same
 app.include_router(forgot_password.router, prefix="/forgot", tags=["Forgot Password"])
 
-# -------------------------------------------------------------------
-# Health check
-# -------------------------------------------------------------------
+
+# -------------------------------------
+# Health Check
+# -------------------------------------
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
-# -------------------------------------------------------------------
-# Upload file
-# -------------------------------------------------------------------
+
+# -------------------------------------
+# Upload File
+# -------------------------------------
 UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -104,29 +101,32 @@ async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = 
 
     return {"ok": True, "file": filename}
 
-# ------------------------------
-# Create DB
-# ------------------------------
+
+# -------------------------------------
+# Create DB Tables
+# -------------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
 
 @app.get("/create-db")
 def create_db():
     Base.metadata.create_all(bind=engine)
-    return {"ok": True, "msg": "All tables created"}
+    return {"ok": True, "msg": "Tables created"}
 
 
-# -------------------------------------------------------------------
-# CREATE DEFAULT ADMIN (Run only once)
-# -------------------------------------------------------------------
-@app.get("/create-admin")
-def create_admin():
-    from app.database import SessionLocal
-    from app.models.user import User
+# -------------------------------------
+# Seed Admin User (one-time)
+# -------------------------------------
+SEED_SECRET = os.getenv("SEED_SECRET", "devseed123")
+
+@app.get("/seed-admin")
+def seed_admin(secret: str = Query(None), db: Session = Depends(get_db)):
+    if secret != SEED_SECRET:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
     from app.utils.auth import hash_password
 
-    db = SessionLocal()
-
+    # Check if exists
     existing = db.query(User).filter(User.email == "admin@edmeinsurance.com").first()
     if existing:
         return {"ok": True, "msg": "Admin already exists"}
@@ -140,6 +140,4 @@ def create_admin():
 
     db.add(admin)
     db.commit()
-    db.close()
-
-    return {"ok": True, "msg": "Admin created successfully"}
+    return {"ok": True, "msg": "Admin created"}
