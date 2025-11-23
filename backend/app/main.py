@@ -1,4 +1,5 @@
-from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
+# backend/app/main.py
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
@@ -6,34 +7,31 @@ import os
 import shutil
 from datetime import date
 
-# Load environment variables
+# Load env
 load_dotenv()
 
 from app.database import Base, engine, SessionLocal
 
 # -------------------------------------------------------------------
-# FASTAPI APP
+# App init
 # -------------------------------------------------------------------
 app = FastAPI(title="FAT-EIBL Backend API")
 
-
 # -------------------------------------------------------------------
-# 🚀 FINAL CORS FIX — 100% Render Compatible
+# CORS - allow everything for debugging; change to production origins later
 # -------------------------------------------------------------------
+# NOTE: For quick debugging set allow_origins=["*"]. After confirm working,
+# set to your exact frontend URL(s) e.g. ["https://fat-eibl-frontend-x1sp.onrender.com"].
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://fat-eibl-frontend-x1sp.onrender.com",  # LIVE FRONTEND
-        "http://localhost:5173",                        # local dev
-    ],
+    allow_origins=["*"],  # <-- change to specific origin list in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
 # -------------------------------------------------------------------
-# DB Dependency
+# DB dependency
 # -------------------------------------------------------------------
 def get_db():
     db = SessionLocal()
@@ -42,9 +40,8 @@ def get_db():
     finally:
         db.close()
 
-
 # -------------------------------------------------------------------
-# MODELS USED INTERNALLY
+# Minimal internal models used in this file
 # -------------------------------------------------------------------
 from sqlalchemy import Column, Integer, String, Date, Text
 
@@ -60,34 +57,32 @@ class Task(Base):
     remarks = Column(Text)
     attachment = Column(String(255))
 
-
 class AuditLog(Base):
     __tablename__ = "audit_logs"
     id = Column(Integer, primary_key=True)
     action = Column(String(50))
     detail = Column(Text)
 
-
 # -------------------------------------------------------------------
-# ROUTERS IMPORT (Order Matters)
+# Routers
 # -------------------------------------------------------------------
 from app.routers import auth, users, forgot_password
 
+# keep router prefixes same as frontend expects: /auth/...
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
+# your forgot password router previously used prefix "/forgot" - keep same
 app.include_router(forgot_password.router, prefix="/forgot", tags=["Forgot Password"])
 
-
 # -------------------------------------------------------------------
-# HEALTH
+# Health check
 # -------------------------------------------------------------------
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
-
 # -------------------------------------------------------------------
-# UPLOAD FILE
+# Upload file
 # -------------------------------------------------------------------
 UPLOAD_DIR = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -109,10 +104,9 @@ async def upload_file(task_id: int, file: UploadFile = File(...), db: Session = 
 
     return {"ok": True, "file": filename}
 
-
-# -------------------------------------------------------------------
-# CREATE TABLES
-# -------------------------------------------------------------------
+# ------------------------------
+# Create DB
+# ------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
 
@@ -121,3 +115,31 @@ def create_db():
     Base.metadata.create_all(bind=engine)
     return {"ok": True, "msg": "All tables created"}
 
+
+# -------------------------------------------------------------------
+# CREATE DEFAULT ADMIN (Run only once)
+# -------------------------------------------------------------------
+@app.get("/create-admin")
+def create_admin():
+    from app.database import SessionLocal
+    from app.models.user import User
+    from app.utils.auth import hash_password
+
+    db = SessionLocal()
+
+    existing = db.query(User).filter(User.email == "admin@edmeinsurance.com").first()
+    if existing:
+        return {"ok": True, "msg": "Admin already exists"}
+
+    admin = User(
+        email="admin@edmeinsurance.com",
+        hashed_password=hash_password("Edme@123"),
+        role="admin",
+        first_login=False
+    )
+
+    db.add(admin)
+    db.commit()
+    db.close()
+
+    return {"ok": True, "msg": "Admin created successfully"}
