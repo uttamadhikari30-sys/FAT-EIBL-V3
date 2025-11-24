@@ -16,11 +16,11 @@ from app.database import Base, engine, SessionLocal
 app = FastAPI(title="FAT-EIBL Backend API")
 
 # ---------------------------------------------------------
-# CORS — FULL OPEN (fix Render CORS issue)
+# CORS — FULL OPEN
 # ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],       # FIX CORS 100%
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -39,11 +39,14 @@ def get_db():
 # ---------------------------------------------------------
 # IMPORT ROUTERS
 # ---------------------------------------------------------
-from app.routers import auth, users, forgot_password
+from app.routers import auth, users, forgot_password, invite
 
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(forgot_password.router, prefix="/forgot", tags=["Forgot"])
+
+# ⭐ ADD THIS FOR INVITE FEATURE
+app.include_router(invite.router, prefix="/invite", tags=["Invite"])
 
 # ---------------------------------------------------------
 # HEALTH
@@ -57,6 +60,7 @@ def health():
 # ---------------------------------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
+from app.models.invite import Invite
 
 @app.get("/create-db")
 def create_db():
@@ -64,7 +68,7 @@ def create_db():
     return {"ok": True, "msg": "DB created"}
 
 # ---------------------------------------------------------
-# SEED ADMIN USER (one-time)
+# SEED ADMIN USER
 # ---------------------------------------------------------
 SEED_SECRET = "devseed123"
 
@@ -75,7 +79,6 @@ def seed_admin(secret: str, db: Session = Depends(get_db)):
 
     from app.utils.auth import hash_password
 
-    # check if exists
     existing = db.query(User).filter(User.email == "admin@edmeinsurance.com").first()
     if existing:
         return {"ok": True, "msg": "Admin already exists"}
