@@ -8,23 +8,30 @@ import shutil
 # Load env
 load_dotenv()
 
-from app.database import Base, engine, SessionLocal
-
 # ---------------------------------------------------------
 # INIT APP
 # ---------------------------------------------------------
 app = FastAPI(title="FAT-EIBL Backend API")
 
 # ---------------------------------------------------------
-# CORS — FULL OPEN
+# CORS — MUST BE AT THE TOP BEFORE ROUTERS
 # ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://fat-eibl-frontend-x1sp.onrender.com",  # your frontend
+        "http://localhost:3000",                        # local dev
+        "*"                                             # allow all (fallback)
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ---------------------------------------------------------
+# IMPORT DB
+# ---------------------------------------------------------
+from app.database import Base, engine, SessionLocal
 
 # ---------------------------------------------------------
 # DB Dependency
@@ -37,7 +44,7 @@ def get_db():
         db.close()
 
 # ---------------------------------------------------------
-# IMPORT ROUTERS
+# IMPORT ROUTERS (AFTER CORS)
 # ---------------------------------------------------------
 from app.routers import auth, users, forgot_password, invite
 
@@ -45,18 +52,18 @@ app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(forgot_password.router, prefix="/forgot", tags=["Forgot"])
 
-# ⭐ ADD THIS FOR INVITE FEATURE
+# ⭐ Invite Feature
 app.include_router(invite.router, prefix="/invite", tags=["Invite"])
 
 # ---------------------------------------------------------
-# HEALTH
+# HEALTH CHECK
 # ---------------------------------------------------------
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
 # ---------------------------------------------------------
-# CREATE ALL TABLES
+# CREATE DB TABLES
 # ---------------------------------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
