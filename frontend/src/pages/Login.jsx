@@ -1,99 +1,71 @@
 import React, { useState } from "react";
-import "../styles/PremiumLogin.css";
+import "./NewLogin.css";
 import logo from "../assets/logo.png";
 
-export default function Login() {
-  const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
-
+export default function NewLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch(`${API}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.detail || "Login failed");
-        setLoading(false);
-        return;
-      }
-
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      if (data.user.first_login) {
-        window.location.href = `/reset-password?user_id=${data.user.id}`;
-        return;
-      }
-
-      window.location.href =
-        data.user.role === "admin" ? "/admin-dashboard" : "/dashboard";
-    } catch (err) {
-      setError("Failed to fetch");
-    }
-
-    setLoading(false);
-  };
 
   return (
-    <div className="page-container">
-      <div className="login-card">
-        
-        <img src={logo} className="login-logo" />
+    <div className="login-wrapper">
+      {/* LEFT SECTION */}
+      <div className="left-panel">
+        <h1 className="title">
+          Simplify, Secure and <br /> Streamline Your <br /> Employee Benefits
+        </h1>
+        <p className="subtext">
+          Go digital with us to insure your family health care and hassle-free
+          access to various wellness benefits.
+        </p>
 
-        <h1 className="title">Welcome back</h1>
-        <p className="subtitle">Sign in to continue to FAT-EIBL</p>
+        <img
+          src="https://cdni.iconscout.com/illustration/premium/thumb/woman-using-mobile-phone-8291914-6677110.png"
+          alt="illustration"
+          className="illustration"
+        />
+      </div>
 
-        {error && <div className="error-box">{error}</div>}
+      {/* RIGHT SECTION */}
+      <div className="right-panel">
+        <img src={logo} className="login-logo" alt="logo" />
 
-        <form onSubmit={handleLogin} className="form-box">
+        <h2 className="login-heading">Sign in to your account</h2>
 
-          <input
-            className="input-box"
-            type="email"
-            placeholder="admin@edmeinsurance.com"
-            value={email}
-            required
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <input
-            className="input-box"
-            type="password"
-            placeholder="Password"
-            value={password}
-            required
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <button className="login-btn" type="submit" disabled={loading}>
-            {loading ? "Signing in..." : "Sign in"}
-          </button>
-        </form>
-
-        <div className="link-row">
-          <button className="simple-link" onClick={() => (window.location.href = "/otp-login")}>
-            Use OTP
-          </button>
-          <button className="simple-link" onClick={() => (window.location.href = "/forgot-password")}>
-            Forgot password?
-          </button>
+        <div className="tab-row">
+          <button className="active-tab">Email</button>
+          <button className="tab">Mobile</button>
+          <button className="tab">Employee Code</button>
         </div>
 
-        <div className="footer-text">
-          <h3>Secure Access</h3>
-          <p>Industry-grade encryption & audit-ready protection.</p>
+        <div className="input-box">
+          <span className="icon">✉</span>
+          <input
+            type="email"
+            placeholder="Enter Email ID"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="login-type">
+          <label><input type="radio" name="type" defaultChecked /> Password</label>
+          <label><input type="radio" name="type" /> OTP</label>
+        </div>
+
+        <div className="input-box">
+          <span className="icon">🔒</span>
+          <input
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <button className="login-btn">Sign In</button>
+
+        <div className="links-row">
+          <a href="/forgot-password">Forgot Password?</a>
         </div>
       </div>
     </div>

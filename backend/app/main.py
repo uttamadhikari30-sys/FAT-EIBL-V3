@@ -1,11 +1,10 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import os
 import shutil
 
-# Load env
+# Load env first
 load_dotenv()
 
 # ---------------------------------------------------------
@@ -14,22 +13,23 @@ load_dotenv()
 app = FastAPI(title="FAT-EIBL Backend API")
 
 # ---------------------------------------------------------
-# CORS — MUST BE AT THE TOP BEFORE ROUTERS
+# CORS — MUST BE VERY TOP BEFORE ANY DB OR ROUTER IMPORT
 # ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://fat-eibl-frontend-x1sp.onrender.com",  # your frontend
-        "http://localhost:3000",                        # local dev
-        "*"                                             # allow all (fallback)
-    ],
+    allow_origins=["https://fat-eibl-frontend-x1sp.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# IMPORTANT: Add global preflight handler for CORS
+@app.options("/{full_path:path}")
+def preflight_handler(full_path: str):
+    return {}
+
 # ---------------------------------------------------------
-# IMPORT DB
+# NOW IMPORT DB
 # ---------------------------------------------------------
 from app.database import Base, engine, SessionLocal
 
@@ -44,15 +44,13 @@ def get_db():
         db.close()
 
 # ---------------------------------------------------------
-# IMPORT ROUTERS (AFTER CORS)
+# ROUTERS (after CORS)
 # ---------------------------------------------------------
 from app.routers import auth, users, forgot_password, invite
 
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(forgot_password.router, prefix="/forgot", tags=["Forgot"])
-
-# ⭐ Invite Feature
 app.include_router(invite.router, prefix="/invite", tags=["Invite"])
 
 # ---------------------------------------------------------
@@ -63,7 +61,7 @@ def health():
     return {"status": "ok"}
 
 # ---------------------------------------------------------
-# CREATE DB TABLES
+# DB CREATE
 # ---------------------------------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
