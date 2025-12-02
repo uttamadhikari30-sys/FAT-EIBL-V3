@@ -4,31 +4,36 @@ import logo from "../assets/logo.png";
 
 export default function Login() {
   const [loginType, setLoginType] = useState("password"); // password | otp
+  const [activeTab, setActiveTab] = useState("email"); // email | mobile
   const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
 
   const handleLogin = () => {
-    if (loginType === "password") {
+    if (activeTab === "email" && loginType === "password") {
       console.log("Login with Email & Password:", email, password);
-      // Call /auth/login API
+      // Call /auth/login API here
+    } else if (activeTab === "email" && loginType === "otp") {
+      console.log("Login with Email & OTP:", email, otp);
+      // Call /auth/login-otp API here
     } else {
-      console.log("Login with OTP:", email, otp);
-      // Call /auth/login-otp API
+      console.log("Login with Mobile & OTP:", mobile, otp);
+      // Call mobile login API
     }
   };
 
   return (
     <div className="login-wrapper">
 
-      {/* LEFT PANEL */}
+      {/* LEFT SIDE PANEL */}
       <div className="left-panel">
         <h1 className="title">
-          Simplify, Secure and <br /> Streamline Your <br /> Employee Benefits
+          Digitally Streamline the Audit Process
         </h1>
+
         <p className="subtext">
-          Digitally streamline the audit process for accuracy, transparency,
-          and effortless compliance.
+          Ensure accuracy, transparency, and effortless compliance.
         </p>
 
         <img
@@ -38,27 +43,53 @@ export default function Login() {
         />
       </div>
 
-      {/* RIGHT PANEL */}
+      {/* RIGHT SIDE PANEL */}
       <div className="right-panel">
         <img src={logo} className="login-logo" alt="logo" />
 
         <h2 className="login-heading">Sign in to your account</h2>
 
+        {/* TAB SWITCH */}
         <div className="tab-row">
-          <button className="active-tab">Email</button>
-          <button className="tab">Mobile</button>
+          <button
+            className={activeTab === "email" ? "active-tab" : "tab"}
+            onClick={() => setActiveTab("email")}
+          >
+            Email
+          </button>
+
+          <button
+            className={activeTab === "mobile" ? "active-tab" : "tab"}
+            onClick={() => setActiveTab("mobile")}
+          >
+            Mobile
+          </button>
         </div>
 
-        <div className="input-box">
-          <span className="icon">✉</span>
-          <input
-            type="email"
-            placeholder="Enter Email ID"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+        {/* INPUT FIELDS */}
+        {activeTab === "email" ? (
+          <div className="input-box">
+            <span className="icon">✉</span>
+            <input
+              type="email"
+              placeholder="Enter Email ID"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+        ) : (
+          <div className="input-box">
+            <span className="icon">📱</span>
+            <input
+              type="text"
+              placeholder="Enter Mobile Number"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+            />
+          </div>
+        )}
 
+        {/* LOGIN TYPE */}
         <div className="login-type">
           <label>
             <input
@@ -67,7 +98,9 @@ export default function Login() {
               value="password"
               checked={loginType === "password"}
               onChange={() => setLoginType("password")}
-            /> Password
+              disabled={activeTab === "mobile"}
+            />
+            Password
           </label>
 
           <label>
@@ -77,10 +110,12 @@ export default function Login() {
               value="otp"
               checked={loginType === "otp"}
               onChange={() => setLoginType("otp")}
-            /> OTP
+            />
+            OTP
           </label>
         </div>
 
+        {/* PASSWORD OR OTP BOX */}
         {loginType === "password" ? (
           <div className="input-box">
             <span className="icon">🔒</span>
@@ -89,6 +124,7 @@ export default function Login() {
               placeholder="Enter Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={activeTab === "mobile"}
             />
           </div>
         ) : (
@@ -103,7 +139,10 @@ export default function Login() {
           </div>
         )}
 
-        <button className="login-btn" onClick={handleLogin}>Sign In</button>
+        {/* LOGIN BUTTON */}
+        <button className="login-btn" onClick={handleLogin}>
+          Sign In
+        </button>
 
         <div className="links-row">
           <a href="/forgot-password">Forgot Password?</a>
