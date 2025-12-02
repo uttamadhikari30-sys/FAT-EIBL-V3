@@ -4,19 +4,30 @@ import logo from "../assets/logo.png";
 
 export default function Login() {
   const [activeTab, setActiveTab] = useState("email"); // email | mobile
-  const [loginType, setLoginType] = useState("password");
+  const [loginType, setLoginType] = useState("password"); // password | otp
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
 
   const handleLogin = () => {
-    console.log("Login Submit");
+    if (activeTab === "email" && loginType === "password") {
+      console.log("Login Email + Password =>", email, password);
+      // call /auth/login backend
+    }
+    if (activeTab === "email" && loginType === "otp") {
+      console.log("Login Email + OTP =>", email, otp);
+      // call /auth/login-otp
+    }
+    if (activeTab === "mobile" && loginType === "otp") {
+      console.log("Login Mobile + OTP =>", mobile, otp);
+      // call /auth/mobile-otp
+    }
   };
 
   return (
     <div className="login-wrapper">
-
+      
       {/* LEFT PANEL */}
       <div className="left-panel">
         <h1 className="title">Digitally Streamline the Audit Process</h1>
@@ -77,7 +88,7 @@ export default function Login() {
           </div>
         )}
 
-        {/* LOGIN TYPE SWITCH */}
+        {/* LOGIN TYPE SELECTION */}
         <div className="login-type">
           <label>
             <input
@@ -123,6 +134,7 @@ export default function Login() {
           </div>
         )}
 
+        {/* BUTTON */}
         <button className="login-btn" onClick={handleLogin}>
           Sign In
         </button>
