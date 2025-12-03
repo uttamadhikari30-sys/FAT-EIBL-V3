@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import "./NewLogin.css";
 import logo from "../assets/logo.png";
-import audit3D from "../assets/audit-hologram.png"; // premium hologram illustration
+import audit3D from "../assets/audit-hologram.png"; // 3D hologram illustration
 
 export default function Login() {
   const [isMobileTab, setIsMobileTab] = useState(false);
 
   return (
     <div className="login-page">
-
-      {/* LEFT PANEL */}
+      {/* LEFT SIDE */}
       <div className="left-section">
         <div className="left-content">
           <h1>Digitally Streamline the Audit Process</h1>
@@ -23,14 +22,14 @@ export default function Login() {
         </div>
       </div>
 
-      {/* RIGHT PANEL with Glass Card */}
+      {/* RIGHT SIDE */}
       <div className="right-section">
         <img src={logo} alt="EDME" className="brand-logo" />
 
         <div className="login-card">
-          <h2>Sign in to your account</h2>
+          <h2 className="login-title">Sign in to your account</h2>
 
-          {/* Tabs */}
+          {/* EMAIL / MOBILE TABS */}
           <div className="tab-row">
             <button
               className={`tab ${!isMobileTab ? "active" : ""}`}
@@ -46,35 +45,58 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Email field */}
+          {/* EMAIL FIELD */}
           {!isMobileTab && (
             <div className="field">
-              <input type="email" placeholder="Enter your email" className="input-box" />
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="input-box"
+              />
             </div>
           )}
 
-          {/* Mobile field */}
+          {/* MOBILE FIELD */}
           {isMobileTab && (
             <div className="field">
-              <input type="number" placeholder="Enter mobile number" className="input-box" />
+              <input
+                type="number"
+                placeholder="Enter mobile number"
+                className="input-box"
+              />
             </div>
           )}
 
-          {/* Radio Selection */}
+          {/* PASSWORD / OTP OPTIONS */}
           <div className="radio-row">
-            <label><input type="radio" name="auth" defaultChecked /> Password</label>
-            <label><input type="radio" name="auth" /> OTP</label>
+            <label>
+              <input type="radio" name="auth" defaultChecked /> Password
+            </label>
+            <label>
+              <input type="radio" name="auth" /> OTP
+            </label>
           </div>
 
-          {/* Password Field */}
+          {/* PASSWORD FIELD */}
           <div className="field">
-            <input type="password" placeholder="Enter Password" className="input-box" />
+            <input
+              type="password"
+              placeholder="Enter Password"
+              className="input-box"
+            />
+          </div>
+
+          {/* FORGOT PASSWORD */}
+          <div className="forgot-row">
+            <a href="/forgot-password" className="forgot-link">
+              Forgot Password?
+            </a>
           </div>
 
           <button className="login-btn">Sign In</button>
         </div>
 
-        {/* FOOTER VERSION INFO */}
+        {/* VERSION FOOTER */}
         <div className="version-footer">
           © 2025 EDME Audit Portal • Version 1.0.0 • Powered by EDME
         </div>
