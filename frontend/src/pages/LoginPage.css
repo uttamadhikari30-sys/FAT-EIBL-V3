@@ -1,76 +1,108 @@
-/* ROOT */
-.login-root {
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  overflow: hidden;
-}
-
-/* LEFT PANEL */
-.login-left {
-  flex: 1;
-  background: linear-gradient(135deg, #b30026, #0046ff);
+/* LOGIN CARD CLEAN UI */
+.login-card {
+  background: #ffffff;
+  width: 480px;
+  padding: 2.4rem 2.6rem;
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.10);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
+  gap: 1rem;
+}
+
+.login-heading {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
   text-align: center;
 }
 
-.login-hero-image {
-  max-width: 60%;
-  margin-bottom: 0.5rem;
-}
-
-/* Title & subtitle */
-.login-title {
-  color: white;
-  font-size: 2.8rem;
-  font-weight: 800;
-  margin-top: 0.3rem;
-}
-
-.login-subtitle {
-  font-size: 1.1rem;
-  margin-top: 0.6rem;
-  padding: 0.5rem 1.3rem;
-  background: rgba(255, 255, 255, 0.85);
-  color: black;
+/* INPUT FIELDS */
+.login-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
   border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 1rem;
+  outline: none;
+  margin-bottom: 0.8rem;
 }
 
-/* RIGHT PANEL */
-.login-right {
-  flex: 1;
-  background: #f3f5fb;
-  position: relative;
+.login-input:focus {
+  border-color: #0f6bff;
+  background: #ffffff;
+}
+
+/* TAB BUTTONS */
+.login-tabs {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
 }
 
-/* Top right logo */
-.login-top-logo {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  width: 120px;
+.login-tab {
+  padding: 0.6rem 2rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: none;
+  background: #e0e7ff;
+  color: #1e3a8a;
+  cursor: pointer;
 }
 
-/* Login Card */
-.login-card {
-  background: white;
-  width: 430px;
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.1);
+.login-tab.active {
+  background: #0f6bff;
+  color: #fff;
 }
 
-/* Heading */
-.login-heading {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  text-align: center;
+/* TOGGLE PASSWORD VS OTP */
+.login-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0.7rem 0;
+}
+
+.toggle-label {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* FORGOT PASSWORD */
+.login-forgot-row {
+  width: 100%;
+  text-align: right;
+  margin-top: -0.3rem;
+  margin-bottom: 0.7rem;
+}
+
+.forgot-link {
+  font-size: 0.9rem;
+  color: #0f6bff;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* SIGN IN BUTTON */
+.login-button {
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 14px;
+  border: none;
+  background: #0f6bff;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.login-button:hover {
+  background: #0b53c7;
+  transform: translateY(-2px);
 }
