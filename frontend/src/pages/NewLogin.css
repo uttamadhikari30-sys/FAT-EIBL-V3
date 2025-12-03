@@ -24,13 +24,13 @@
   font-size: 44px;
   font-weight: 800;
   margin-bottom: 16px;
-  color: #0047ba; /* big blue heading */
+  color: #0047ba;
 }
 
 .left-content p {
   font-size: 18px;
   margin-bottom: 32px;
-  color: #000000; /* white text changed to black */
+  color: #000000;
 }
 
 .audit-illustration {
@@ -69,12 +69,12 @@
 }
 
 .login-title {
-  font-size: 22px;          /* smaller title */
+  font-size: 22px;
   font-weight: 700;
   text-align: center;
   margin-bottom: 24px;
-  color: #ffffff;           /* blue font → white */
-  background: #0047ba;      /* blue pill background */
+  color: #ffffff;
+  background: #0047ba;
   padding: 10px 16px;
   border-radius: 14px;
 }
@@ -130,7 +130,7 @@
   justify-content: space-between;
   margin-bottom: 12px;
   font-size: 15px;
-  color: #000; /* darker labels */
+  color: #000;
 }
 
 /* ===== FORGOT PASSWORD ===== */
