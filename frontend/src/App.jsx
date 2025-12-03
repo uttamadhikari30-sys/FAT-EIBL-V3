@@ -1,13 +1,17 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
+
+// 🔐 Updated Login UI Page
+import LoginPage from "./pages/LoginPage";
+
+// Existing Pages
 import OtpLogin from "./pages/OtpLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/AdminDashboard";
 import Dashboard from "./pages/Dashboard";
 
-// ⭐ ADD THESE TWO IMPORTS
+// ⭐ INVITE SYSTEM (NEW IMPORTS)
 import InviteUser from "./components/InviteUser";
 import AcceptInvite from "./components/AcceptInvite";
 
@@ -16,8 +20,10 @@ export default function App() {
     <BrowserRouter>
       <Routes>
 
+        {/* ⭐ UPDATED LOGIN ROUTE (New UI Page) */}
+        <Route path="/" element={<LoginPage />} />
+
         {/* EXISTING ROUTES */}
-        <Route path="/" element={<Login />} />
         <Route path="/otp-login" element={<OtpLogin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />

@@ -1,106 +1,100 @@
 import React, { useState } from "react";
-import "./NewLogin.css";
-import logo from "../assets/logo.png";
-import audit3D from "../assets/audit-hologram.png"; // 3D hologram illustration
+import "./LoginPage.css";
 
-export default function Login() {
-  const [isMobileTab, setIsMobileTab] = useState(false);
+const LoginPage = () => {
+  const [useOtp, setUseOtp] = useState(false);
 
   return (
-    <div className="login-page">
-      {/* LEFT SIDE */}
-      <div className="left-section">
-        <div className="left-content">
-          <h1>Digitally Streamline the Audit Process</h1>
-          <p>Ensure accuracy, transparency, and effortless compliance.</p>
+    <div className="login-root">
+      {/* LEFT PANEL */}
+      <div className="login-left">
+        <img
+          src="/assets/audit-3d.png"
+          alt="Audit Illustration"
+          className="login-hero-image"
+        />
 
-          <img
-            src={audit3D}
-            alt="Audit Hologram Illustration"
-            className="audit-illustration"
-          />
-        </div>
+        <h1 className="login-title">
+          Digitally Streamline the Audit Process
+        </h1>
+
+        <p className="login-subtitle">
+          Ensure accuracy, transparency, and effortless compliance.
+        </p>
       </div>
 
-      {/* RIGHT SIDE */}
-      <div className="right-section">
-        <img src={logo} alt="EDME" className="brand-logo" />
+      {/* RIGHT PANEL */}
+      <div className="login-right">
+        <div className="login-right-inner">
+          <img
+            src="/assets/edme-logo.png"
+            alt="Edme Logo"
+            className="login-logo"
+          />
 
-        <div className="login-card">
-          <h2 className="login-title">Sign in to your account</h2>
+          <div className="login-card">
+            <h2 className="login-heading">Sign in to your account</h2>
 
-          {/* EMAIL / MOBILE TABS */}
-          <div className="tab-row">
-            <button
-              className={`tab ${!isMobileTab ? "active" : ""}`}
-              onClick={() => setIsMobileTab(false)}
-            >
-              Email
-            </button>
-            <button
-              className={`tab ${isMobileTab ? "active" : ""}`}
-              onClick={() => setIsMobileTab(true)}
-            >
-              Mobile
-            </button>
-          </div>
-
-          {/* EMAIL FIELD */}
-          {!isMobileTab && (
-            <div className="field">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="input-box"
-              />
+            {/* Email / Mobile tabs (optional) */}
+            <div className="login-tabs">
+              <button className="login-tab active">Email</button>
+              <button className="login-tab">Mobile</button>
             </div>
-          )}
 
-          {/* MOBILE FIELD */}
-          {isMobileTab && (
-            <div className="field">
-              <input
-                type="number"
-                placeholder="Enter mobile number"
-                className="input-box"
-              />
-            </div>
-          )}
-
-          {/* PASSWORD / OTP OPTIONS */}
-          <div className="radio-row">
-            <label>
-              <input type="radio" name="auth" defaultChecked /> Password
-            </label>
-            <label>
-              <input type="radio" name="auth" /> OTP
-            </label>
-          </div>
-
-          {/* PASSWORD FIELD */}
-          <div className="field">
+            {/* Email input */}
+            <label className="login-label">Email</label>
             <input
-              type="password"
-              placeholder="Enter Password"
-              className="input-box"
+              type="email"
+              className="login-input"
+              placeholder="admin@edmeinsurance.com"
             />
+
+            {/* Password / OTP toggle */}
+            <div className="login-toggle-row">
+              <span className={!useOtp ? "toggle-label active" : "toggle-label"}>
+                Password
+              </span>
+
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={useOtp}
+                  onChange={() => setUseOtp(!useOtp)}
+                />
+                <span className="toggle-slider" />
+              </label>
+
+              <span className={useOtp ? "toggle-label active" : "toggle-label"}>
+                OTP
+              </span>
+            </div>
+
+            {/* Password / OTP field */}
+            <label className="login-label">
+              {useOtp ? "Enter OTP" : "Password"}
+            </label>
+            <input
+              type={useOtp ? "text" : "password"}
+              className="login-input"
+              placeholder={useOtp ? "Enter 6-digit OTP" : "********"}
+            />
+
+            {/* Forgot password */}
+            <div className="login-forgot-row">
+              <button className="forgot-link" type="button">
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* Sign In button */}
+            <button className="login-button" type="button">
+              Sign In
+            </button>
           </div>
-
-          {/* FORGOT PASSWORD */}
-          <div className="forgot-row">
-            <a href="/forgot-password" className="forgot-link">
-              Forgot Password?
-            </a>
-          </div>
-
-          <button className="login-btn">Sign In</button>
-        </div>
-
-        {/* VERSION FOOTER */}
-        <div className="version-footer">
-          © 2025 EDME Audit Portal • Version 1.0.0 • Powered by EDME
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;
