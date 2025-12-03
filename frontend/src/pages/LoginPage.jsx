@@ -35,13 +35,11 @@ const LoginPage = () => {
           <div className="login-card">
             <h2 className="login-heading">Sign in to your account</h2>
 
-            {/* Email / Mobile tabs (optional) */}
             <div className="login-tabs">
               <button className="login-tab active">Email</button>
               <button className="login-tab">Mobile</button>
             </div>
 
-            {/* Email input */}
             <label className="login-label">Email</label>
             <input
               type="email"
@@ -49,7 +47,6 @@ const LoginPage = () => {
               placeholder="admin@edmeinsurance.com"
             />
 
-            {/* Password / OTP toggle */}
             <div className="login-toggle-row">
               <span className={!useOtp ? "toggle-label active" : "toggle-label"}>
                 Password
@@ -69,7 +66,6 @@ const LoginPage = () => {
               </span>
             </div>
 
-            {/* Password / OTP field */}
             <label className="login-label">
               {useOtp ? "Enter OTP" : "Password"}
             </label>
@@ -79,14 +75,12 @@ const LoginPage = () => {
               placeholder={useOtp ? "Enter 6-digit OTP" : "********"}
             />
 
-            {/* Forgot password */}
             <div className="login-forgot-row">
               <button className="forgot-link" type="button">
                 Forgot Password?
               </button>
             </div>
 
-            {/* Sign In button */}
             <button className="login-button" type="button">
               Sign In
             </button>
