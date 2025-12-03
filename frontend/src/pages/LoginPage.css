@@ -1,9 +1,9 @@
-/* ROOT LAYOUT */
+/* ROOT */
 .login-root {
   display: flex;
-  height: 100vh;         /* full screen height */
-  overflow: hidden;      /* remove scrollbar */
+  height: 100vh;
   width: 100%;
+  overflow: hidden;
 }
 
 /* LEFT PANEL */
@@ -12,68 +12,65 @@
   background: linear-gradient(135deg, #b30026, #0046ff);
   display: flex;
   flex-direction: column;
-  justify-content: center;   /* vertical center */
-  align-items: center;       /* horizontal center */
+  justify-content: center;
+  align-items: center;
   padding: 2rem;
   text-align: center;
 }
 
 .login-hero-image {
-  max-width: 70%;
-  height: auto;
-  margin-bottom: 1rem;
-  filter: drop-shadow(0 18px 35px rgba(0, 0, 0, 0.4));
+  max-width: 60%;
+  margin-bottom: 0.5rem;
 }
 
+/* Title & subtitle */
 .login-title {
-  font-size: 2.4rem;
+  color: white;
+  font-size: 2.8rem;
   font-weight: 800;
-  color: #fff;
-  margin-top: 0.6rem;
+  margin-top: 0.3rem;
 }
 
 .login-subtitle {
+  font-size: 1.1rem;
   margin-top: 0.6rem;
-  font-size: 1rem;
-  color: #000;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
+  padding: 0.5rem 1.3rem;
+  background: rgba(255, 255, 255, 0.85);
+  color: black;
+  border-radius: 12px;
 }
 
 /* RIGHT PANEL */
 .login-right {
   flex: 1;
   background: #f3f5fb;
+  position: relative;
   display: flex;
-  height: 100vh;                /* same height */
-  align-items: center;
   justify-content: center;
-  overflow: hidden;
+  align-items: center;
 }
 
-.login-right-inner {
-  width: 100%;
-  max-width: 420px;
+/* Top right logo */
+.login-top-logo {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  width: 120px;
 }
 
-.login-logo {
-  display: block;
-  margin: 0 auto 1.2rem;
-  max-width: 180px;
-}
-
+/* Login Card */
 .login-card {
-  background: #fff;
+  background: white;
+  width: 430px;
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.1);
 }
 
+/* Heading */
 .login-heading {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
-
-/* Inputs, buttons, tabs, toggle (same as earlier definitions) */

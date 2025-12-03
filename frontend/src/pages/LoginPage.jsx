@@ -6,6 +6,7 @@ const LoginPage = () => {
 
   return (
     <div className="login-root">
+
       {/* LEFT PANEL */}
       <div className="login-left">
         <img
@@ -14,9 +15,7 @@ const LoginPage = () => {
           className="login-hero-image"
         />
 
-        <h1 className="login-title">
-          Digitally Streamline the Audit Process
-        </h1>
+        <h1 className="login-title">Digitally Streamline the Audit Process</h1>
 
         <p className="login-subtitle">
           Ensure accuracy, transparency, and effortless compliance.
@@ -25,66 +24,60 @@ const LoginPage = () => {
 
       {/* RIGHT PANEL */}
       <div className="login-right">
-        <div className="login-right-inner">
-          <img
-            src="/assets/edme-logo.png"
-            alt="Edme Logo"
-            className="login-logo"
+
+        {/* Logo at top */}
+        <img
+          src="/assets/edme-logo.png"
+          alt="Edme Logo"
+          className="login-top-logo"
+        />
+
+        <div className="login-card">
+          <h2 className="login-heading">Sign in to your account</h2>
+
+          <div className="login-tabs">
+            <button className="login-tab active">Email</button>
+            <button className="login-tab">Mobile</button>
+          </div>
+
+          <label className="login-label">Email</label>
+          <input
+            type="email"
+            className="login-input"
+            placeholder="admin@edmeinsurance.com"
           />
 
-          <div className="login-card">
-            <h2 className="login-heading">Sign in to your account</h2>
+          <div className="login-toggle-row">
+            <span className={!useOtp ? "toggle-label active" : "toggle-label"}>
+              Password
+            </span>
 
-            <div className="login-tabs">
-              <button className="login-tab active">Email</button>
-              <button className="login-tab">Mobile</button>
-            </div>
-
-            <label className="login-label">Email</label>
-            <input
-              type="email"
-              className="login-input"
-              placeholder="admin@edmeinsurance.com"
-            />
-
-            <div className="login-toggle-row">
-              <span className={!useOtp ? "toggle-label active" : "toggle-label"}>
-                Password
-              </span>
-
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={useOtp}
-                  onChange={() => setUseOtp(!useOtp)}
-                />
-                <span className="toggle-slider" />
-              </label>
-
-              <span className={useOtp ? "toggle-label active" : "toggle-label"}>
-                OTP
-              </span>
-            </div>
-
-            <label className="login-label">
-              {useOtp ? "Enter OTP" : "Password"}
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={useOtp}
+                onChange={() => setUseOtp(!useOtp)}
+              />
+              <span className="toggle-slider" />
             </label>
-            <input
-              type={useOtp ? "text" : "password"}
-              className="login-input"
-              placeholder={useOtp ? "Enter 6-digit OTP" : "********"}
-            />
 
-            <div className="login-forgot-row">
-              <button className="forgot-link" type="button">
-                Forgot Password?
-              </button>
-            </div>
-
-            <button className="login-button" type="button">
-              Sign In
-            </button>
+            <span className={useOtp ? "toggle-label active" : "toggle-label"}>
+              OTP
+            </span>
           </div>
+
+          <label className="login-label">{useOtp ? "Enter OTP" : "Password"}</label>
+          <input
+            type={useOtp ? "text" : "password"}
+            className="login-input"
+            placeholder={useOtp ? "Enter 6-digit OTP" : "********"}
+          />
+
+          <div className="login-forgot-row">
+            <button className="forgot-link" type="button">Forgot Password?</button>
+          </div>
+
+          <button className="login-button" type="button">Sign In</button>
         </div>
       </div>
     </div>
