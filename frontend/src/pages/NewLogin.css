@@ -1,0 +1,128 @@
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f3f7ff;
+}
+
+/* LEFT SIDE */
+.left-section {
+  width: 50%;
+  background: linear-gradient(135deg, #b90014, #810009, #5f0006);
+  color: white;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.left-section h1 {
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #0047ba;
+}
+
+.left-section p {
+  font-size: 18px;
+  margin-bottom: 32px;
+  color: #f1f1f1;
+}
+
+.audit-image {
+  width: 420px;
+  margin-top: 10px;
+}
+
+/* RIGHT SIDE */
+.right-section {
+  width: 50%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.company-logo {
+  height: 80px;
+  margin-bottom: 20px;
+}
+
+.login-box {
+  width: 440px;
+  padding: 28px 32px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
+}
+
+.login-box h2 {
+  text-align: center;
+  color: #0047ba;
+  font-size: 26px;
+  margin-bottom: 22px;
+}
+
+.tab-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.tab-buttons button {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: #d7e6ff;
+  color: #0047ba;
+}
+
+.tab-buttons button.active {
+  background: #0047ba;
+  color: white;
+}
+
+.input-field {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #d4d7db;
+  background: #eef3ff;
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+.auth-type {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  color: #000;
+  font-weight: 600;
+}
+
+.forgot-link {
+  text-align: right;
+  margin: 10px 0;
+}
+
+.forgot-link a {
+  color: #0047ba;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  background: #0047ba;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  margin-top: 10px;
+  cursor: pointer;
+}
