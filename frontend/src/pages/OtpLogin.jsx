@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../styles/PremiumLogin.css";
-import logo from "../assets/edme-logo.png";
+import logo from "../assets/logo.png";
 
 export default function OtpLogin() {
   const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
