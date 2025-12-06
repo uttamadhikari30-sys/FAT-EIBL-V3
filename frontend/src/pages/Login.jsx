@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../Src/NewLogin.css";
+import "../Src/pages/NewLogin.css";
 import logo from "../assets/logo.png";
 import audit from "../assets/audit-illustration.png";
 
