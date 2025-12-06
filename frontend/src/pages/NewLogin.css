@@ -1,39 +1,52 @@
-.login-container {
-  display: flex;
-  min-height: 100vh;
+/* ================= GLOBAL ================= */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Removes scroll bar */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: #f3f7ff;
 }
 
-/* LEFT SIDE */
+.login-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* ================= LEFT SECTION ================= */
 .left-section {
   width: 50%;
   background: linear-gradient(135deg, #b90014, #810009, #5f0006);
   color: white;
-  padding: 60px;
+  padding: 70px 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .left-section h1 {
-  font-size: 42px;
+  font-size: 46px;
   font-weight: 800;
-  margin-bottom: 12px;
-  color: #0047ba;
+  margin-bottom: 16px;
+  color: #ffffff; /* White heading */
 }
 
 .left-section p {
-  font-size: 18px;
-  margin-bottom: 32px;
-  color: #f1f1f1;
+  font-size: 20px;
+  margin-bottom: 35px;
+  color: #000000; /* Black text */
 }
 
 .audit-image {
-  width: 420px;
-  margin-top: 10px;
+  width: 520px;
+  max-width: 100%;
+  margin-top: 25px;
+  border-radius: 16px;
+  object-fit: contain;
 }
 
-/* RIGHT SIDE */
+/* ================= RIGHT SECTION ================= */
 .right-section {
   width: 50%;
   background: #ffffff;
@@ -41,42 +54,49 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden; /* prevents scroll inside */
 }
 
 .company-logo {
-  height: 80px;
-  margin-bottom: 20px;
+  height: 70px;
+  margin-bottom: 18px;
 }
 
+/* ================= LOGIN BOX ================= */
 .login-box {
-  width: 440px;
-  padding: 28px 32px;
-  background: white;
+  width: 420px;
+  padding: 24px 32px;
+  background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
 }
 
 .login-box h2 {
   text-align: center;
-  color: #0047ba;
-  font-size: 26px;
+  font-size: 22px; /* Reduced font */
+  font-weight: 700;
   margin-bottom: 22px;
+  color: #0047ba;
 }
 
+/* ================= TAB BUTTONS ================= */
 .tab-buttons {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
 .tab-buttons button {
-  padding: 10px 22px;
+  padding: 10px 24px;
   border-radius: 999px;
   border: none;
   cursor: pointer;
   background: #d7e6ff;
   color: #0047ba;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
 }
 
 .tab-buttons button.active {
@@ -84,45 +104,94 @@
   color: white;
 }
 
+/* ================= INPUT FIELDS ================= */
 .input-field {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   border-radius: 10px;
   border: 1px solid #d4d7db;
   background: #eef3ff;
-  margin: 10px 0;
-  font-size: 15px;
+  font-size: 14px; /* Reduced font */
+  margin-bottom: 12px;
+  transition: 0.25s;
 }
 
+.input-field:focus {
+  border-color: #0047ba;
+  box-shadow: 0 0 6px rgba(0, 71, 186, 0.25);
+  outline: none;
+}
+
+/* ================= RADIO OPTIONS ================= */
 .auth-type {
   display: flex;
   justify-content: space-between;
-  padding: 5px;
-  color: #000;
+  margin: 8px 0 14px;
+  font-size: 14px;
   font-weight: 600;
+  color: #000000;
 }
 
+.auth-type input {
+  margin-right: 6px;
+}
+
+/* ================= FORGOT PASSWORD ================= */
 .forgot-link {
   text-align: right;
-  margin: 10px 0;
+  margin-bottom: 14px;
 }
 
 .forgot-link a {
+  font-size: 13px;
   color: #0047ba;
-  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
 }
 
+.forgot-link a:hover {
+  text-decoration: underline;
+}
+
+/* ================= SIGN IN BUTTON ================= */
 .login-btn {
   width: 100%;
-  padding: 14px;
+  padding: 12px 0;
   border-radius: 999px;
+  border: none;
   background: #0047ba;
   color: white;
-  font-size: 18px;
+  font-size: 16px; /* Reduced */
   font-weight: 700;
-  border: none;
-  margin-top: 10px;
   cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.login-btn:hover {
+  background: #003b9a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 71, 186, 0.25);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 960px) {
+  .login-container {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .left-section,
+  .right-section {
+    width: 100%;
+    height: auto;
+    padding: 40px 20px;
+  }
+
+  .audit-image {
+    width: 100%;
+  }
+
+  body {
+    overflow: auto; /* allow scroll on mobile */
+  }
 }

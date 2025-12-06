@@ -1,165 +1,197 @@
-/* ===== Layout ===== */
-.login-page {
-  display: flex;
-  min-height: 100vh;
+/* ================= GLOBAL ================= */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Removes scroll bar */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f3f7ff;
 }
 
-/* ===== Left Section ===== */
-.left-section {
-  flex: 1;
-  background: linear-gradient(135deg, #d31027 0%, #61040a 100%);
-  color: #ffffff;
+.login-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 40px;
-}
-
-.left-content {
-  max-width: 520px;
-}
-
-.left-content h1 {
-  font-size: 44px;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 18px;
-}
-
-.left-content p {
-  font-size: 18px;
-  font-weight: 350;
-  opacity: 0.92;
-  margin-bottom: 32px;
-  max-width: 420px;
-}
-
-.audit-illustration {
-  margin-top: 25px;
+  height: 100vh;
   width: 100%;
-  max-width: 450px;
-  border-radius: 18px;
-  display: block;
 }
 
-/* ===== Right Section ===== */
+/* ================= LEFT SECTION ================= */
+.left-section {
+  width: 50%;
+  background: linear-gradient(135deg, #b90014, #810009, #5f0006);
+  color: white;
+  padding: 70px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.left-section h1 {
+  font-size: 46px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: #ffffff; /* White heading */
+}
+
+.left-section p {
+  font-size: 20px;
+  margin-bottom: 35px;
+  color: #000000; /* Black text */
+}
+
+.audit-image {
+  width: 520px;
+  max-width: 100%;
+  margin-top: 25px;
+  border-radius: 16px;
+  object-fit: contain;
+}
+
+/* ================= RIGHT SECTION ================= */
 .right-section {
-  flex: 1;
-  background: #f5f7fb;
+  width: 50%;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px;
+  overflow: hidden; /* prevents scroll inside */
 }
 
-.brand-logo {
-  height: 46px;
-  margin-bottom: 24px;
-}
-
-/* ===== Glass Login Card ===== */
-.login-card {
-  width: 100%;
-  max-width: 420px;
-
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 20px;
-  padding: 36px 30px;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  animation: fadeIn 0.5s ease;
-}
-
-.login-card h2 {
-  font-size: 26px;
-  font-weight: 700;
-  text-align: center;
-  color: #0047ba;
-  margin-bottom: 24px;
-}
-
-/* ===== Tabs (Email / Mobile) ===== */
-.tab-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.tab {
-  flex: 1;
-  border: none;
-  background: transparent;
-  padding: 10px 0;
-  font-size: 15px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  color: #555;
-  transition: 0.3s ease;
-}
-
-.tab.active {
-  font-weight: 600;
-  border-bottom-color: #0047ba;
-  color: #0047ba;
-}
-
-/* ===== Input Fields ===== */
-.field {
+.company-logo {
+  height: 70px;
   margin-bottom: 18px;
 }
 
-/* ===== Login Button ===== */
-.login-btn {
-  width: 100%;
-  padding: 14px 0;
+/* ================= LOGIN BOX ================= */
+.login-box {
+  width: 420px;
+  padding: 24px 32px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+}
+
+.login-box h2 {
+  text-align: center;
+  font-size: 22px; /* Reduced font */
+  font-weight: 700;
+  margin-bottom: 22px;
+  color: #0047ba;
+}
+
+/* ================= TAB BUTTONS ================= */
+.tab-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.tab-buttons button {
+  padding: 10px 24px;
   border-radius: 999px;
   border: none;
-
-  background: linear-gradient(135deg, #0047ba, #0069ff);
-  color: #ffffff;
-
-  font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
+  background: #d7e6ff;
+  color: #0047ba;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
-  box-shadow: 0 10px 25px rgba(0, 71, 186, 0.35);
+.tab-buttons button.active {
+  background: #0047ba;
+  color: white;
+}
+
+/* ================= INPUT FIELDS ================= */
+.input-field {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d4d7db;
+  background: #eef3ff;
+  font-size: 14px; /* Reduced font */
+  margin-bottom: 12px;
+  transition: 0.25s;
+}
+
+.input-field:focus {
+  border-color: #0047ba;
+  box-shadow: 0 0 6px rgba(0, 71, 186, 0.25);
+  outline: none;
+}
+
+/* ================= RADIO OPTIONS ================= */
+.auth-type {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.auth-type input {
+  margin-right: 6px;
+}
+
+/* ================= FORGOT PASSWORD ================= */
+.forgot-link {
+  text-align: right;
+  margin-bottom: 14px;
+}
+
+.forgot-link a {
+  font-size: 13px;
+  color: #0047ba;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgot-link a:hover {
+  text-decoration: underline;
+}
+
+/* ================= SIGN IN BUTTON ================= */
+.login-btn {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 999px;
+  border: none;
+  background: #0047ba;
+  color: white;
+  font-size: 16px; /* Reduced */
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .login-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 32px rgba(0, 71, 186, 0.45);
-  opacity: 0.97;
+  background: #003b9a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 71, 186, 0.25);
 }
 
-/* ===== Animations ===== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0px);
-  }
-}
-
-/* ===== Responsive ===== */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 960px) {
-  .login-page {
+  .login-container {
     flex-direction: column;
+    overflow-y: auto;
   }
-  .left-section {
+
+  .left-section,
+  .right-section {
+    width: 100%;
+    height: auto;
     padding: 40px 20px;
-    text-align: center;
   }
-  .left-content {
-    align-items: center;
-    text-align: center;
+
+  .audit-image {
+    width: 100%;
+  }
+
+  body {
+    overflow: auto; /* allow scroll on mobile */
   }
 }
