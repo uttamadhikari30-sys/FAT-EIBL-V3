@@ -9,150 +9,149 @@
 /* LEFT SIDE */
 .left-section {
   background: #7b0000;
-  padding: 60px 50px;
+  padding: 40px 50px;
   color: #fff;
 }
 
 .main-heading {
-  font-size: 42px;
+  font-size: 38px;
   font-weight: 800;
-  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  color: #ffffff;
 }
 
 .sub-heading {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 400;
-  margin-bottom: 30px;
-  color: #f8f8f8;
+  margin-bottom: 25px;
+  color: #000000;
 }
 
 .audit-image {
-  width: 90%;
+  width: 85%;
   margin-top: 20px;
-  opacity: 0.92;
   border-radius: 12px;
+  opacity: 0.92;
 }
 
-/* RIGHT SIDE */
+/* RIGHT SECTION */
 .right-section {
   background: #f8faff;
   text-align: center;
-  padding: 40px;
-  overflow-y: auto;
+  padding: 25px;
 }
 
 .company-logo {
-  width: 180px;
-  margin-bottom: 10px;
+  width: 150px;
+  margin-bottom: 5px;
 }
 
+/* LOGIN CARD */
 .login-box {
-  background: #fff;
-  padding: 30px;
-  border-radius: 18px;
-  box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
-  width: 80%;
+  background: #ffffff;
+  padding: 20px;
+  width: 75%;
   margin: 0 auto;
+  border-radius: 14px;
+  box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
+  font-size: 14px;
 }
 
 .login-title {
-  font-size: 26px;
-  color: #0057d8;
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 25px;
+  color: #0057d8;
+  margin-bottom: 15px;
 }
 
 /* TABS */
 .tab-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
 .tab-buttons button {
-  padding: 10px 28px;
+  padding: 8px 20px;
   border-radius: 25px;
   border: none;
-  background: #e4ecff;
-  color: #0047b3;
-  font-weight: 600;
   cursor: pointer;
+  font-size: 14px;
+  background: #dfdfdf;
 }
 
 .tab-buttons .active {
   background: #0057d8;
-  color: white;
+  color: #ffffff;
 }
 
 /* INPUT FIELD */
 .input-field {
   width: 100%;
-  padding: 14px;
-  margin-top: 10px;
+  padding: 12px;
+  margin-top: 8px;
   border-radius: 8px;
   background: #e8f0ff;
   border: 1px solid #c9d9f8;
-  font-size: 16px;
+  font-size: 14px;
 }
 
-/* PASSWORD / OTP BOX */
+/* AUTH OPTIONS */
 .auth-type {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  font-size: 16px;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
+/* FORGOT PASSWORD */
 .forgot-link {
-  margin-top: 10px;
   text-align: right;
+  margin-top: 5px;
 }
 
 .forgot-link a {
-  font-size: 14px;
-  font-weight: 600;
   color: #0057d8;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 /* LOGIN BUTTON */
 .login-btn {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   background: #0057d8;
-  color: #fff;
-  border: none;
+  color: #ffffff;
   border-radius: 10px;
-  margin-top: 20px;
-  font-size: 18px;
+  border: none;
+  margin-top: 18px;
+  font-size: 16px;
   cursor: pointer;
 }
 
-/* FOOTER FULL WIDTH BAR */
+.login-btn:hover {
+  background: #0046b0;
+}
+
+/* FOOTER BAR */
 .footer-bar {
   width: 100%;
   background: #ffffff;
   position: fixed;
   bottom: 0;
   left: 0;
-
-  padding: 12px 35px;
-  border-top: 1px solid #dcdcdc;
-
+  padding: 12px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  border-top: 1px solid #dddddd;
   font-size: 14px;
-  color: #333;
-  z-index: 999;
 }
 
 .footer-bar-right a {
-  margin-left: 22px;
-  text-decoration: none;
+  margin-left: 25px;
   color: #0057d8;
-  font-weight: 500;
+  text-decoration: none;
 }
 
 .footer-bar-right a:hover {
