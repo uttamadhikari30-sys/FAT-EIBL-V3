@@ -1,93 +1,221 @@
-import React, { useState } from "react";
-import "./NewLogin.css";
-import logo from "../assets/logo.png";
-import audit from "../assets/audit-illustration.png";
+/* ================================
+   MAIN GRID LAYOUT
+================================ */
+.login-container {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  height: 100vh;
+  overflow: hidden;
+}
 
-const Login = () => {
-  const [loginWith, setLoginWith] = useState("email");
-  const [authMode, setAuthMode] = useState("password");
+/* ================================
+   LEFT SIDE
+================================ */
+.left-section {
+  background: #7a0000; /* deep premium red */
+  padding: 70px 60px;
+  color: white;
+  position: relative;
+}
 
-  return (
-    <div className="login-container">
-      {/* LEFT SIDE */}
-      <div className="left-section">
-        <h1>Digitally Streamline the Audit Process</h1>
-        <p>Ensure accuracy, transparency, and effortless compliance.</p>
-        <img src={audit} alt="Audit Illustration" className="audit-image" />
-      </div>
+/* overlay to make text readable */
+.left-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 0;
+}
 
-      {/* RIGHT SIDE */}
-      <div className="right-section">
-        <img src={logo} alt="Company Logo" className="company-logo" />
+.left-section h1 {
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #ffffff;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
+}
 
-        <div className="login-box">
-          <h2>Sign in to your account</h2>
+.left-section p {
+  font-size: 22px;
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 35px;
+  position: relative;
+  z-index: 2;
+}
 
-          <div className="tab-buttons">
-            <button
-              className={loginWith === "email" ? "active" : ""}
-              onClick={() => setLoginWith("email")}
-            >
-              Email
-            </button>
-            <button
-              className={loginWith === "mobile" ? "active" : ""}
-              onClick={() => setLoginWith("mobile")}
-            >
-              Mobile
-            </button>
-          </div>
+/* Illustration */
+.audit-image {
+  width: 88%;
+  margin-top: 25px;
+  border-radius: 12px;
+  position: relative;
+  z-index: 2;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-          {/* EMAIL / MOBILE INPUT */}
-          <input
-            type={loginWith === "email" ? "email" : "number"}
-            className="input-field"
-            placeholder={
-              loginWith === "email"
-                ? "admin@edmeinsurance.com"
-                : "Enter mobile number"
-            }
-          />
+/* Add spacing left & right */
+.left-section .audit-image {
+  padding-left: 10px;
+  padding-right: 10px;
+}
 
-          {/* PASSWORD / OTP */}
-          <div className="auth-type">
-            <label>
-              <input
-                type="radio"
-                checked={authMode === "password"}
-                onChange={() => setAuthMode("password")}
-              />
-              Password
-            </label>
+/* ================================
+   RIGHT SIDE
+================================ */
+.right-section {
+  background: #f6faff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  padding-top: 40px;
+}
 
-            <label>
-              <input
-                type="radio"
-                checked={authMode === "otp"}
-                onChange={() => setAuthMode("otp")}
-              />
-              OTP
-            </label>
-          </div>
+.company-logo {
+  width: 120px;
+  margin-bottom: 20px;
+}
 
-          {/* PASSWORD FIELD */}
-          {authMode === "password" && (
-            <input
-              type="password"
-              className="input-field"
-              placeholder="Enter password"
-            />
-          )}
+/* Login Box */
+.login-box {
+  background: #ffffff;
+  width: 78%;
+  padding: 40px;
+  border-radius: 18px;
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15);
+  margin-top: 10px;
+}
 
-          <div className="forgot-link">
-            <a href="/forgot-password">Forgot Password?</a>
-          </div>
+.login-box h2 {
+  text-align: center;
+  color: #004cc7;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
 
-          <button className="login-btn">Sign In</button>
-        </div>
-      </div>
-    </div>
-  );
-};
+/* ================================
+   Email / Mobile Tab Buttons
+================================ */
+.tab-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
 
-export default Login;
+.tab-buttons button {
+  padding: 12px 30px;
+  border-radius: 30px;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  background: #dce8ff;
+  color: #123a8f;
+  font-weight: 600;
+}
+
+.tab-buttons .active {
+  background: #004ce8;
+  color: white;
+}
+
+/* ================================
+   INPUT FIELDS
+================================ */
+.input-field {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: none;
+  background: #e7f0ff;
+  margin-bottom: 18px;
+  font-size: 18px;
+}
+
+.input-field:focus {
+  outline: 2px solid #005fff;
+}
+
+/* ================================
+   RADIO OPTIONS
+================================ */
+.auth-type {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 18px;
+  color: #000;
+}
+
+.auth-type input {
+  margin-right: 8px;
+}
+
+/* ================================
+   FORGOT PASSWORD
+================================ */
+.forgot-link {
+  text-align: right;
+  margin-bottom: 18px;
+}
+
+.forgot-link a {
+  color: #004ce8;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.forgot-link a:hover {
+  text-decoration: underline;
+}
+
+/* ================================
+   SIGN IN BUTTON
+================================ */
+.login-btn {
+  width: 100%;
+  padding: 16px;
+  background: #004ce8;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.login-btn:hover {
+  background: #0037b8;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 1100px) {
+  .login-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .left-section {
+    padding: 40px;
+    height: auto;
+    text-align: center;
+  }
+
+  .audit-image {
+    width: 70%;
+  }
+
+  .login-box {
+    width: 90%;
+  }
+}
