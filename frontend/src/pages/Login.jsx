@@ -1,50 +1,48 @@
 import React, { useState } from "react";
 import "./NewLogin.css";
-
 import logo from "../assets/logo.png";
 import audit from "../assets/audit-illustration.png";
 
-export default function Login() {
+const Login = () => {
   const [loginWith, setLoginWith] = useState("email");
   const [authMode, setAuthMode] = useState("password");
 
   return (
-    <div className="login-container">
+    <div className="login-wrapper">
 
-      {/* LEFT SECTION */}
+      {/* LEFT SIDE */}
       <div className="left-section">
-        <h1 className="left-title">Digitally Streamline the Audit Process</h1>
-        <p className="left-subtitle">
+        <h1 className="main-heading">Digitally Streamline the Audit Process</h1>
+        <p className="sub-heading">
           Ensure accuracy, transparency, and effortless compliance.
         </p>
 
         <img src={audit} alt="Audit Illustration" className="audit-image" />
       </div>
 
-      {/* RIGHT SECTION */}
+      {/* RIGHT SIDE */}
       <div className="right-section">
-        <img src={logo} className="company-logo" alt="Company Logo" />
+        <img src={logo} alt="Company Logo" className="company-logo" />
 
         <div className="login-box">
           <h2 className="login-title">Sign in to your account</h2>
 
-          {/* Tabs */}
           <div className="tab-buttons">
             <button
-              className={loginWith === "email" ? "tab-active" : ""}
+              className={loginWith === "email" ? "active" : ""}
               onClick={() => setLoginWith("email")}
             >
               Email
             </button>
+
             <button
-              className={loginWith === "mobile" ? "tab-active" : ""}
+              className={loginWith === "mobile" ? "active" : ""}
               onClick={() => setLoginWith("mobile")}
             >
               Mobile
             </button>
           </div>
 
-          {/* Email/Mobile Input */}
           <input
             type={loginWith === "email" ? "email" : "number"}
             className="input-field"
@@ -55,7 +53,6 @@ export default function Login() {
             }
           />
 
-          {/* Auth Type */}
           <div className="auth-type">
             <label>
               <input
@@ -76,7 +73,6 @@ export default function Login() {
             </label>
           </div>
 
-          {/* Password Field */}
           {authMode === "password" && (
             <input
               type="password"
@@ -91,17 +87,20 @@ export default function Login() {
 
           <button className="login-btn">Sign In</button>
         </div>
+      </div>
 
-        {/* FOOTER */}
-        <div className="footer">
-          © 2025 EDME Services Pvt Ltd.
-          <div className="footer-links">
-            <a href="/privacy-policy">Privacy Policy</a> |{" "}
-            <a href="/terms">Terms</a> |{" "}
-            <a href="/contact">Contact Us</a>
-          </div>
+      {/* FULL-WIDTH FOOTER */}
+      <div className="footer-bar">
+        <div className="footer-bar-left">© 2025 EDME Services Pvt Ltd.</div>
+
+        <div className="footer-bar-right">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms</a>
+          <a href="#">Contact Support</a>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Login;

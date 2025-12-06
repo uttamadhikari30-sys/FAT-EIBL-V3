@@ -1,170 +1,160 @@
-/* ============================
-   MAIN GRID LAYOUT
-============================ */
-.login-container {
+/* MAIN WRAPPER */
+.login-wrapper {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: 1fr 1fr;
   height: 100vh;
   overflow: hidden;
-  font-family: "Inter", sans-serif;
 }
 
-/* ============================
-   LEFT SECTION (RED PANEL)
-============================ */
+/* LEFT SIDE */
 .left-section {
-  background: #7a0000;
-  color: white;
-  padding: 25px 50px 0 50px; /* Reduced top space */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  background: #7b0000;
+  padding: 60px 50px;
+  color: #fff;
 }
 
-.left-section h1 {
+.main-heading {
   font-size: 42px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #ffffff;
-  margin-bottom: 15px;
+  font-weight: 800;
+  margin-bottom: 10px;
 }
 
-.left-section p {
+.sub-heading {
   font-size: 20px;
-  color: #eeeeee;
-  margin-bottom: 20px;
+  font-weight: 400;
+  margin-bottom: 30px;
+  color: #f8f8f8;
 }
 
-/* Illustration */
 .audit-image {
-  width: 88%;
-  margin-top: 10px;
-  opacity: 0.95;              /* Light transparency */
+  width: 90%;
+  margin-top: 20px;
+  opacity: 0.92;
   border-radius: 12px;
-  object-fit: contain;
 }
 
-/* ============================
-   RIGHT SECTION (FORM PANEL)
-============================ */
+/* RIGHT SIDE */
 .right-section {
-  background: #f5f7ff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px 60px;
+  background: #f8faff;
+  text-align: center;
+  padding: 40px;
+  overflow-y: auto;
 }
 
-/* Logo */
 .company-logo {
-  width: 170px;
-  margin: 10px auto 0 auto;
-  display: block;
+  width: 180px;
+  margin-bottom: 10px;
 }
 
-/* Login Box */
 .login-box {
-  background: white;
-  padding: 35px 35px 40px 35px;
-  border-radius: 20px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 450px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
+  width: 80%;
   margin: 0 auto;
 }
 
-.login-box h2 {
-  text-align: center;
-  color: #0047ba;
-  font-size: 28px;
+.login-title {
+  font-size: 26px;
+  color: #0057d8;
+  font-weight: 700;
   margin-bottom: 25px;
 }
 
-/* Tabs */
+/* TABS */
 .tab-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
 .tab-buttons button {
-  padding: 10px 30px;
+  padding: 10px 28px;
+  border-radius: 25px;
   border: none;
-  background: #d7dffb;
-  color: #00378a;
-  border-radius: 20px;
+  background: #e4ecff;
+  color: #0047b3;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 15px;
 }
 
 .tab-buttons .active {
-  background: #0047ba;
+  background: #0057d8;
   color: white;
 }
 
-/* Inputs */
+/* INPUT FIELD */
 .input-field {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #d3d9e4;
-  margin-bottom: 15px;
-  background: #eef4ff;
+  padding: 14px;
+  margin-top: 10px;
+  border-radius: 8px;
+  background: #e8f0ff;
+  border: 1px solid #c9d9f8;
   font-size: 16px;
 }
 
-/* Password / OTP Radio */
+/* PASSWORD / OTP BOX */
 .auth-type {
   display: flex;
   justify-content: space-between;
-  padding: 3px 5px 8px 3px;
-  font-size: 15px;
-  color: #333;
+  margin-top: 15px;
+  font-size: 16px;
 }
 
-/* Forgot Password */
 .forgot-link {
+  margin-top: 10px;
   text-align: right;
-  margin-bottom: 15px;
 }
 
 .forgot-link a {
-  color: #0047ba;
-  text-decoration: none;
   font-size: 14px;
+  font-weight: 600;
+  color: #0057d8;
 }
 
-/* Login Button */
+/* LOGIN BUTTON */
 .login-btn {
   width: 100%;
   padding: 14px;
-  background: #0050da;
-  color: white;
+  background: #0057d8;
+  color: #fff;
   border: none;
-  border-radius: 12px;
-  font-size: 17px;
+  border-radius: 10px;
+  margin-top: 20px;
+  font-size: 18px;
   cursor: pointer;
-  margin-top: 5px;
 }
 
-.login-btn:hover {
-  background: #003ea8;
-}
+/* FOOTER FULL WIDTH BAR */
+.footer-bar {
+  width: 100%;
+  background: #ffffff;
+  position: fixed;
+  bottom: 0;
+  left: 0;
 
-/* ============================
-   FOOTER FIX — ALWAYS VISIBLE
-============================ */
-.footer {
-  text-align: center;
+  padding: 12px 35px;
+  border-top: 1px solid #dcdcdc;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   font-size: 14px;
   color: #333;
-  padding: 12px 0 5px 0;
-  margin-top: auto;
+  z-index: 999;
 }
 
-.footer a {
-  color: #0047ba;
+.footer-bar-right a {
+  margin-left: 22px;
   text-decoration: none;
-  margin: 0 8px;
+  color: #0057d8;
+  font-weight: 500;
+}
+
+.footer-bar-right a:hover {
+  text-decoration: underline;
 }
