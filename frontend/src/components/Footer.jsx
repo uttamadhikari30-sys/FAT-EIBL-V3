@@ -3,17 +3,12 @@ import "./Footer.css";
 
 const Footer = () => {
   return (
-    <footer className="auth-footer">
-      <div className="footer-left">© 2025 EDME Services Pvt Ltd.</div>
-
-      <div className="footer-right">
-        <a href="#">Privacy Policy</a>
-        <span>|</span>
-        <a href="#">Terms</a>
-        <span>|</span>
-        <a href="#">Contact Support</a>
-      </div>
-    </footer>
+    <div className="auth-footer">
+      © 2025 EDME Services Pvt Ltd.
+      <a href="/privacy-policy">Privacy Policy</a> |
+      <a href="/terms">Terms</a> |
+      <a href="/contact">Contact Us</a>
+    </div>
   );
 };
 

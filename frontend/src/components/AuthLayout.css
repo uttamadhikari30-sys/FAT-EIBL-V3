@@ -9,56 +9,83 @@
 /* LEFT SIDE */
 .auth-left {
   background: #7a0000;
-  padding: 50px 55px;
+  padding: 30px 55px; /* Reduced space */
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
 
-/* WHITE MAIN HEADING */
+/* WHITE MAIN HEADING (reduced size) */
 .auth-title {
-  font-size: 42px;
+  font-size: 34px;        /* Reduced from 42px */
   font-weight: 800;
-  margin-bottom: 10px;
+  margin-top: 10px;       /* Reduced top space */
+  margin-bottom: 8px;
+  line-height: 1.2;
   color: #ffffff;
 }
 
-/* BLACK SUB-HEADING */
+/* BLACK SUB-HEADING (reduced size) */
 .auth-subtitle {
-  font-size: 20px;
+  font-size: 18px;        /* Reduced from 20px */
   color: #000000;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  font-weight: 500;
 }
 
-/* Illustration Fix */
+/* Illustration Fix - transparent look */
 .auth-illustration {
-  width: 90%;
-  margin-top: 25px;
-  border-radius: 12px;
+  width: 85%;
+  margin-top: 10px;
+  filter: drop-shadow(0px 0px 12px rgba(0,0,0,0.25));
+  opacity: 0.95;          /* Soft transparent look */
+  border-radius: 10px;
   object-fit: contain;
 }
 
 /* RIGHT SIDE */
 .auth-right {
   background: #f9fbff;
-  padding: 40px 60px;
+  padding: 20px 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
 }
 
-/* Logo Style Fix */
+/* Logo Style */
 .auth-logo {
-  width: 160px;
-  margin-bottom: 20px;
+  width: 150px;
+  margin-top: 10px;      /* Reduced space */
+  margin-bottom: 15px;
   object-fit: contain;
 }
 
-/* Shrink content to avoid scrolling */
+/* Shrink content */
 .login-box,
 .form-box {
-  transform: scale(0.92);
+  transform: scale(0.90);
   transform-origin: top center;
+}
+
+/* FOOTER FIX */
+.auth-footer {
+  position: absolute;
+  bottom: 12px;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: #ffffffcc;     /* Soft white text */
+}
+
+.auth-footer a {
+  color: #ffffff;
+  margin: 0 8px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
 }
