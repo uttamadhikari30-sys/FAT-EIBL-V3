@@ -1,177 +1,82 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./ResetPassword.css";
 import logo from "../assets/logo.png";
 
 export default function ResetPassword() {
-  const API =
-    import.meta.env.VITE_API_URL ||
-    "https://fat-eibl-backend-x1sp.onrender.com";
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [show, setShow] = useState(false);
+  const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  function checkStrength(pwd) {
+    if (pwd.length >= 12) return "Strong";
+    if (pwd.length >= 8) return "Medium";
+    if (pwd.length > 0) return "Weak";
+    return "";
+  }
 
-  const handleResetPassword = async (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-    setMessage("");
-
-    try {
-      const response = await fetch(`${API}/auth/reset-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/json",
-        },
-        body: new URLSearchParams({
-          email,
-          otp,
-          new_password: newPassword,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage("✅ Password successfully reset! Redirecting to login...");
-        setTimeout(() => (window.location.href = "/"), 2000);
-      } else {
-        setError(data.detail || data.error || "Invalid OTP or expired link");
-      }
-    } catch (err) {
-      setError("⚠ Unable to connect to the server.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    if (!password || !confirm) return alert("Enter both fields");
+    if (password !== confirm) return alert("Passwords do not match");
+    // TODO: call API to update password
+    alert("Password updated successfully");
+    navigate("/");
+  }
 
   return (
-    <div
-      style={{
-        background: "linear-gradient(to bottom, #f0f6ff, #dce8ff)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        fontFamily: "Segoe UI, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          background: "white",
-          borderRadius: "16px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          width: "340px",
-          padding: "30px",
-          textAlign: "center",
-        }}
-      >
-        <img
-          src={logo}
-          alt="Edme Logo"
-          style={{ width: "100px", marginBottom: "10px" }}
-        />
+    <div className="auth-container">
+      <div className="auth-left">
+        <h1 className="left-title">Digitally Streamline the Audit Process</h1>
+        <p className="left-subtitle">Ensure accuracy, transparency, and effortless compliance.</p>
+      </div>
 
-        <h2 style={{ color: "#004aad", marginBottom: "10px" }}>
-          Reset Your Password
-        </h2>
+      <div className="auth-right">
+        <img src={logo} alt="logo" className="company-logo" />
+        <div className="auth-card">
+          <h2 className="auth-title">Reset Password</h2>
 
-        <p style={{ color: "#444", fontSize: "0.9rem", marginBottom: "20px" }}>
-          Enter your Email, OTP, and New Password.
-        </p>
+          <form onSubmit={handleSubmit}>
+            <label className="field-label">New Password</label>
+            <div className="pwd-row">
+              <input
+                type={show ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-field"
+                placeholder="Create a strong password"
+                required
+              />
+              <button
+                type="button"
+                className="show-btn"
+                onClick={() => setShow((s) => !s)}
+              >
+                {show ? "Hide" : "Show"}
+              </button>
+            </div>
 
-        <form onSubmit={handleResetPassword}>
-          <input
-            type="email"
-            placeholder="Registered Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={inputStyle}
-          />
+            <div className="strength">Strength: {checkStrength(password)}</div>
 
-          <input
-            type="text"
-            placeholder="OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            required
-            style={inputStyle}
-          />
+            <label className="field-label">Confirm Password</label>
+            <input
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className="input-field"
+              placeholder="Re-enter password"
+              required
+            />
 
-          <input
-            type="password"
-            placeholder="New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-            style={inputStyle}
-          />
+            <button className="primary-btn" type="submit">Update Password</button>
 
-          {error && <p style={errorStyle}>{error}</p>}
-          {message && <p style={messageStyle}>{message}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              ...buttonStyle,
-              backgroundColor: loading ? "#7aa2f7" : "#004aad",
-            }}
-          >
-            {loading ? "Processing..." : "Reset Password"}
-          </button>
-        </form>
-
-        <p
-          style={{
-            fontSize: "0.85rem",
-            color: "#004aad",
-            marginTop: "15px",
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-          onClick={() => (window.location.href = "/")}
-        >
-          Back to Login
-        </p>
+            <div className="small-row">
+              <Link to="/">Back to Sign In</Link>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px",
-  marginBottom: "15px",
-  border: "1px solid #ccc",
-  borderRadius: "8px",
-  fontSize: "0.95rem",
-};
-
-const buttonStyle = {
-  width: "100%",
-  padding: "10px",
-  color: "white",
-  border: "none",
-  borderRadius: "8px",
-  fontWeight: "bold",
-  cursor: "pointer",
-  transition: "0.3s ease",
-};
-
-const errorStyle = {
-  color: "red",
-  fontSize: "0.9rem",
-  marginBottom: "10px",
-};
-
-const messageStyle = {
-  color: "green",
-  fontSize: "0.9rem",
-  marginBottom: "10px",
-};

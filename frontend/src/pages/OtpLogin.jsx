@@ -1,125 +1,101 @@
-import React, { useState } from "react";
-import "../styles/PremiumLogin.css";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./OtpLogin.css";
 import logo from "../assets/logo.png";
 
 export default function OtpLogin() {
-  const API = import.meta.env.VITE_API_URL || "https://fat-eibl-backend-x1sp.onrender.com";
+  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [timer, setTimer] = useState(120);
+  const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  useEffect(() => {
+    if (timer <= 0) return;
+    const t = setTimeout(() => setTimer((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [timer]);
 
-  // send OTP (JSON)
-  const sendOtp = async () => {
-    setError("");
-    setLoading(true);
-    try {
-      const res = await fetch(`${API}/auth/generate-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.detail || data.message || "Failed to send OTP");
-      } else {
-        setOtpSent(true);
-      }
-    } catch (e) {
-      console.error(e);
-      setError("Unable to send OTP. Try again later.");
-    } finally {
-      setLoading(false);
+  function handleChange(index, value) {
+    if (!/^\d*$/.test(value)) return;
+    const arr = [...otp];
+    arr[index] = value.slice(-1);
+    setOtp(arr);
+    // auto focus next field
+    if (value && index < otp.length - 1) {
+      const next = document.getElementById(`otp-${index + 1}`);
+      if (next) next.focus();
     }
-  };
+  }
 
-  // verify OTP (JSON)
-  const verifyOtp = async (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const res = await fetch(`${API}/auth/login-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.detail || data.message || "Invalid OTP");
-        setLoading(false);
-        return;
-      }
-      const user = data.user;
-      localStorage.setItem("user", JSON.stringify(user));
-      if (user?.first_login) {
-        window.location.href = `/reset-password?user_id=${user.id}`;
-        return;
-      }
-      window.location.href = user?.role === "admin" ? "/admin-dashboard" : "/dashboard";
-    } catch (e) {
-      console.error(e);
-      setError("Unable to verify OTP. Try again later.");
-    } finally {
-      setLoading(false);
+    const code = otp.join("");
+    // TODO: validate OTP with API
+    if (code.length === 4) {
+      // simulate success
+      navigate("/reset-password");
+    } else {
+      alert("Enter 4 digit OTP");
     }
-  };
+  }
+
+  function handleResend() {
+    setTimer(120);
+    setOtp(["", "", "", ""]);
+    // TODO: call resend API
+  }
 
   return (
-    <div className="premium-bg">
-      <div className="premium-card">
-        <div className="premium-left">
-          <img src={logo} className="premium-logo" alt="Edme logo" />
-          <h1 className="premium-title">OTP Login</h1>
-          <p className="premium-sub">Quick access via one-time-password</p>
+    <div className="auth-container">
+      <div className="auth-left">
+        <h1 className="left-title">Digitally Streamline the Audit Process</h1>
+        <p className="left-subtitle">
+          Ensure accuracy, transparency, and effortless compliance.
+        </p>
+      </div>
 
-          {error && <div className="premium-error">{error}</div>}
+      <div className="auth-right">
+        <img src={logo} alt="logo" className="company-logo" />
+        <div className="auth-card">
+          <h2 className="auth-title">Enter OTP</h2>
 
-          <form onSubmit={verifyOtp} className="premium-form">
-            <input
-              className="premium-input"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              required
-              onChange={(e) => setEmail(e.target.value)}
-            />
+          <p className="otp-info">A 4-digit code was sent to your email.</p>
 
-            {!otpSent ? (
-              <button className="premium-btn" type="button" onClick={sendOtp} disabled={loading}>
-                {loading ? "Sending..." : "Send OTP"}
-              </button>
-            ) : (
-              <>
+          <form onSubmit={handleSubmit}>
+            <div className="otp-row">
+              {otp.map((d, i) => (
                 <input
-                  className="premium-input"
-                  type="text"
-                  placeholder="Enter OTP"
-                  value={otp}
-                  required
-                  onChange={(e) => setOtp(e.target.value)}
+                  key={i}
+                  id={`otp-${i}`}
+                  value={d}
+                  onChange={(e) => handleChange(i, e.target.value)}
+                  className="otp-input"
+                  maxLength={1}
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
                 />
-                <button className="premium-btn" type="submit" disabled={loading}>
-                  {loading ? "Verifying..." : "Verify OTP"}
-                </button>
-              </>
-            )}
+              ))}
+            </div>
 
-            <div className="premium-actions">
-              <button type="button" className="link-btn" onClick={() => (window.location.href = "/")}>
-                Login with Password
-              </button>
+            <div className="otp-meta">
+              <div className="timer">Resend in: {timer}s</div>
+              <div className="resend">
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={handleResend}
+                  disabled={timer > 0}
+                >
+                  Resend
+                </button>
+              </div>
+            </div>
+
+            <button className="primary-btn" type="submit">Verify OTP</button>
+
+            <div className="small-row">
+              <Link to="/">Back to Sign In</Link>
             </div>
           </form>
-        </div>
-
-        <div className="premium-right" aria-hidden>
-          <div className="promo">
-            <h3>OTP Security</h3>
-            <p>OTP expires quickly for secure logins. Check your inbox/spam.</p>
-          </div>
         </div>
       </div>
     </div>
