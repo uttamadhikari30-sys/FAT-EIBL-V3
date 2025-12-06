@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./NewLogin.css";
+import "./NewLogin.css";   // Correct path since both files are in src/pages/
 import logo from "../assets/logo.png";
 import audit from "../assets/audit-illustration.png";
 
@@ -26,11 +26,13 @@ const Login = () => {
 
         {/* RIGHT SECTION */}
         <div className="right-section">
+
           <img src={logo} alt="Company Logo" className="company-logo" />
 
           <div className="login-box">
             <h2 className="login-title">Sign in to your account</h2>
 
+            {/* Tabs */}
             <div className="tab-buttons">
               <button
                 className={loginWith === "email" ? "active" : ""}
@@ -47,7 +49,7 @@ const Login = () => {
               </button>
             </div>
 
-            {/* Email / Mobile Input */}
+            {/* Input */}
             <input
               type={loginWith === "email" ? "email" : "number"}
               className="input-field"
@@ -69,7 +71,7 @@ const Login = () => {
                 Password
               </label>
 
-              <label style={{ marginLeft: "20px" }}>
+              <label>
                 <input
                   type="radio"
                   checked={authMode === "otp"}
@@ -79,7 +81,6 @@ const Login = () => {
               </label>
             </div>
 
-            {/* Password Field */}
             {authMode === "password" && (
               <input
                 type="password"
@@ -99,12 +100,10 @@ const Login = () => {
 
       {/* FOOTER BAR */}
       <div className="footer-bar">
-        <span className="footer-bar-left">
-          © 2025 EDME Services Pvt Ltd.
-        </span>
+        <span className="footer-bar-left">© 2025 EDME Services Pvt Ltd.</span>
 
         <span className="footer-bar-right">
-          <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/privacy">Privacy Policy</a>
           <a href="/terms">Terms</a>
           <a href="/contact-support">Contact Support</a>
         </span>

@@ -6,7 +6,7 @@
   overflow: hidden;
 }
 
-/* LEFT SIDE */
+/* LEFT SECTION */
 .left-section {
   background: #7b0000;
   padding: 40px 50px;
@@ -16,7 +16,6 @@
 .main-heading {
   font-size: 38px;
   font-weight: 800;
-  margin-top: 10px;
   margin-bottom: 8px;
   color: #ffffff;
 }
@@ -24,15 +23,16 @@
 .sub-heading {
   font-size: 18px;
   font-weight: 400;
-  margin-bottom: 25px;
   color: #000000;
+  margin-bottom: 25px;
 }
 
+/* TRANSPARENT ILLUSTRATION */
 .audit-image {
   width: 85%;
   margin-top: 20px;
-  border-radius: 12px;
-  opacity: 0.92;
+  opacity: 0.70;        /* Transparent illustration */
+  border-radius: 14px;
 }
 
 /* RIGHT SECTION */
@@ -42,12 +42,14 @@
   padding: 25px;
 }
 
+/* LOGO TRANSPARENT */
 .company-logo {
   width: 150px;
-  margin-bottom: 5px;
+  opacity: 0.80;       /* Transparent logo */
+  margin-bottom: 10px;
 }
 
-/* LOGIN CARD */
+/* LOGIN BOX */
 .login-box {
   background: #ffffff;
   padding: 20px;
@@ -60,9 +62,8 @@
 
 .login-title {
   font-size: 22px;
-  font-weight: 700;
   color: #0057d8;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
 
 /* TABS */
@@ -75,65 +76,61 @@
 
 .tab-buttons button {
   padding: 8px 20px;
-  border-radius: 25px;
+  border-radius: 22px;
   border: none;
+  background: #dbe3ff;
+  color: #0045b3;
   cursor: pointer;
-  font-size: 14px;
-  background: #dfdfdf;
 }
 
 .tab-buttons .active {
   background: #0057d8;
-  color: #ffffff;
+  color: #fff;
 }
 
-/* INPUT FIELD */
+/* INPUT */
 .input-field {
   width: 100%;
   padding: 12px;
   margin-top: 8px;
   border-radius: 8px;
-  background: #e8f0ff;
   border: 1px solid #c9d9f8;
-  font-size: 14px;
+  background: #eef3ff;
 }
 
 /* AUTH OPTIONS */
 .auth-type {
   margin-top: 10px;
-  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* FORGOT PASSWORD */
 .forgot-link {
   text-align: right;
-  margin-top: 5px;
+  margin-top: 8px;
 }
 
 .forgot-link a {
-  color: #0057d8;
   font-size: 13px;
-  font-weight: 600;
+  color: #0057d8;
+  text-decoration: none;
 }
 
 /* LOGIN BUTTON */
 .login-btn {
   width: 100%;
   padding: 12px;
+  margin-top: 15px;
   background: #0057d8;
-  color: #ffffff;
-  border-radius: 10px;
   border: none;
-  margin-top: 18px;
+  color: white;
   font-size: 16px;
   cursor: pointer;
+  border-radius: 10px;
 }
 
-.login-btn:hover {
-  background: #0046b0;
-}
-
-/* FOOTER BAR */
+/* FOOTER FULL-WIDTH BAR */
 .footer-bar {
   width: 100%;
   background: #ffffff;
@@ -141,10 +138,9 @@
   bottom: 0;
   left: 0;
   padding: 12px 40px;
+  border-top: 1px solid #dddddd;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid #dddddd;
   font-size: 14px;
 }
 
@@ -152,8 +148,4 @@
   margin-left: 25px;
   color: #0057d8;
   text-decoration: none;
-}
-
-.footer-bar-right a:hover {
-  text-decoration: underline;
 }
