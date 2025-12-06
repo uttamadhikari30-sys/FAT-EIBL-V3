@@ -2,21 +2,21 @@ import React from "react";
 import AuthLayout from "../components/AuthLayout";
 import logo from "../assets/logo.png";
 
-const ResetPassword = () => {
+const AcceptInvite = () => {
   return (
     <AuthLayout>
-      <img src={logo} alt="logo" className="company-logo" />
+      <img src={logo} className="company-logo" alt="logo" />
 
       <div className="login-box">
-        <h2>Reset Password</h2>
+        <h2>Accept Invitation</h2>
 
-        <label className="label-text">New Password</label>
-        <input type="password" className="input-field" placeholder="Enter new password" />
+        <label className="label-text">Create Password</label>
+        <input type="password" className="input-field" placeholder="Enter password" />
 
         <label className="label-text">Confirm Password</label>
         <input type="password" className="input-field" placeholder="Confirm password" />
 
-        <button className="login-btn">Update Password</button>
+        <button className="login-btn">Activate Account</button>
 
         <div className="forgot-link">
           <a href="/">Back to Login</a>
@@ -26,4 +26,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default AcceptInvite;

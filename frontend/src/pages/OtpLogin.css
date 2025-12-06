@@ -1,42 +1,31 @@
-/* Reuse same layout pattern */
-.auth-container {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  min-height: 100vh;
-  overflow: hidden;
-  background: #fff;
-}
-.auth-left {
-  background: #7A0000;
-  padding: 60px 70px;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.left-title { font-size: 44px; font-weight: 700; margin-bottom: 12px; color:#fff; }
-.left-subtitle { font-size: 18px; color:#f1f1f1; margin-bottom: 30px; }
+import React from "react";
+import AuthLayout from "../components/AuthLayout";
+import logo from "../assets/logo.png";
 
-/* RIGHT */
-.auth-right { padding: 40px; display:flex; flex-direction:column; align-items:center; }
-.company-logo { width:130px; margin-bottom: 18px; }
-.auth-card { width:100%; max-width:420px; background:#fff; padding:28px; border-radius:16px; box-shadow:0 8px 25px rgba(0,0,0,0.08); }
-.auth-title { text-align:center; color:#0047b3; font-size:24px; margin-bottom:10px; }
+const OtpLogin = () => {
+  return (
+    <AuthLayout>
+      <img src={logo} className="company-logo" alt="logo" />
 
-.otp-info { color:#505f79; font-size:14px; text-align:center; margin-bottom:12px; }
-.otp-row { display:flex; justify-content:center; gap:12px; margin-bottom:12px; }
-.otp-input { width:58px; height:58px; font-size:24px; text-align:center; border-radius:8px; border:1px solid #dfe7fb; background:#f6faff; }
-.otp-input:focus { outline:2px solid #005fff; }
+      <div className="login-box">
+        <h2>OTP Login</h2>
 
-.otp-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:14px; color:#6b7280; }
-.link-btn { background:transparent; border:none; color:#0050d8; cursor:pointer; font-weight:600; }
-.link-btn[disabled] { color:#9fb3ff; cursor:default; }
+        <label className="label-text">Enter your mobile number</label>
+        <input type="number" className="input-field" placeholder="Enter mobile number" />
 
-.primary-btn { width:100%; padding:12px; background:#0047b3; color:#fff; border:none; border-radius:10px; font-weight:700; margin-bottom:8px; }
-.primary-btn:hover { background:#003a92; }
+        <button className="login-btn">Send OTP</button>
 
-.small-row { text-align:center; margin-top:12px; }
-@media (max-width:980px) {
-  .auth-container { grid-template-columns: 1fr; }
-  .auth-left { padding:30px; text-align:center; }
-}
+        <label className="label-text">Enter OTP</label>
+        <input type="number" className="input-field" placeholder="000000" />
+
+        <button className="login-btn">Verify & Login</button>
+
+        <div className="forgot-link">
+          <a href="/">Back to Sign In</a>
+        </div>
+      </div>
+    </AuthLayout>
+  );
+};
+
+export default OtpLogin;

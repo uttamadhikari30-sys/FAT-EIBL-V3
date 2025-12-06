@@ -1,162 +1,155 @@
-/* ============================================
-   MAIN LAYOUT GRID — PERFECT FIT NO SCROLL
-============================================ */
+/* =============================
+   GLOBAL LAYOUT
+============================= */
+
 .login-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 100vh; 
+  grid-template-columns: 1.15fr 0.85fr;
+  height: 100vh;
   overflow: hidden;
+  background: white;
 }
 
-/* ============================================
+
+/* =============================
    LEFT SECTION
-============================================ */
+============================= */
+
 .left-section {
   background: #7a0000;
-  padding: 40px 50px;
-  color: white;
+  padding: 70px 70px;
   display: flex;
   flex-direction: column;
-  justify-content: center;   /* vertically centered */
-  height: 100%;
+  justify-content: flex-start;
+  color: white;
 }
 
-.left-section h1 {
-  font-size: 46px;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 12px;
+.left-title {
+  font-size: 3.2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
 }
 
-.left-section p {
-  font-size: 20px;
-  font-weight: 600;
-  color: #000000;
-  margin-bottom: 25px;
+.left-subtitle {
+  font-size: 1.25rem;
+  color: #ffffffd0;
+  margin-bottom: 40px;
 }
 
-/* Reduced image size to fit screen */
 .audit-image {
-  width: 75%;
+  width: 88%;
   margin-top: 10px;
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
-/* ============================================
+
+/* =============================
    RIGHT SECTION
-============================================ */
+============================= */
+
 .right-section {
-  background: #f6faff;
+  padding: 50px 60px;
+  background: #f8fbff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* perfect vertical alignment */
-  height: 100%;
 }
 
 .company-logo {
-  width: 110px;
-  margin-bottom: 10px;
+  width: 150px;
+  margin-bottom: 25px;
 }
 
 .login-box {
+  width: 100%;
+  max-width: 420px;
   background: white;
-  width: 70%;
-  padding: 25px;
-  border-radius: 18px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.12);
+  padding: 35px;
+  border-radius: 20px;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .login-box h2 {
   text-align: center;
-  font-size: 28px;
-  color: #004cc7;
-  margin-bottom: 20px;
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 25px;
 }
 
-/* Tabs */
+
+/* TAB BUTTONS */
+
 .tab-buttons {
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .tab-buttons button {
-  padding: 10px 25px;
+  padding: 10px 26px;
   border-radius: 30px;
   border: none;
   background: #dce8ff;
-  color: #123a8f;
-  font-size: 16px;
-  cursor: pointer;
+  color: #003399;
   font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.25s;
 }
 
-.tab-buttons button.active {
-  background: #004ce8;
+.tab-buttons .active {
+  background: #0050ff;
   color: white;
 }
 
-/* Inputs */
+
+/* INPUT FIELDS */
+
 .input-field {
   width: 100%;
   padding: 14px;
-  font-size: 16px;
-  background: #e7f0ff;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 1px solid #d6d6d6;
+  background: #eef4ff;
+  margin-bottom: 18px;
+  font-size: 1rem;
 }
 
-/* Radio buttons */
+
+/* RADIO GROUP */
+
 .auth-type {
   display: flex;
   justify-content: space-between;
-  font-size: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
 }
 
-/* Forgot Password */
+
+/* ACTION LINKS */
+
 .forgot-link {
   text-align: right;
   margin-bottom: 15px;
 }
 
 .forgot-link a {
-  color: #004ce8;
+  color: #0050ff;
   font-weight: 600;
   text-decoration: none;
 }
 
-/* Sign In Button */
+
+/* MAIN BUTTON */
+
 .login-btn {
   width: 100%;
-  padding: 14px;
-  background: #004ce8;
+  padding: 15px;
+  background: #0050ff;
   color: white;
+  font-size: 1.2rem;
   border: none;
   border-radius: 12px;
-  font-size: 18px;
-  font-weight: 700;
   cursor: pointer;
-}
-
-.login-btn:hover {
-  background: #003bb8;
-}
-
-/* ============================================
-   RESPONSIVE FOR LAPTOPS & SMALLER
-============================================ */
-@media (max-height: 750px) {
-  .audit-image {
-    width: 65%;
-  }
-  .left-section h1 {
-    font-size: 40px;
-  }
-  .login-box {
-    width: 75%;
-  }
+  font-weight: 700;
 }
