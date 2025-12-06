@@ -1,38 +1,64 @@
+/* Full page grid layout */
 .auth-layout-container {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   height: 100vh;
   overflow: hidden;
 }
 
+/* LEFT SIDE */
 .auth-left {
   background: #7a0000;
-  padding: 60px 70px;
+  padding: 50px 55px;
   color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
+/* WHITE MAIN HEADING */
 .auth-title {
-  font-size: 46px;
+  font-size: 42px;
   font-weight: 800;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  color: #ffffff;
 }
 
+/* BLACK SUB-HEADING */
 .auth-subtitle {
   font-size: 20px;
-  font-weight: 400;
-  margin-bottom: 40px;
-  color: #f5f5f5;
+  color: #000000;
+  margin-bottom: 20px;
 }
 
+/* Illustration Fix */
 .auth-illustration {
-  width: 100%;
-  border-radius: 16px;
+  width: 90%;
+  margin-top: 25px;
+  border-radius: 12px;
+  object-fit: contain;
 }
 
+/* RIGHT SIDE */
 .auth-right {
   background: #f9fbff;
   padding: 40px 60px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+}
+
+/* Logo Style Fix */
+.auth-logo {
+  width: 160px;
+  margin-bottom: 20px;
+  object-fit: contain;
+}
+
+/* Shrink content to avoid scrolling */
+.login-box,
+.form-box {
+  transform: scale(0.92);
+  transform-origin: top center;
 }
