@@ -1,24 +1,19 @@
 import React from "react";
 import AuthLayout from "../components/AuthLayout";
-import logo from "../assets/logo.png";
+import "./FormPage.css";
 
 const ResetPassword = () => {
   return (
     <AuthLayout>
-      <img src={logo} alt="logo" className="company-logo" />
-
-      <div className="login-box">
+      <div className="form-box">
         <h2>Reset Password</h2>
 
-        <label className="label-text">New Password</label>
-        <input type="password" className="input-field" placeholder="Enter new password" />
+        <input type="password" className="input-field" placeholder="New Password" />
+        <input type="password" className="input-field" placeholder="Confirm Password" />
 
-        <label className="label-text">Confirm Password</label>
-        <input type="password" className="input-field" placeholder="Confirm password" />
+        <button className="login-btn">Reset Password</button>
 
-        <button className="login-btn">Update Password</button>
-
-        <div className="forgot-link">
+        <div className="back-link">
           <a href="/">Back to Login</a>
         </div>
       </div>

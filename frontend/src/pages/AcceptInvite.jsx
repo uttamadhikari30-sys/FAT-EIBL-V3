@@ -1,24 +1,21 @@
 import React from "react";
 import AuthLayout from "../components/AuthLayout";
-import logo from "../assets/logo.png";
+import "./FormPage.css";
 
 const AcceptInvite = () => {
   return (
     <AuthLayout>
-      <img src={logo} className="company-logo" alt="logo" />
-
-      <div className="login-box">
+      <div className="form-box">
         <h2>Accept Invitation</h2>
 
-        <label className="label-text">Create Password</label>
-        <input type="password" className="input-field" placeholder="Enter password" />
+        <p className="form-text">Create your password to activate your account.</p>
 
-        <label className="label-text">Confirm Password</label>
-        <input type="password" className="input-field" placeholder="Confirm password" />
+        <input type="password" className="input-field" placeholder="Create Password" />
+        <input type="password" className="input-field" placeholder="Confirm Password" />
 
         <button className="login-btn">Activate Account</button>
 
-        <div className="forgot-link">
+        <div className="back-link">
           <a href="/">Back to Login</a>
         </div>
       </div>

@@ -1,21 +1,25 @@
 import React from "react";
-import "../pages/NewLogin.css";
-import audit from "../assets/audit-illustration.png";
+import Footer from "./Footer";
+import "./AuthLayout.css";
 
 const AuthLayout = ({ children }) => {
   return (
-    <div className="login-container">
-      <div className="left-section">
-        <h1 className="left-title">Digitally Streamline the Audit Process</h1>
-        <p className="left-subtitle">
+    <div className="auth-layout-container">
+      <div className="auth-left">
+        <h1 className="auth-title">Digitally Streamline the Audit Process</h1>
+        <p className="auth-subtitle">
           Ensure accuracy, transparency, and effortless compliance.
         </p>
-        <div className="audit-wrapper">
-          <img src={audit} alt="Audit Illustration" className="audit-image" />
-        </div>
+        <img
+          src="/audit-illustration.png"
+          className="auth-illustration"
+          alt="Audit Illustration"
+        />
       </div>
 
-      <div className="right-section">{children}</div>
+      <div className="auth-right">{children}</div>
+
+      <Footer />
     </div>
   );
 };

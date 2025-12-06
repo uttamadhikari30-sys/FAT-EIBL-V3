@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AuthLayout from "../components/AuthLayout";
-import logo from "../assets/logo.png";
+import "./NewLogin.css";
 
 const Login = () => {
   const [loginWith, setLoginWith] = useState("email");
@@ -8,8 +8,6 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <img src={logo} className="company-logo" alt="logo" />
-
       <div className="login-box">
         <h2>Sign in to your account</h2>
 
@@ -32,7 +30,9 @@ const Login = () => {
           type={loginWith === "email" ? "email" : "number"}
           className="input-field"
           placeholder={
-            loginWith === "email" ? "admin@edmeinsurance.com" : "Enter mobile number"
+            loginWith === "email"
+              ? "admin@edmeinsurance.com"
+              : "Enter mobile number"
           }
         />
 
@@ -42,7 +42,7 @@ const Login = () => {
               type="radio"
               checked={authMode === "password"}
               onChange={() => setAuthMode("password")}
-            />
+            />{" "}
             Password
           </label>
 
@@ -51,13 +51,13 @@ const Login = () => {
               type="radio"
               checked={authMode === "otp"}
               onChange={() => setAuthMode("otp")}
-            />
+            />{" "}
             OTP
           </label>
         </div>
 
         {authMode === "password" && (
-          <input type="password" className="input-field" placeholder="Enter password" />
+          <input type="password" className="input-field" placeholder="Password" />
         )}
 
         <div className="forgot-link">

@@ -1,23 +1,16 @@
-/* =============================
-   GLOBAL LAYOUT
-============================= */
-
+/* MAIN GRID */
 .login-container {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1.05fr 0.95fr;
   height: 100vh;
   overflow: hidden;
-  background: white;
+  background-color: #ffffff;
 }
 
-
-/* =============================
-   LEFT SECTION
-============================= */
-
+/* LEFT SIDE */
 .left-section {
-  background: #7a0000;
-  padding: 70px 70px;
+  background-color: #7a0000;
+  padding: 60px 60px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -25,131 +18,130 @@
 }
 
 .left-title {
-  font-size: 3.2rem;
-  font-weight: 700;
-  margin-bottom: 15px;
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #ffffff !important;
+  margin-bottom: 20px;
 }
 
 .left-subtitle {
-  font-size: 1.25rem;
-  color: #ffffffd0;
+  font-size: 22px;
+  color: #e5e5e5;
   margin-bottom: 40px;
+  font-weight: 400;
 }
 
 .audit-image {
-  width: 88%;
-  margin-top: 10px;
-  border-radius: 8px;
+  width: 100%;
+  max-height: 45vh;
+  margin-top: 20px;
+  object-fit: contain;
 }
 
-
-/* =============================
-   RIGHT SECTION
-============================= */
-
+/* RIGHT SIDE */
 .right-section {
-  padding: 50px 60px;
   background: #f8fbff;
+  padding: 40px 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
+/* LOGO */
 .company-logo {
-  width: 150px;
-  margin-bottom: 25px;
+  width: 160px;
+  margin-bottom: 20px;
 }
 
+/* LOGIN BOX */
 .login-box {
   width: 100%;
   max-width: 420px;
-  background: white;
   padding: 35px;
+  background: white;
   border-radius: 20px;
-  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  text-align: center;
 }
 
+/* SIGN IN HEADING */
 .login-box h2 {
-  text-align: center;
-  font-size: 1.7rem;
+  font-size: 28px;
   font-weight: 700;
   margin-bottom: 25px;
+  color: #004aad;
 }
 
-
-/* TAB BUTTONS */
-
+/* TABS */
 .tab-buttons {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 15px;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 .tab-buttons button {
-  padding: 10px 26px;
-  border-radius: 30px;
-  border: none;
-  background: #dce8ff;
-  color: #003399;
+  padding: 10px 22px;
+  border-radius: 25px;
+  border: 1px solid #c7d7ff;
+  background: #eaefff;
+  color: #004aad;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
-  transition: 0.25s;
 }
 
 .tab-buttons .active {
-  background: #0050ff;
+  background: #004aad;
   color: white;
+  border-color: #004aad;
 }
 
-
-/* INPUT FIELDS */
-
+/* INPUTS */
 .input-field {
   width: 100%;
   padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #d6d6d6;
-  background: #eef4ff;
+  border-radius: 10px;
+  border: 1px solid #cddaff;
+  background: #eef5ff;
   margin-bottom: 18px;
-  font-size: 1rem;
+  font-size: 15px;
 }
 
-
-/* RADIO GROUP */
-
+/* RADIO */
 .auth-type {
   display: flex;
   justify-content: space-between;
   margin-bottom: 15px;
+  font-size: 16px;
 }
 
+/* BUTTON */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: #004aad;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 12px; /* Button before Forgot Password */
+  cursor: pointer;
+}
 
-/* ACTION LINKS */
+.login-btn:hover {
+  background: #003380;
+}
 
+/* FORGOT PASSWORD LINK */
 .forgot-link {
   text-align: right;
-  margin-bottom: 15px;
 }
 
 .forgot-link a {
-  color: #0050ff;
+  color: #004aad;
+  font-size: 14px;
   font-weight: 600;
-  text-decoration: none;
-}
-
-
-/* MAIN BUTTON */
-
-.login-btn {
-  width: 100%;
-  padding: 15px;
-  background: #0050ff;
-  color: white;
-  font-size: 1.2rem;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 700;
 }
