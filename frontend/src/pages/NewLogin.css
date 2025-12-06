@@ -1,10 +1,10 @@
 /* ============================================
-   MAIN LAYOUT GRID
+   MAIN LAYOUT GRID — PERFECT FIT NO SCROLL
 ============================================ */
 .login-container {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  height: 100vh;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh; 
   overflow: hidden;
 }
 
@@ -12,52 +12,34 @@
    LEFT SECTION
 ============================================ */
 .left-section {
-  background: #7a0000; /* Premium dark red */
-  padding: 70px 60px;
+  background: #7a0000;
+  padding: 40px 50px;
   color: white;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertically centered */
+  height: 100%;
 }
 
-/* Dark overlay for text visibility */
-.left-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 0;
-}
-
-/* Heading */
 .left-section h1 {
-  position: relative;
-  z-index: 2;
-  font-size: 52px;
+  font-size: 46px;
   font-weight: 800;
   line-height: 1.2;
-  margin-bottom: 20px;
-  color: #ffffff; /* White */
+  margin-bottom: 12px;
 }
 
-/* Subtitle */
 .left-section p {
-  position: relative;
-  z-index: 2;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
-  color: #000000; /* Black as requested */
-  margin-bottom: 35px;
+  color: #000000;
+  margin-bottom: 25px;
 }
 
-/* Illustration */
+/* Reduced image size to fit screen */
 .audit-image {
-  position: relative;
-  z-index: 2;
-  width: 88%;
-  display: block;
+  width: 75%;
+  margin-top: 10px;
   border-radius: 12px;
-  margin: 25px auto 0 auto;
-  padding-left: 10px;
-  padding-right: 10px;
 }
 
 /* ============================================
@@ -68,48 +50,45 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 40px;
+  justify-content: center; /* perfect vertical alignment */
+  height: 100%;
 }
 
 .company-logo {
-  width: 120px;
-  margin-bottom: 25px;
+  width: 110px;
+  margin-bottom: 10px;
 }
 
-/* Login Card */
 .login-box {
-  background: #ffffff;
-  width: 78%;
-  padding: 40px;
+  background: white;
+  width: 70%;
+  padding: 25px;
   border-radius: 18px;
-  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.12);
 }
 
 .login-box h2 {
   text-align: center;
-  font-size: 30px;
-  font-weight: 700;
+  font-size: 28px;
   color: #004cc7;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
-/* ============================================
-   TAB BUTTONS (Email / Mobile)
-============================================ */
+/* Tabs */
 .tab-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 25px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .tab-buttons button {
-  padding: 12px 30px;
+  padding: 10px 25px;
   border-radius: 30px;
   border: none;
   background: #dce8ff;
   color: #123a8f;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
   font-weight: 600;
 }
@@ -119,92 +98,65 @@
   color: white;
 }
 
-/* ============================================
-   INPUT FIELDS
-============================================ */
+/* Inputs */
 .input-field {
   width: 100%;
-  padding: 15px;
-  font-size: 18px;
+  padding: 14px;
+  font-size: 16px;
   background: #e7f0ff;
   border-radius: 10px;
   border: none;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
-.input-field:focus {
-  outline: 2px solid #005fff;
-}
-
-/* ============================================
-   RADIO BUTTONS
-============================================ */
+/* Radio buttons */
 .auth-type {
   display: flex;
   justify-content: space-between;
-  font-size: 18px;
-  margin-bottom: 12px;
-  color: black;
+  font-size: 16px;
+  margin-bottom: 8px;
 }
 
-/* ============================================
-   FORGOT PASSWORD
-============================================ */
+/* Forgot Password */
 .forgot-link {
   text-align: right;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .forgot-link a {
   color: #004ce8;
-  text-decoration: none;
-  font-size: 16px;
   font-weight: 600;
+  text-decoration: none;
 }
 
-.forgot-link a:hover {
-  text-decoration: underline;
-}
-
-/* ============================================
-   SIGN IN BUTTON
-============================================ */
+/* Sign In Button */
 .login-btn {
   width: 100%;
-  padding: 16px;
+  padding: 14px;
   background: #004ce8;
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 5px;
 }
 
 .login-btn:hover {
-  background: #0037b8;
+  background: #003bb8;
 }
 
 /* ============================================
-   RESPONSIVE DESIGN
+   RESPONSIVE FOR LAPTOPS & SMALLER
 ============================================ */
-@media (max-width: 1100px) {
-  .login-container {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-
-  .left-section {
-    padding: 40px;
-    text-align: center;
-  }
-
+@media (max-height: 750px) {
   .audit-image {
-    width: 70%;
+    width: 65%;
   }
-
+  .left-section h1 {
+    font-size: 40px;
+  }
   .login-box {
-    width: 90%;
+    width: 75%;
   }
 }
