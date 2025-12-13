@@ -1,151 +1,151 @@
-/* MAIN WRAPPER */
-.login-wrapper {
+/* MAIN LAYOUT */
+.login-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.1fr 0.9fr;
   height: 100vh;
+  width: 100%;
   overflow: hidden;
 }
 
-/* LEFT SECTION */
+/* LEFT SIDE */
 .left-section {
-  background: #7b0000;
-  padding: 40px 50px;
-  color: #fff;
+  background: #7d0000;
+  padding: 40px 60px;
+  color: white;
 }
 
 .main-heading {
-  font-size: 38px;
-  font-weight: 800;
-  margin-bottom: 8px;
-  color: #ffffff;
-}
-
-.sub-heading {
-  font-size: 18px;
-  font-weight: 400;
-  color: #000000;
-  margin-bottom: 25px;
-}
-
-/* TRANSPARENT ILLUSTRATION */
-.audit-image {
-  width: 85%;
-  margin-top: 20px;
-  opacity: 0.70;        /* Transparent illustration */
-  border-radius: 14px;
-}
-
-/* RIGHT SECTION */
-.right-section {
-  background: #f8faff;
-  text-align: center;
-  padding: 25px;
-}
-
-/* LOGO TRANSPARENT */
-.company-logo {
-  width: 150px;
-  opacity: 0.80;       /* Transparent logo */
+  font-size: 44px;
+  font-weight: 700;
+  color: white;
   margin-bottom: 10px;
 }
 
-/* LOGIN BOX */
-.login-box {
-  background: #ffffff;
-  padding: 20px;
-  width: 75%;
-  margin: 0 auto;
-  border-radius: 14px;
-  box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
-  font-size: 14px;
-}
-
-.login-title {
+.sub-heading {
+  color: #000000;
   font-size: 22px;
-  color: #0057d8;
-  margin-bottom: 18px;
+  margin-bottom: 30px;
 }
 
-/* TABS */
+.audit-image {
+  width: 85%;
+  margin-top: 20px;
+  opacity: 0.88;
+}
+
+/* RIGHT SIDE */
+.right-section {
+  background: #f7f9ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+}
+
+.company-logo {
+  width: 210px;
+  margin-bottom: 10px;
+}
+
+.login-box {
+  width: 82%;
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.signin-heading {
+  text-align: center;
+  color: #024acb;
+  margin-bottom: 20px;
+}
+
+/* TAB BUTTONS */
 .tab-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 .tab-buttons button {
-  padding: 8px 20px;
-  border-radius: 22px;
+  padding: 10px 30px;
+  border-radius: 20px;
   border: none;
-  background: #dbe3ff;
-  color: #0045b3;
   cursor: pointer;
+  font-size: 15px;
+  background: #e1e8ff;
+  color: #024acb;
 }
 
-.tab-buttons .active {
-  background: #0057d8;
-  color: #fff;
+.tab-buttons button.active {
+  background: #024acb;
+  color: white;
 }
 
-/* INPUT */
+/* INPUT FIELD */
 .input-field {
   width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  border-radius: 8px;
-  border: 1px solid #c9d9f8;
-  background: #eef3ff;
+  padding: 12px 15px;
+  margin: 12px 0;
+  border-radius: 10px;
+  border: 1px solid #d6d6d6;
+  background: #eef4ff;
+  font-size: 15px;
 }
 
-/* AUTH OPTIONS */
+/* AUTH TYPE */
 .auth-type {
-  margin-top: 10px;
   display: flex;
   justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
-/* FORGOT PASSWORD */
+/* FORGOT LINK */
 .forgot-link {
   text-align: right;
-  margin-top: 8px;
+  margin-bottom: 15px;
 }
 
 .forgot-link a {
-  font-size: 13px;
-  color: #0057d8;
-  text-decoration: none;
+  color: #1357e4;
 }
 
 /* LOGIN BUTTON */
 .login-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 15px;
-  background: #0057d8;
-  border: none;
+  background: #024acb;
   color: white;
-  font-size: 16px;
-  cursor: pointer;
+  padding: 14px;
+  width: 100%;
   border-radius: 10px;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
-/* FOOTER FULL-WIDTH BAR */
-.footer-bar {
+/* FOOTER */
+.footer {
   width: 100%;
   background: #ffffff;
+  padding: 12px 40px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
   position: fixed;
   bottom: 0;
   left: 0;
-  padding: 12px 40px;
-  border-top: 1px solid #dddddd;
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
+  border-top: 1px solid #ddd;
 }
 
-.footer-bar-right a {
-  margin-left: 25px;
-  color: #0057d8;
+.footer-right a {
+  margin: 0 8px;
+  color: #0056d6;
   text-decoration: none;
+}
+
+.footer-right span {
+  color: #999;
 }

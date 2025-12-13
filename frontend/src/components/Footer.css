@@ -1,40 +1,29 @@
-.auth-footer {
+.footer {
   width: 100%;
+  background: #ffffff;
   padding: 12px 40px;
+  font-size: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
+  color: #1a1a1a;
   border-top: 1px solid #e6e6e6;
-  font-size: 14px;
-  color: #555;
   position: fixed;
   bottom: 0;
   left: 0;
-  z-index: 50;
-}
-
-.footer-left {
-  font-weight: 500;
-  color: #333;
-}
-
-.footer-right {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  z-index: 10;
 }
 
 .footer-right a {
+  color: #0056d6;
   text-decoration: none;
-  color: #005ad5;
-  font-weight: 500;
+  margin: 0 8px;
 }
 
 .footer-right a:hover {
   text-decoration: underline;
 }
 
-.auth-footer span {
-  color: #777;
+.footer-right span {
+  color: #999;
 }

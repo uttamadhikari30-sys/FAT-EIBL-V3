@@ -1,15 +1,13 @@
-import React from "react";
-import "./Footer.css";
+<footer className="footer">
+  <div className="footer-left">
+    © 2025 Edme Insurance Brokers Limited.
+  </div>
 
-const Footer = () => {
-  return (
-    <div className="auth-footer">
-      © 2025 EDME Services Pvt Ltd.
-      <a href="/privacy-policy">Privacy Policy</a> |
-      <a href="/terms">Terms</a> |
-      <a href="/contact">Contact Us</a>
-    </div>
-  );
-};
-
-export default Footer;
+  <div className="footer-right">
+    <a href="/privacy-policy">Privacy Policy</a>
+    <span>|</span>
+    <a href="/terms">Terms</a>
+    <span>|</span>
+    <a href="/contact-support">Contact Support</a>
+  </div>
+</footer>
