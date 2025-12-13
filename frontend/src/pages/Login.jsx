@@ -10,73 +10,45 @@ const Login = () => {
 
   const [emailOrMobile, setEmailOrMobile] = useState("");
   const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const BASE_URL = "https://fat-eibl-backend-x1sp.onrender.com";
 
-  // -----------------------------
+  // =========================
   // LOGIN FUNCTION
-  // -----------------------------
+  // =========================
   const handleLogin = async () => {
     setErrorMsg("");
     setLoading(true);
 
     try {
-      let payload = {};
-      let url = "";
+      const payload = {
+        email: loginWith === "email" ? emailOrMobile : undefined,
+        mobile: loginWith === "mobile" ? emailOrMobile : undefined,
+        password: password,
+      };
 
-      // EMAIL or MOBILE
-      if (loginWith === "email") payload.email = emailOrMobile;
-      if (loginWith === "mobile") payload.mobile = emailOrMobile;
+      const res = await axios.post(
+        `${BASE_URL}/auth/login`,
+        payload
+      );
 
-      // PASSWORD LOGIN
-      if (authMode === "password") {
-        payload.password = password;
-        url = "/auth/login";
+      // ✅ BACKEND RETURNS access_token
+      if (res.data?.access_token) {
+        localStorage.setItem("token", res.data.access_token);
+
+        // ✅ Redirect to Admin Dashboard
+        window.location.href = "/admin-dashboard";
+      } else {
+        setErrorMsg("Login failed. Token not received.");
       }
-
-      // OTP LOGIN
-      if (authMode === "otp") {
-        payload.otp = otp;
-        url = "/auth/login-otp";
-      }
-
-      const res = await axios.post(BASE_URL + url, payload);
-
-      if (res.data?.accessToken) {
-        localStorage.setItem("token", res.data.accessToken);
-        window.location.href = "/dashboard";
-      }
-    } catch (err) {
-      setErrorMsg("Invalid login credentials");
+    } catch (error) {
+      setErrorMsg("Invalid email or password");
     }
 
     setLoading(false);
-  };
-
-  // -----------------------------
-  // SEND OTP
-  // -----------------------------
-  const handleSendOtp = async () => {
-    setErrorMsg("");
-    if (!emailOrMobile) {
-      setErrorMsg("Enter email/mobile first.");
-      return;
-    }
-
-    try {
-      await axios.post(BASE_URL + "/auth/generate-otp", {
-        email: loginWith === "email" ? emailOrMobile : undefined,
-        mobile: loginWith === "mobile" ? emailOrMobile : undefined,
-      });
-
-      alert("OTP sent successfully!");
-    } catch (err) {
-      setErrorMsg("Failed to send OTP.");
-    }
   };
 
   return (
@@ -84,22 +56,34 @@ const Login = () => {
 
       {/* LEFT SECTION */}
       <div className="left-section">
-        <h1 className="main-heading">Digitally Streamline the Audit Process</h1>
+        <h1 className="main-heading">
+          Digitally Streamline the Audit Process
+        </h1>
         <p className="sub-heading">
           Ensure accuracy, transparency, and effortless compliance.
         </p>
 
-        <img src={audit} alt="Audit Illustration" className="audit-image" />
+        <img
+          src={audit}
+          alt="Audit Illustration"
+          className="audit-image"
+        />
       </div>
 
       {/* RIGHT SECTION */}
       <div className="right-section">
-        <img src={logo} alt="Company Logo" className="company-logo" />
+        <img
+          src={logo}
+          alt="Company Logo"
+          className="company-logo"
+        />
 
         <div className="login-box">
-          <h2 className="signin-heading">Sign in to your account</h2>
+          <h2 className="signin-heading">
+            Sign in to your account
+          </h2>
 
-          {/* TAB BUTTONS */}
+          {/* LOGIN TYPE */}
           <div className="tab-buttons">
             <button
               className={loginWith === "email" ? "active" : ""}
@@ -107,7 +91,6 @@ const Login = () => {
             >
               Email
             </button>
-
             <button
               className={loginWith === "mobile" ? "active" : ""}
               onClick={() => setLoginWith("mobile")}
@@ -120,73 +103,40 @@ const Login = () => {
           <input
             type={loginWith === "email" ? "email" : "number"}
             className="input-field"
-            value={emailOrMobile}
-            onChange={(e) => setEmailOrMobile(e.target.value)}
             placeholder={
               loginWith === "email"
                 ? "admin@edmeinsurance.com"
                 : "Enter mobile number"
             }
+            value={emailOrMobile}
+            onChange={(e) => setEmailOrMobile(e.target.value)}
           />
 
-          {/* PASSWORD / OTP */}
+          {/* PASSWORD */}
           <div className="auth-type">
             <label>
-              <input
-                type="radio"
-                checked={authMode === "password"}
-                onChange={() => setAuthMode("password")}
-              />
+              <input type="radio" checked readOnly />
               Password
-            </label>
-
-            <label>
-              <input
-                type="radio"
-                checked={authMode === "otp"}
-                onChange={() => setAuthMode("otp")}
-              />
-              OTP
             </label>
           </div>
 
-          {/* PASSWORD FIELD */}
-          {authMode === "password" && (
-            <input
-              type="password"
-              className="input-field"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-            />
-          )}
-
-          {/* OTP FIELD */}
-          {authMode === "otp" && (
-            <>
-              <input
-                type="text"
-                className="input-field"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter OTP"
-              />
-
-              <button className="otp-btn" onClick={handleSendOtp}>
-                Send OTP
-              </button>
-            </>
-          )}
+          <input
+            type="password"
+            className="input-field"
+            placeholder="Enter password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
           {/* ERROR MESSAGE */}
-          {errorMsg && <p className="error-msg">{errorMsg}</p>}
+          {errorMsg && (
+            <p className="error-msg">{errorMsg}</p>
+          )}
 
-          {/* FORGOT PASSWORD */}
           <div className="forgot-link">
             <a href="/forgot-password">Forgot Password?</a>
           </div>
 
-          {/* LOGIN BUTTON */}
           <button
             className="login-btn"
             onClick={handleLogin}
