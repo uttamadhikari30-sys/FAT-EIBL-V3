@@ -7,8 +7,8 @@ import axios from "axios";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const BASE_URL = "https://fat-eibl-backend-x1sp.onrender.com";
 
@@ -26,9 +26,9 @@ const Login = () => {
         localStorage.setItem("token", res.data.access_token);
         window.location.href = "/admin-dashboard";
       } else {
-        setErrorMsg("Login failed. Token not received.");
+        setErrorMsg("Login failed");
       }
-    } catch (err) {
+    } catch {
       setErrorMsg("Invalid email or password");
     }
 
@@ -37,7 +37,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      {/* LEFT SECTION */}
+      {/* LEFT */}
       <div className="left-section">
         <h1 className="main-heading">
           Digitally Streamline the Audit Process
@@ -47,22 +47,17 @@ const Login = () => {
           Ensure accuracy, transparency, and effortless compliance.
         </p>
 
-        <img
-          src={audit}
-          alt="Audit Illustration"
-          className="audit-image"
-        />
+        <img src={audit} className="audit-image" alt="Audit" />
       </div>
 
-      {/* RIGHT SECTION */}
+      {/* RIGHT */}
       <div className="right-section">
-        <img src={logo} alt="EDME Logo" className="company-logo" />
+        <img src={logo} className="company-logo" alt="EDME" />
 
         <div className="login-box">
           <h2 className="signin-heading">Sign in to your account</h2>
 
           <input
-            type="email"
             className="input-field"
             placeholder="admin@edmeinsurance.com"
             value={email}
@@ -83,11 +78,7 @@ const Login = () => {
             <a href="/forgot-password">Forgot Password?</a>
           </div>
 
-          <button
-            className="login-btn"
-            onClick={handleLogin}
-            disabled={loading}
-          >
+          <button className="login-btn" onClick={handleLogin} disabled={loading}>
             {loading ? "Signing In..." : "Sign In"}
           </button>
         </div>
@@ -98,6 +89,7 @@ const Login = () => {
         <div className="footer-left">
           © 2025 Edme Insurance Brokers Limited.
         </div>
+
         <div className="footer-right">
           <a href="/privacy-policy">Privacy Policy</a>
           <span>|</span>

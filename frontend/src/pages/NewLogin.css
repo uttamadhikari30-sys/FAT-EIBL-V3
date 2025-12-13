@@ -6,38 +6,36 @@
   font-family: "Segoe UI", sans-serif;
 }
 
-/* LEFT */
+/* LEFT SECTION */
 .left-section {
   width: 55%;
   background-color: #8b0000;
   padding: 70px 60px 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
 }
 
 .main-heading {
+  color: #ffffff;
   font-size: 36px;
   font-weight: 700;
-  color: #ffffff;
   margin-bottom: 12px;
-  line-height: 1.3;
 }
 
 .sub-heading {
-  font-size: 16px;
   color: #000000;
-  margin-bottom: 20px;
+  font-size: 16px;
+  margin-bottom: 18px;
 }
 
+/* 🔥 AUDIT IMAGE – HORIZONTAL INCREASE */
 .audit-image {
-  width: 100%;
-  max-width: 520px;
-  max-height: 320px;
+  width: 95%;           /* increased horizontally */
+  max-width: 620px;     /* wider */
+  height: auto;
+  max-height: 320px;    /* height unchanged */
   object-fit: contain;
 }
 
-/* RIGHT */
+/* RIGHT SECTION */
 .right-section {
   width: 45%;
   background-color: #f6f8fb;
@@ -57,7 +55,7 @@
   background: #ffffff;
   padding: 30px;
   border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
 }
 
 .signin-heading {
@@ -73,7 +71,6 @@
   margin-bottom: 14px;
   border-radius: 10px;
   border: 1px solid #dcdcdc;
-  font-size: 14px;
 }
 
 .forgot-link {
@@ -93,37 +90,39 @@
   background-color: #0b5ed7;
   border: none;
   border-radius: 12px;
-  color: #ffffff;
+  color: white;
   font-size: 16px;
-  cursor: pointer;
-}
-
-.login-btn:disabled {
-  opacity: 0.7;
 }
 
 .error-msg {
   color: red;
   font-size: 13px;
-  margin-bottom: 10px;
   text-align: center;
+  margin-bottom: 10px;
 }
 
-/* FOOTER */
+/* 🔥 FOOTER FIX */
 .footer {
   position: fixed;
   bottom: 0;
   width: 100%;
+  padding: 10px 24px;
   background: #ffffff;
-  padding: 10px 40px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 13px;
   border-top: 1px solid #e0e0e0;
+  box-sizing: border-box;
+}
+
+.footer-right {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap; /* prevents cutting */
 }
 
 .footer-right a {
-  margin: 0 6px;
   color: #0b5ed7;
   text-decoration: none;
 }
