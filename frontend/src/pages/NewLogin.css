@@ -1,56 +1,42 @@
-/* =========================
-   GLOBAL RESET
-========================= */
-* {
+html, body {
+  height: 100%;
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", Arial, sans-serif;
+  overflow: hidden;
+  font-family: "Segoe UI", sans-serif;
 }
 
-/* =========================
-   MAIN CONTAINER
-========================= */
+/* MAIN */
 .login-container {
   display: flex;
-  min-height: 100vh;
-  background: #f5f7fb;
-  position: relative;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* =========================
-   LEFT SECTION
-========================= */
+/* LEFT */
 .left-section {
   width: 55%;
   background: #8b0000;
-  padding: 60px 70px;
-  color: #ffffff;
+  padding: 40px 60px;
+  color: white;
 }
 
 .main-heading {
   font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 14px;
-  line-height: 1.25;
-  color: #ffffff;
+  margin-bottom: 10px;
 }
 
 .sub-heading {
+  color: #000;
   font-size: 15px;
-  color: #000000;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .audit-image {
-  width: 75%;
-  max-width: 420px;
-  margin-top: 20px;
+  width: 65%;
+  max-width: 360px;
 }
 
-/* =========================
-   RIGHT SECTION
-========================= */
+/* RIGHT */
 .right-section {
   width: 45%;
   display: flex;
@@ -60,151 +46,99 @@
 }
 
 .company-logo {
-  width: 140px;
-  margin-bottom: 20px;
+  width: 130px;
+  margin-bottom: 10px;
 }
 
-/* =========================
-   LOGIN CARD
-========================= */
+/* LOGIN CARD */
 .login-box {
-  background: #ffffff;
-  padding: 26px;
-  border-radius: 14px;
   width: 380px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  padding: 22px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
 }
 
 .signin-heading {
   font-size: 20px;
-  font-weight: 600;
-  color: #0b5ed7;
+  margin-bottom: 14px;
   text-align: center;
-  margin-bottom: 16px;
 }
 
-/* =========================
-   TABS
-========================= */
+/* TABS */
 .tab-buttons {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.tab-buttons button {
-  border: none;
-  padding: 6px 16px;
-  font-size: 13px;
-  border-radius: 20px;
-  cursor: pointer;
-  background: #e8efff;
-  color: #0b5ed7;
-}
-
-.tab-buttons button.active {
-  background: #0b5ed7;
-  color: #ffffff;
-}
-
-/* =========================
-   INPUTS
-========================= */
-.input-field {
-  width: 100%;
-  padding: 10px 14px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid #d0d7e2;
   margin-bottom: 12px;
 }
 
-/* =========================
-   PASSWORD / OTP
-========================= */
+.tab-buttons button {
+  padding: 6px 16px;
+  margin: 0 6px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.tab-buttons .active {
+  background: #0b5ed7;
+  color: white;
+}
+
+/* INPUTS */
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* AUTH */
 .auth-type {
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.auth-type label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* =========================
-   OTP BUTTON
-========================= */
-.otp-btn {
+/* BUTTONS */
+.login-btn, .otp-btn {
   width: 100%;
   padding: 10px;
-  font-size: 13px;
-  background: #e8efff;
+  background: #0b5ed7;
+  color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  margin-bottom: 10px;
 }
 
-/* =========================
-   ERROR MESSAGE
-========================= */
+.otp-btn {
+  margin-bottom: 8px;
+}
+
+/* ERROR */
 .error-msg {
-  font-size: 13px;
   color: red;
+  font-size: 13px;
   text-align: center;
   margin-bottom: 8px;
 }
 
-/* =========================
-   FORGOT PASSWORD
-========================= */
-.forgot-link {
-  text-align: right;
-  font-size: 13px;
-  margin-bottom: 12px;
-}
-
-.forgot-link a {
-  color: #0b5ed7;
-  text-decoration: none;
-}
-
-/* =========================
-   LOGIN BUTTON
-========================= */
-.login-btn {
-  width: 100%;
-  padding: 12px;
-  font-size: 15px;
-  border-radius: 10px;
-  border: none;
-  background: #0b5ed7;
-  color: #ffffff;
-  cursor: pointer;
-}
-
-/* =========================
-   FOOTER BAR
-========================= */
+/* FOOTER */
 .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
-  background: #ffffff;
-  padding: 10px 40px;
+  padding: 8px 40px;
+  background: white;
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
-  border-top: 1px solid #e0e0e0;
+  font-size: 12px;
+  border-top: 1px solid #ddd;
 }
 
-.footer-right a {
-  color: #0b5ed7;
+.footer a {
   text-decoration: none;
-  margin: 0 6px;
+  color: #0b5ed7;
 }
