@@ -1,4 +1,11 @@
-/* PAGE LAYOUT */
+/* RESET */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* MAIN CONTAINER */
 .login-container {
   display: flex;
   height: 100vh;
@@ -6,35 +13,40 @@
   font-family: "Segoe UI", sans-serif;
 }
 
-/* LEFT SIDE */
+/* LEFT SECTION */
 .left-section {
   width: 55%;
   background-color: #8b0000;
-  padding: 40px 60px;
+  padding: 50px 60px 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
+/* FIXED HEADING VISIBILITY */
 .main-heading {
-  font-size: 36px;
+  font-size: 38px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 10px;
+  line-height: 1.3;
+  margin-bottom: 12px;
 }
 
+/* SUB HEADING */
 .sub-heading {
   font-size: 16px;
   color: #000000;
   margin-bottom: 25px;
 }
 
+/* AUDIT IMAGE — HORIZONTAL EXPAND */
 .audit-image {
-  width: 85%;
-  max-width: 520px;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
 }
 
-/* RIGHT SIDE */
+/* RIGHT SECTION */
 .right-section {
   width: 45%;
   background: #f6f8fb;
@@ -44,24 +56,27 @@
   justify-content: center;
 }
 
+/* LOGO POSITION FIX */
 .company-logo {
-  width: 140px;
-  margin-bottom: 15px;
+  width: 135px;
+  margin-bottom: 12px;
 }
 
+/* LOGIN CARD */
 .login-box {
   background: #ffffff;
-  padding: 30px;
+  padding: 26px;
   border-radius: 16px;
   width: 380px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
+/* CARD HEADING */
 .signin-heading {
-  font-size: 22px;
+  font-size: 21px;
   color: #0b5ed7;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 /* TABS */
@@ -83,7 +98,7 @@
 
 .tab-buttons .active {
   background: #0b5ed7;
-  color: #fff;
+  color: #ffffff;
 }
 
 /* INPUTS */
@@ -102,10 +117,10 @@
   margin-bottom: 8px;
 }
 
-/* LINKS */
+/* FORGOT LINK */
 .forgot-link {
   text-align: right;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 .forgot-link a {
@@ -121,21 +136,30 @@
   border-radius: 10px;
   border: none;
   background: #0b5ed7;
-  color: white;
+  color: #ffffff;
   font-size: 16px;
   cursor: pointer;
 }
 
-/* FOOTER */
+/* FOOTER FIX */
 .footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
-  padding: 12px 40px;
+  height: 48px;
+  padding: 0 40px;
   background: #ffffff;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   font-size: 14px;
+  z-index: 10;
+}
+
+/* FOOTER RIGHT FIX */
+.footer-right {
+  white-space: nowrap;
 }
 
 .footer-right a {
