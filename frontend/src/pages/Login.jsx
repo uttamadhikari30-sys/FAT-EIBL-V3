@@ -5,9 +5,7 @@ import audit from "../assets/audit-illustration.png";
 import axios from "axios";
 
 const Login = () => {
-  const [loginWith, setLoginWith] = useState("email");
-  const [authMode, setAuthMode] = useState("password");
-  const [emailOrMobile, setEmailOrMobile] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -19,17 +17,14 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const payload = {
-        email: loginWith === "email" ? emailOrMobile : undefined,
-        mobile: loginWith === "mobile" ? emailOrMobile : undefined,
-        password: password,
-      };
-
-      const res = await axios.post(`${BASE_URL}/auth/login`, payload);
+      const res = await axios.post(`${BASE_URL}/auth/login`, {
+        email,
+        password,
+      });
 
       if (res.data?.access_token) {
         localStorage.setItem("token", res.data.access_token);
-        window.location.href = "/dashboard";
+        window.location.href = "/admin-dashboard";
       } else {
         setErrorMsg("Login failed. Token not received.");
       }
@@ -47,11 +42,16 @@ const Login = () => {
         <h1 className="main-heading">
           Digitally Streamline the Audit Process
         </h1>
+
         <p className="sub-heading">
           Ensure accuracy, transparency, and effortless compliance.
         </p>
 
-        <img src={audit} alt="Audit Illustration" className="audit-image" />
+        <img
+          src={audit}
+          alt="Audit Illustration"
+          className="audit-image"
+        />
       </div>
 
       {/* RIGHT SECTION */}
@@ -61,35 +61,20 @@ const Login = () => {
         <div className="login-box">
           <h2 className="signin-heading">Sign in to your account</h2>
 
-          <div className="tab-buttons">
-            <button
-              className={loginWith === "email" ? "active" : ""}
-              onClick={() => setLoginWith("email")}
-            >
-              Email
-            </button>
-            <button
-              className={loginWith === "mobile" ? "active" : ""}
-              onClick={() => setLoginWith("mobile")}
-            >
-              Mobile
-            </button>
-          </div>
-
           <input
-            type={loginWith === "email" ? "email" : "text"}
+            type="email"
             className="input-field"
-            value={emailOrMobile}
-            onChange={(e) => setEmailOrMobile(e.target.value)}
             placeholder="admin@edmeinsurance.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <input
             type="password"
             className="input-field"
+            placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
           />
 
           {errorMsg && <p className="error-msg">{errorMsg}</p>}
