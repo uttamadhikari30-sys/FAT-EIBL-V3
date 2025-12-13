@@ -1,10 +1,11 @@
-from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Query
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session   # ✅ FIX ADDED
 from dotenv import load_dotenv
-import os
-import shutil
 
-# Load env first
+# ---------------------------------------------------------
+# LOAD ENV
+# ---------------------------------------------------------
 load_dotenv()
 
 # ---------------------------------------------------------
@@ -13,29 +14,24 @@ load_dotenv()
 app = FastAPI(title="FAT-EIBL Backend API")
 
 # ---------------------------------------------------------
-# CORS — MUST BE VERY TOP BEFORE ANY DB OR ROUTER IMPORT
+# CORS CONFIG
 # ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://fat-eibl-frontend-x1sp.onrender.com"],
+    allow_origins=[
+        "https://fat-eibl-frontend-x1sp.onrender.com",
+        "http://localhost:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# IMPORTANT: Add global preflight handler for CORS
-@app.options("/{full_path:path}")
-def preflight_handler(full_path: str):
-    return {}
-
 # ---------------------------------------------------------
-# NOW IMPORT DB
+# DATABASE
 # ---------------------------------------------------------
 from app.database import Base, engine, SessionLocal
 
-# ---------------------------------------------------------
-# DB Dependency
-# ---------------------------------------------------------
 def get_db():
     db = SessionLocal()
     try:
@@ -44,14 +40,17 @@ def get_db():
         db.close()
 
 # ---------------------------------------------------------
-# ROUTERS (after CORS)
+# ROUTERS
 # ---------------------------------------------------------
-from app.routers import auth, users, forgot_password, invite
+from app.auth import router as auth_router
+from app.users import router as users_router
+from app.invite import router as invite_router
+from app.forgot_password import router as forgot_router
 
-app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(users.router, prefix="/users", tags=["Users"])
-app.include_router(forgot_password.router, prefix="/forgot", tags=["Forgot"])
-app.include_router(invite.router, prefix="/invite", tags=["Invite"])
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+app.include_router(users_router, prefix="/users", tags=["Users"])
+app.include_router(invite_router, prefix="/invite", tags=["Invite"])
+app.include_router(forgot_router, prefix="/forgot", tags=["Forgot Password"])
 
 # ---------------------------------------------------------
 # HEALTH CHECK
@@ -61,7 +60,7 @@ def health():
     return {"status": "ok"}
 
 # ---------------------------------------------------------
-# DB CREATE
+# CREATE DATABASE TABLES
 # ---------------------------------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
@@ -70,10 +69,10 @@ from app.models.invite import Invite
 @app.get("/create-db")
 def create_db():
     Base.metadata.create_all(bind=engine)
-    return {"ok": True, "msg": "DB created"}
+    return {"ok": True, "message": "Database tables created"}
 
 # ---------------------------------------------------------
-# SEED ADMIN USER
+# SEED ADMIN USER (ONE TIME)
 # ---------------------------------------------------------
 SEED_SECRET = "devseed123"
 
@@ -82,20 +81,22 @@ def seed_admin(secret: str, db: Session = Depends(get_db)):
     if secret != SEED_SECRET:
         raise HTTPException(status_code=403, detail="Invalid secret")
 
-    from app.utils.auth import hash_password
+    from app.utils.security import get_password_hash
 
-    existing = db.query(User).filter(User.email == "admin@edmeinsurance.com").first()
+    admin_email = "admin@edmeinsurance.com"
+
+    existing = db.query(User).filter(User.email == admin_email).first()
     if existing:
-        return {"ok": True, "msg": "Admin already exists"}
+        return {"ok": True, "message": "Admin already exists"}
 
     admin = User(
-        email="admin@edmeinsurance.com",
-        hashed_password=hash_password("Edme@123"),
+        email=admin_email,
+        password=get_password_hash("Edme@123"),
         role="admin",
-        first_login=False
+        is_active=True
     )
 
     db.add(admin)
     db.commit()
 
-    return {"ok": True, "msg": "Admin created"}
+    return {"ok": True, "message": "Admin user created successfully"}
