@@ -7,71 +7,63 @@ import axios from "axios";
 const BASE_URL = "https://fat-eibl-backend-x1sp.onrender.com";
 
 const Login = () => {
-  const [loginWith, setLoginWith] = useState("email"); // email | mobile
   const [authMode, setAuthMode] = useState("password"); // password | otp
-
-  const [emailOrMobile, setEmailOrMobile] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
 
+  const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
 
-  // -------------------------
+  // --------------------
   // SEND OTP
-  // -------------------------
+  // --------------------
   const handleSendOtp = async () => {
     setErrorMsg("");
 
-    if (!emailOrMobile) {
-      setErrorMsg("Please enter email or mobile first");
+    if (!email) {
+      setErrorMsg("Please enter email first");
       return;
     }
 
     try {
       await axios.post(`${BASE_URL}/auth/generate-otp`, {
-        email: loginWith === "email" ? emailOrMobile : undefined,
-        mobile: loginWith === "mobile" ? emailOrMobile : undefined,
+        email: email,
       });
-
       setOtpSent(true);
-      alert("OTP sent successfully");
+      alert("OTP sent to your email");
     } catch (error) {
       setErrorMsg("Failed to send OTP");
     }
   };
 
-  // -------------------------
+  // --------------------
   // LOGIN
-  // -------------------------
+  // --------------------
   const handleLogin = async () => {
     setErrorMsg("");
     setLoading(true);
 
     try {
-      let payload = {};
-
-      if (loginWith === "email") payload.email = emailOrMobile;
-      if (loginWith === "mobile") payload.mobile = emailOrMobile;
-
-      if (authMode === "password") {
-        payload.password = password;
-      } else {
-        payload.otp = otp;
-      }
+      const payload =
+        authMode === "password"
+          ? { email, password }
+          : { email, otp };
 
       const url =
-        authMode === "password" ? "/auth/login" : "/auth/login-otp";
+        authMode === "password"
+          ? "/auth/login"
+          : "/auth/login-otp";
 
       const res = await axios.post(`${BASE_URL}${url}`, payload);
 
-      // ✅ TOKEN (backend uses access_token)
+      // ✅ TOKEN
       if (res.data?.access_token) {
         localStorage.setItem("token", res.data.access_token);
-        window.location.href = "/dashboard"; // change if needed
+        window.location.href = "/dashboard";
       } else {
-        setErrorMsg("Login failed. Token not received.");
+        setErrorMsg("Login failed");
       }
     } catch (error) {
       setErrorMsg("Invalid email / password / OTP");
@@ -101,35 +93,16 @@ const Login = () => {
         <div className="login-box">
           <h2 className="signin-heading">Sign in to your account</h2>
 
-          {/* EMAIL / MOBILE */}
-          <div className="tab-buttons">
-            <button
-              className={loginWith === "email" ? "active" : ""}
-              onClick={() => setLoginWith("email")}
-            >
-              Email
-            </button>
-            <button
-              className={loginWith === "mobile" ? "active" : ""}
-              onClick={() => setLoginWith("mobile")}
-            >
-              Mobile
-            </button>
-          </div>
-
+          {/* EMAIL */}
           <input
-            type={loginWith === "email" ? "email" : "text"}
+            type="email"
             className="input-field"
-            placeholder={
-              loginWith === "email"
-                ? "admin@edmeinsurance.com"
-                : "Enter mobile number"
-            }
-            value={emailOrMobile}
-            onChange={(e) => setEmailOrMobile(e.target.value)}
+            placeholder="admin@edmeinsurance.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
-          {/* PASSWORD / OTP TOGGLE */}
+          {/* PASSWORD / OTP */}
           <div className="auth-type">
             <label>
               <input
@@ -153,7 +126,7 @@ const Login = () => {
             </label>
           </div>
 
-          {/* PASSWORD */}
+          {/* PASSWORD FIELD */}
           {authMode === "password" && (
             <input
               type="password"
@@ -164,7 +137,7 @@ const Login = () => {
             />
           )}
 
-          {/* OTP */}
+          {/* OTP FIELD */}
           {authMode === "otp" && (
             <>
               <input
