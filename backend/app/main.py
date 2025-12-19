@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session   # ✅ FIX ADDED
+from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
 # ---------------------------------------------------------
@@ -40,12 +40,12 @@ def get_db():
         db.close()
 
 # ---------------------------------------------------------
-# ROUTERS
+# ROUTERS (✅ FIXED PATHS)
 # ---------------------------------------------------------
-from app.auth import router as auth_router
-from app.users import router as users_router
-from app.invite import router as invite_router
-from app.forgot_password import router as forgot_router
+from app.routers.auth import router as auth_router
+from app.routers.users import router as users_router
+from app.routers.invite import router as invite_router
+from app.routers.forgot_password import router as forgot_router
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router, prefix="/users", tags=["Users"])
