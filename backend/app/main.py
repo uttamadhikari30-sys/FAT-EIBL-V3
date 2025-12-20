@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------- DB ----------------
+# ---------------- DATABASE ----------------
 from app.database import Base, engine, SessionLocal
 
 def get_db():
@@ -38,17 +38,15 @@ from app.routers.forgot_password import router as forgot_router
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router, prefix="/users", tags=["Users"])
 app.include_router(invite_router, prefix="/invite", tags=["Invite"])
-app.include_router(forgot_router, prefix="/forgot", tags=["Forgot Password"])
+app.include_router(forgot_router, prefix="/forgot", tags=["Forgot"])
 
 # ---------------- HEALTH ----------------
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
-# ---------------- CREATE DB ----------------
+# ---------------- DB CREATE ----------------
 from app.models.user import User
-from app.models.otp import OtpModel
-from app.models.invite import Invite
 
 @app.get("/create-db")
 def create_db():
@@ -69,7 +67,7 @@ def seed_admin(secret: str, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(User.email == email).first()
     if user:
-        return {"ok": True, "message": "Admin already exists"}
+        return {"ok": True, "msg": "Admin already exists"}
 
     admin = User(
         email=email,
@@ -80,6 +78,4 @@ def seed_admin(secret: str, db: Session = Depends(get_db)):
 
     db.add(admin)
     db.commit()
-    db.refresh(admin)
-
-    return {"ok": True, "message": "Admin created"}
+    return {"ok": True, "msg": "Admin created"}
