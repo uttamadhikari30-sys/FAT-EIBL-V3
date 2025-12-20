@@ -3,12 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
+# ---------------------------------------------------------
+# LOAD ENV
+# ---------------------------------------------------------
 load_dotenv()
 
+# ---------------------------------------------------------
+# INIT APP
+# ---------------------------------------------------------
 app = FastAPI(title="FAT-EIBL Backend API")
 
 # ---------------------------------------------------------
-# ✅ CORS — MUST BE BEFORE ROUTERS
+# CORS (THIS FIXES LOGIN ISSUE)
 # ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
@@ -34,24 +40,27 @@ def get_db():
         db.close()
 
 # ---------------------------------------------------------
-# ✅ ROUTERS (FIXED IMPORTS)
+# ROUTERS (✅ CORRECT IMPORTS)
 # ---------------------------------------------------------
-from app import auth, users, invite, forgot_password
+from app.auth import router as auth_router
+from app.users import router as users_router
+from app.invite import router as invite_router
+from app.forgot_password import router as forgot_router
 
-app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(users.router, prefix="/users", tags=["Users"])
-app.include_router(invite.router, prefix="/invite", tags=["Invite"])
-app.include_router(forgot_password.router, prefix="/forgot", tags=["Forgot"])
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+app.include_router(users_router, prefix="/users", tags=["Users"])
+app.include_router(invite_router, prefix="/invite", tags=["Invite"])
+app.include_router(forgot_router, prefix="/forgot", tags=["Forgot Password"])
 
 # ---------------------------------------------------------
-# HEALTH
+# HEALTH CHECK
 # ---------------------------------------------------------
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
 # ---------------------------------------------------------
-# CREATE DB
+# CREATE DATABASE TABLES
 # ---------------------------------------------------------
 from app.models.user import User
 from app.models.otp import OtpModel
@@ -63,7 +72,7 @@ def create_db():
     return {"ok": True}
 
 # ---------------------------------------------------------
-# SEED ADMIN
+# SEED ADMIN USER
 # ---------------------------------------------------------
 SEED_SECRET = "devseed123"
 
@@ -76,8 +85,8 @@ def seed_admin(secret: str, db: Session = Depends(get_db)):
 
     email = "admin@edmeinsurance.com"
 
-    user = db.query(User).filter(User.email == email).first()
-    if user:
+    existing = db.query(User).filter(User.email == email).first()
+    if existing:
         return {"ok": True, "msg": "Admin already exists"}
 
     admin = User(
