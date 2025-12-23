@@ -7,19 +7,24 @@ load_dotenv()
 
 app = FastAPI(title="FAT-EIBL Backend API")
 
-# ---------------- CORS ----------------
+# ===================== CORS (FIXED) =====================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://fat-eibl-frontend-x1sp.onrender.com",
-        "http://localhost:5173"
+        "http://localhost:5173",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---------------- DATABASE ----------------
+# Handle OPTIONS explicitly (IMPORTANT)
+@app.options("/{path:path}")
+def options_handler(path: str):
+    return {}
+
+# ===================== DATABASE =====================
 from app.database import Base, engine, SessionLocal
 
 def get_db():
@@ -29,7 +34,7 @@ def get_db():
     finally:
         db.close()
 
-# ---------------- ROUTERS ----------------
+# ===================== ROUTERS =====================
 from app.routers.auth import router as auth_router
 from app.routers.users import router as users_router
 from app.routers.invite import router as invite_router
@@ -40,12 +45,12 @@ app.include_router(users_router, prefix="/users", tags=["Users"])
 app.include_router(invite_router, prefix="/invite", tags=["Invite"])
 app.include_router(forgot_router, prefix="/forgot", tags=["Forgot"])
 
-# ---------------- HEALTH ----------------
+# ===================== HEALTH =====================
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
-# ---------------- DB CREATE ----------------
+# ===================== DB CREATE =====================
 from app.models.user import User
 
 @app.get("/create-db")
@@ -53,7 +58,7 @@ def create_db():
     Base.metadata.create_all(bind=engine)
     return {"ok": True}
 
-# ---------------- SEED ADMIN ----------------
+# ===================== SEED ADMIN =====================
 SEED_SECRET = "devseed123"
 
 @app.get("/seed-admin")
@@ -73,9 +78,10 @@ def seed_admin(secret: str, db: Session = Depends(get_db)):
         email=email,
         hashed_password=get_password_hash("Edme@123"),
         role="admin",
-        first_login=False
+        first_login=False,
     )
 
     db.add(admin)
     db.commit()
+
     return {"ok": True, "msg": "Admin created"}
