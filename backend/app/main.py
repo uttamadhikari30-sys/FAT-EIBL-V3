@@ -1,13 +1,13 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# ===================== APP =====================
 app = FastAPI(title="FAT-EIBL Backend API")
 
-# ===================== CORS (FIXED) =====================
+# ===================== CORS =====================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -19,18 +19,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Handle OPTIONS explicitly (IMPORTANT)
+# Handle OPTIONS explicitly
 @app.options("/{path:path}")
 def options_handler(path: str):
     return {}
 
 # ===================== DATABASE =====================
 from app.database import Base, engine, SessionLocal
+from app.models.user import User
+from app.utils.security import get_password_hash
 
-def get_db():
+# ===================== STARTUP (AUTO DB + ADMIN) =====================
+@app.on_event("startup")
+def startup():
+    # Create tables
+    Base.metadata.create_all(bind=engine)
+
+    # Create admin user if not exists
     db = SessionLocal()
     try:
-        yield db
+        admin_email = "admin@edmeinsurance.com"
+
+        admin = db.query(User).filter(
+            User.email == admin_email
+        ).first()
+
+        if not admin:
+            admin = User(
+                email=admin_email,
+                hashed_password=get_password_hash("Edme@123"),
+                role="admin",
+                first_login=False,
+            )
+            db.add(admin)
+            db.commit()
+            print("✅ Admin user created")
+        else:
+            print("ℹ️ Admin already exists")
+
     finally:
         db.close()
 
@@ -49,39 +75,3 @@ app.include_router(forgot_router, prefix="/forgot", tags=["Forgot"])
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
-# ===================== DB CREATE =====================
-from app.models.user import User
-
-@app.get("/create-db")
-def create_db():
-    Base.metadata.create_all(bind=engine)
-    return {"ok": True}
-
-# ===================== SEED ADMIN =====================
-SEED_SECRET = "devseed123"
-
-@app.get("/seed-admin")
-def seed_admin(secret: str, db: Session = Depends(get_db)):
-    if secret != SEED_SECRET:
-        raise HTTPException(status_code=403, detail="Invalid secret")
-
-    from app.utils.security import get_password_hash
-
-    email = "admin@edmeinsurance.com"
-
-    user = db.query(User).filter(User.email == email).first()
-    if user:
-        return {"ok": True, "msg": "Admin already exists"}
-
-    admin = User(
-        email=email,
-        hashed_password=get_password_hash("Edme@123"),
-        role="admin",
-        first_login=False,
-    )
-
-    db.add(admin)
-    db.commit()
-
-    return {"ok": True, "msg": "Admin created"}
