@@ -29,13 +29,12 @@ from app.database import Base, engine, SessionLocal
 from app.models.user import User
 from app.utils.security import get_password_hash
 
-# ===================== STARTUP (AUTO DB + ADMIN) =====================
+# ===================== STARTUP =====================
 @app.on_event("startup")
 def startup():
-    # Create tables
+    # Create tables if not exist
     Base.metadata.create_all(bind=engine)
 
-    # Create admin user if not exists
     db = SessionLocal()
     try:
         admin_email = "admin@edmeinsurance.com"
@@ -46,16 +45,23 @@ def startup():
 
         if not admin:
             admin = User(
+                name="Admin",                       # ✅ REQUIRED (NOT NULL)
                 email=admin_email,
                 hashed_password=get_password_hash("Edme@123"),
                 role="admin",
+                is_active=True,
                 first_login=False,
             )
             db.add(admin)
             db.commit()
-            print("✅ Admin user created")
+            print("✅ Admin user created successfully")
+
         else:
-            print("ℹ️ Admin already exists")
+            print("ℹ️ Admin user already exists")
+
+    except Exception as e:
+        db.rollback()
+        print("❌ Startup error:", e)
 
     finally:
         db.close()
