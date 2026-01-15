@@ -48,13 +48,14 @@ def startup():
             )
             db.add(admin)
             db.commit()
-            print("✅ Admin user created at startup")
+            print("✅ Admin user created successfully")
+
         else:
             print("ℹ️ Admin already exists")
 
     except Exception as e:
         db.rollback()
-        print("❌ Startup error:", e)
+        print("❌ Startup failed:", e)
 
     finally:
         db.close()
