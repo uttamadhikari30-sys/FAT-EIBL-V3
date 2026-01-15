@@ -1,35 +1,84 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from app.database import SessionLocal
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# ===================== APP =====================
+app = FastAPI(title="FAT-EIBL Backend API")
+
+# ===================== CORS =====================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://fat-eibl-frontend-x1sp.onrender.com",
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Handle OPTIONS explicitly (important for CORS)
+@app.options("/{path:path}")
+def options_handler(path: str):
+    return {}
+
+# ===================== DATABASE =====================
+from app.database import Base, engine, SessionLocal
 from app.models.user import User
-from app.schemas.auth import LoginSchema
-from app.utils.security import verify_password
+from app.utils.security import get_password_hash
 
-router = APIRouter()
+# ===================== STARTUP =====================
+@app.on_event("startup")
+def startup():
+    # 1️⃣ Create tables
+    Base.metadata.create_all(bind=engine)
 
-def get_db():
+    # 2️⃣ Create Admin user if not exists
     db = SessionLocal()
     try:
-        yield db
+        admin_email = "admin@edmeinsurance.com"
+
+        admin = db.query(User).filter(
+            User.email == admin_email
+        ).first()
+
+        if not admin:
+            admin = User(
+                name="Admin",                 # NOT NULL
+                email=admin_email,
+                hashed_password=get_password_hash("Edme@123"),
+                role="admin",
+                is_active=True,
+                first_login=False,
+            )
+            db.add(admin)
+            db.commit()
+            print("✅ Admin user created successfully")
+
+        else:
+            print("ℹ️ Admin user already exists")
+
+    except Exception as e:
+        db.rollback()
+        print("❌ Startup error:", e)
+
     finally:
         db.close()
 
-@router.post("/login")
-def login(data: LoginSchema, db: Session = Depends(get_db)):
+# ===================== ROUTERS =====================
+from app.routers.auth import router as auth_router
+from app.routers.users import router as users_router
+from app.routers.invite import router as invite_router
+from app.routers.forgot_password import router as forgot_router
 
-    user = db.query(User).filter(User.email == data.email).first()
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+app.include_router(users_router, prefix="/users", tags=["Users"])
+app.include_router(invite_router, prefix="/invite", tags=["Invite"])
+app.include_router(forgot_router, prefix="/forgot", tags=["Forgot Password"])
 
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-
-    if not user.hashed_password:
-        raise HTTPException(status_code=401, detail="Password login disabled")
-
-    if not verify_password(data.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-
-    return {
-        "ok": True,
-        "email": user.email,
-        "role": user.role
-    }
+# ===================== HEALTH =====================
+@app.get("/health")
+def health():
+    return {"status": "ok"}

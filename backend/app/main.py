@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ===================== APP =====================
 app = FastAPI(title="FAT-EIBL Backend API")
 
 # ===================== CORS =====================
@@ -19,7 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Handle OPTIONS explicitly
 @app.options("/{path:path}")
 def options_handler(path: str):
     return {}
@@ -32,20 +30,16 @@ from app.utils.security import get_password_hash
 # ===================== STARTUP =====================
 @app.on_event("startup")
 def startup():
-    # Create tables if not exist
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
         admin_email = "admin@edmeinsurance.com"
 
-        admin = db.query(User).filter(
-            User.email == admin_email
-        ).first()
+        admin = db.query(User).filter(User.email == admin_email).first()
 
         if not admin:
             admin = User(
-                name="Admin",                       # ✅ REQUIRED (NOT NULL)
                 email=admin_email,
                 hashed_password=get_password_hash("Edme@123"),
                 role="admin",
@@ -54,10 +48,9 @@ def startup():
             )
             db.add(admin)
             db.commit()
-            print("✅ Admin user created successfully")
-
+            print("✅ Admin user created at startup")
         else:
-            print("ℹ️ Admin user already exists")
+            print("ℹ️ Admin already exists")
 
     except Exception as e:
         db.rollback()
@@ -77,7 +70,6 @@ app.include_router(users_router, prefix="/users", tags=["Users"])
 app.include_router(invite_router, prefix="/invite", tags=["Invite"])
 app.include_router(forgot_router, prefix="/forgot", tags=["Forgot"])
 
-# ===================== HEALTH =====================
 @app.get("/health")
 def health():
     return {"status": "ok"}
