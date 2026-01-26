@@ -8,6 +8,7 @@ from app.utils.security import verify_password
 
 router = APIRouter()
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -15,9 +16,9 @@ def get_db():
     finally:
         db.close()
 
+
 @router.post("/login")
 def login(data: LoginSchema, db: Session = Depends(get_db)):
-
     user = db.query(User).filter(User.email == data.email).first()
 
     if not user:
@@ -32,5 +33,5 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
     return {
         "ok": True,
         "email": user.email,
-        "role": user.role
+        "role": user.role,
     }
