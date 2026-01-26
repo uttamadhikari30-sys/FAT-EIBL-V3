@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ===================== APP =====================
 app = FastAPI(title="FAT-EIBL Backend API")
 
+# ===================== CORS =====================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -17,38 +19,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ===================== DATABASE =====================
 from app.database import Base, engine, SessionLocal
 from app.models.user import User
 from app.utils.security import get_password_hash
 
-
+# ===================== STARTUP =====================
 @app.on_event("startup")
 def startup():
+    # Create tables
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
-        email = "admin@edmeinsurance.com"
+        admin_email = "admin@edmeinsurance.com"
 
-        admin = db.query(User).filter(User.email == email).first()
+        admin = db.query(User).filter(User.email == admin_email).first()
+
         if not admin:
             admin = User(
-                email=email,
+                email=admin_email,
                 hashed_password=get_password_hash("Edme@123"),
-                role="admin",
-                is_active=True,
-                first_login=False,
+                role="admin"
             )
             db.add(admin)
             db.commit()
-            print("✅ Admin created")
+            print("✅ Admin user created")
+
         else:
-            print("ℹ️ Admin exists")
+            print("ℹ️ Admin already exists")
+
+    except Exception as e:
+        db.rollback()
+        print("❌ Startup error:", e)
 
     finally:
         db.close()
 
-
+# ===================== ROUTERS =====================
 from app.routers.auth import router as auth_router
 from app.routers.users import router as users_router
 from app.routers.invite import router as invite_router
@@ -57,9 +65,9 @@ from app.routers.forgot_password import router as forgot_router
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router, prefix="/users", tags=["Users"])
 app.include_router(invite_router, prefix="/invite", tags=["Invite"])
-app.include_router(forgot_router, prefix="/forgot", tags=["Forgot"])
+app.include_router(forgot_router, prefix="/forgot", tags=["Forgot Password"])
 
-
+# ===================== HEALTH =====================
 @app.get("/health")
 def health():
     return {"status": "ok"}
