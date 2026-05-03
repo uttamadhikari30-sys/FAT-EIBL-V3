@@ -38,14 +38,18 @@ def startup():
 
         admin = db.query(User).filter(User.email == admin_email).first()
         if not admin:
-            db.add(User(
+            admin = User(
                 email=admin_email,
-                hashed_password=get_password_hash(admin_password),
                 role="admin",
                 first_login=False,
-            ))
-            db.commit()
-            print(f"✅ Default admin created: {admin_email}")
+            )
+            db.add(admin)
+
+        # Keep admin credentials deterministic across environments
+        admin.hashed_password = get_password_hash(admin_password)
+        admin.first_login = False
+        db.commit()
+        print(f"✅ Default admin ensured: {admin_email}")
     finally:
         db.close()
 
