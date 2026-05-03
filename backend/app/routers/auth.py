@@ -29,7 +29,17 @@ def login(data: dict, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(User.email == email).first()
 
-    if not user or not user.hashed_password or not verify_password(password, user.hashed_password):
+    stored_hash = user.hashed_password or user.password if user else None
+
+    is_valid_password = False
+    if user and stored_hash:
+        try:
+            is_valid_password = verify_password(password, stored_hash)
+        except Exception:
+            # Backward compatibility: some old rows stored plain text in `password`
+            is_valid_password = password == stored_hash
+
+    if not user or not stored_hash or not is_valid_password:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
