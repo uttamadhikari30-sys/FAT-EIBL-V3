@@ -4,7 +4,7 @@ import logo from "../assets/logo.png";
 import audit from "../assets/audit-illustration.png";
 import axios from "axios";
 
-const BASE_URL = "https://fat-eibl-backend-x1sp.onrender.com";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fat-eibl-backend-x1sp.onrender.com";
 
 const Login = () => {
   const [authMode, setAuthMode] = useState("password"); // password | otp
@@ -46,10 +46,11 @@ const Login = () => {
     setLoading(true);
 
     try {
+      const normalizedEmail = email.trim().toLowerCase();
       const payload =
         authMode === "password"
-          ? { email, password }
-          : { email, otp };
+          ? { email: normalizedEmail, password }
+          : { email: normalizedEmail, otp };
 
       const url =
         authMode === "password"
@@ -66,7 +67,12 @@ const Login = () => {
         setErrorMsg("Login failed");
       }
     } catch (error) {
-      setErrorMsg("Invalid email / password / OTP");
+      const apiMsg =
+        error?.response?.data?.detail ||
+        error?.response?.data?.message ||
+        "Invalid email / password / OTP";
+      setErrorMsg(apiMsg);
+      console.error("Login failed:", error?.response?.status, error?.response?.data);
     }
 
     setLoading(false);
