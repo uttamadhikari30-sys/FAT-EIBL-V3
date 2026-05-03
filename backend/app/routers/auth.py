@@ -1,6 +1,7 @@
 import os
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.database import SessionLocal
 from app.models.user import User
@@ -28,7 +29,7 @@ def login(data: dict, db: Session = Depends(get_db)):
             detail="Email and password required"
         )
 
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(User).filter(func.lower(User.email) == email).first()
     stored_hash = user.hashed_password or user.password if user else None
 
     is_valid_password = False

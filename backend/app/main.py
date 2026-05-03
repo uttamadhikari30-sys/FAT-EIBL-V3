@@ -33,10 +33,11 @@ def startup():
     # Ensure a default admin exists for first-time login in fresh deployments
     db = SessionLocal()
     try:
-        admin_email = os.getenv("ADMIN_EMAIL", "admin@edmeinsurance.com")
+        admin_email = os.getenv("ADMIN_EMAIL", "admin@edmeinsurance.com").strip().lower()
         admin_password = os.getenv("ADMIN_PASSWORD", "Edme@123")
 
-        admin = db.query(User).filter(User.email == admin_email).first()
+        from sqlalchemy import func
+        admin = db.query(User).filter(func.lower(User.email) == admin_email).first()
         if not admin:
             admin = User(
                 email=admin_email,
