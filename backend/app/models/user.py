@@ -10,6 +10,8 @@ class User(Base):
 
     # Required for login
     hashed_password = Column(String, nullable=True)
+    # Legacy column kept for backward compatibility with older deployments
+    password = Column(String, nullable=True)
 
     # Roles
     role = Column(String, default="user")
