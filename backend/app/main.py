@@ -46,12 +46,6 @@ def startup():
             ))
             db.commit()
             print(f"✅ Default admin created: {admin_email}")
-        elif not (admin.hashed_password or admin.password):
-            # Repair partially seeded admin rows that exist without any login password
-            admin.hashed_password = get_password_hash(admin_password)
-            admin.first_login = False
-            db.commit()
-            print(f"✅ Default admin password repaired: {admin_email}")
     finally:
         db.close()
 
