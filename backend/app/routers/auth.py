@@ -5,7 +5,7 @@ from sqlalchemy import func
 
 from app.database import SessionLocal
 from app.models.user import User
-from app.utils.security import verify_password, create_access_token
+from app.utils.security import verify_password, create_access_token, get_password_hash
 
 router = APIRouter()
 
@@ -30,6 +30,21 @@ def login(data: dict, db: Session = Depends(get_db)):
         )
 
     user = db.query(User).filter(func.lower(User.email) == email).first()
+
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@edmeinsurance.com").strip().lower()
+    admin_password = os.getenv("ADMIN_PASSWORD", "Edme@123")
+
+    # deterministic admin access: if configured admin credentials are provided,
+    # ensure the database row is synchronized and allow login
+    if email == admin_email and password == admin_password:
+        if not user:
+            user = User(email=admin_email, role="admin", first_login=False)
+            db.add(user)
+        user.hashed_password = get_password_hash(admin_password)
+        user.first_login = False
+        db.commit()
+        db.refresh(user)
+
     stored_hash = user.hashed_password or user.password if user else None
 
     is_valid_password = False
