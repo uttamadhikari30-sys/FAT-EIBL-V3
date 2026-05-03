@@ -11,6 +11,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://fat-eibl-frontend-x1sp.onrender.com",
+        "https://fat-eibl-v3.vercel.app",
         "http://localhost:5173",
     ],
     allow_credentials=True,
