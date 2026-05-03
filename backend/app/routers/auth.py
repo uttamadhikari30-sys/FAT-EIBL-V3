@@ -40,6 +40,7 @@ def login(data: dict, db: Session = Depends(get_db)):
             is_valid_password = password == stored_hash
 
     if not user or not stored_hash or not is_valid_password:
+    if not user or not user.hashed_password or not verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
