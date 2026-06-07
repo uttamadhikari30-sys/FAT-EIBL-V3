@@ -1,3 +1,9 @@
+databases:
+  - name: fat-eibl-db
+    plan: free
+    databaseName: fatdb
+    user: fatuser
+
 services:
   - type: web
     name: fat-eibl-backend
@@ -6,11 +12,13 @@ services:
     dockerfilePath: backend/Dockerfile
     envVars:
       - key: DATABASE_URL
-        value: postgresql://fatuser:fatpass@db:5432/fatdb
+        fromDatabase:
+          name: fat-eibl-db
+          property: connectionString
       - key: OPENAI_API_KEY
         sync: false
       - key: SECRET_KEY
-        value: dev-secret
+        generateValue: true
       - key: EMAIL_FROM
         value: Audit@edmeinsurance.com
 
