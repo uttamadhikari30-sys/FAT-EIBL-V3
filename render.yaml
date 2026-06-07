@@ -35,3 +35,5 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://fat-eibl-backend.onrender.com
+      - key: VITE_API_BASE_URL
+        value: https://fat-eibl-backend.onrender.com

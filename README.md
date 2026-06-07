@@ -19,7 +19,7 @@ http://localhost:3000
 Backend docs: http://localhost:8000/docs
 
 ## Configure
-- Frontend reads API at `VITE_API_URL` (set in docker-compose to http://localhost:8000)
+- Frontend reads API at `VITE_API_BASE_URL` (set in docker-compose to http://localhost:8000)
 - Backend env in `backend/.env`:
 ```
 DATABASE_URL=postgresql+psycopg2://fatuser:fatpass@db:5432/fatdb

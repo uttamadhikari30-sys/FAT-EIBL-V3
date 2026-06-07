@@ -17,3 +17,13 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    # Legacy column kept for backward compatibility with older deployments
+    password = Column(String, nullable=True)
+
+    # First login flag
+    first_login = Column(Boolean, default=True)
+
+    # OTP login fields
+    otp_code = Column(String, nullable=True)
+    otp_expires_at = Column(DateTime, nullable=True)

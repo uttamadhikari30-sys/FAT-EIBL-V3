@@ -21,14 +21,19 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
+        "https://fat-eibl-frontend-x1sp.onrender.com",
+        "https://fat-eibl-v3.vercel.app",
         "http://localhost:5173",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
     ],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+import os
 
 
 class LoginRequest(BaseModel):
@@ -339,6 +344,36 @@ def ensure_seed_data():
 def startup():
     Base.metadata.create_all(bind=engine)
     ensure_seed_data()
+
+    # Ensure a default admin exists for first-time login in fresh deployments
+    db = SessionLocal()
+    try:
+        admin_email = os.getenv("ADMIN_EMAIL", "admin@edmeinsurance.com").strip().lower()
+        admin_password = os.getenv("ADMIN_PASSWORD", "Edme@123")
+
+        from sqlalchemy import func
+        admin = db.query(User).filter(func.lower(User.email) == admin_email).first()
+        if not admin:
+            admin = User(
+                name="Audit Administrator",
+                email=admin_email,
+                department="Internal Audit",
+                reporting_manager="CFO Office",
+                role="admin",
+                first_login=False,
+                is_active=True,
+            )
+            db.add(admin)
+
+        # Keep admin credentials deterministic across environments
+        admin.hashed_password = get_password_hash(admin_password)
+        admin.first_login = False
+        db.commit()
+        print(f"✅ Default admin ensured: {admin_email}")
+    finally:
+        db.close()
+
+    print("✅ Database ready")
 
 
 @app.get("/health")

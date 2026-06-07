@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import auditArt from "../assets/audit-illustration.png";
 import logo from "../assets/logo.png";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  "http://localhost:8000";
 const roles = [
   { id: "cfo", icon: "👑", name: "CFO", note: "Full access" },
   { id: "ceo", icon: "🎯", name: "CEO", note: "Executive" },
@@ -25,10 +28,11 @@ export default function Login() {
     setError("");
 
     try {
+      const normalizedEmail = email.trim().toLowerCase();
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: normalizedEmail, password }),
       });
 
       const data = await response.json();
